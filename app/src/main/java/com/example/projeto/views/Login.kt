@@ -1,6 +1,7 @@
 package com.example.projeto.views
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,11 +22,14 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.projeto.R
+import com.example.projeto.layoutsprontos.loadImage
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Login() {
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -36,13 +40,21 @@ fun Login() {
             )
         },
         modifier = Modifier.fillMaxSize(),
-       // backgroundColor = Color(0xFFF99D13)
+
     ) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            loadImage(
+                path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlaranja.png",
+                contentDescription = "Background Laranja")
+        }
+        
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
+            loadImage(path = , contentDescription = )
 
         }
 
@@ -51,11 +63,7 @@ fun Login() {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun loadBackground(path:String){
-    GlideImage(model = path, contentDescription = "Background laranja")
-}
+
 
 @Preview(showBackground = true)
 @Composable
