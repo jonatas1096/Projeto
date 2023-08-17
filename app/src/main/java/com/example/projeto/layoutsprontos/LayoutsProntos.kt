@@ -12,9 +12,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 //Carregar uma imagem do github:
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun loadImage(path:String, contentDescription:String){
-    GlideImage(model = path,
+fun loadImage(path:String, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
+    GlideImage(
+    model = path,
     contentDescription = contentDescription,
-    contentScale = ContentScale.Crop,
-     modifier = Modifier.fillMaxSize())
+    contentScale = contentScale,
+    modifier = Modifier
+    )
+
  }

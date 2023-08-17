@@ -47,14 +47,22 @@ fun Login() {
         ){
             loadImage(
                 path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlaranja.png",
-                contentDescription = "Background Laranja")
+                contentDescription = "Background Laranja",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+
+            )
         }
-        
+
         Column(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            loadImage(path = , contentDescription = )
+            loadImage(path = "",
+                contentDescription = "a",
+                contentScale = ContentScale.None,
+                modifier = Modifier
+            )
 
         }
 
