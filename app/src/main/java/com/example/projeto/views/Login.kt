@@ -58,10 +58,10 @@ fun Login() {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            loadImage(path = "",
-                contentDescription = "a",
-                contentScale = ContentScale.None,
-                modifier = Modifier
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/capeloaluno.png",
+                contentDescription = "Capelo Aluno",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(10.dp)
             )
 
         }
