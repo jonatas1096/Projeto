@@ -2,6 +2,7 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,7 +45,7 @@ fun Login() {
         loadImage(
             path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlogin.png",
             contentDescription = "Background do Login",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.None,
             modifier = Modifier.fillMaxSize()
 
         )
@@ -154,14 +155,13 @@ fun Login() {
                         OutlinedTextField(
                             value = email,
                             onValueChange = { email = it },
-                            placeholder = {
-                                Text(
-                                    text = "Email",
-                                    fontSize = 19.sp
-                                )
+                            label = {
+                                Text(text = "Email")
                             },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = LARANJA
+                                unfocusedBorderColor = LARANJA,
+                                focusedBorderColor = Color(0xFFFFFFFF),
+                                focusedLabelColor = LARANJA,
                             ),
                             maxLines = 1,
                             shape = RoundedCornerShape(40.dp),
@@ -175,14 +175,14 @@ fun Login() {
                         OutlinedTextField(
                             value = senha,
                             onValueChange = { senha = it },
-                            placeholder = {
+                            label = {
                                 Text(
                                     text = "Senha",
-                                    fontSize = 19.sp
                                 )
                             },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = LARANJA
+                                unfocusedBorderColor = LARANJA,
+                                focusedBorderColor = Color(0xFFFFFFFF)
                             ),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password
