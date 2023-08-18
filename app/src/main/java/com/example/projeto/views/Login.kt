@@ -40,7 +40,7 @@ fun Login() {
         modifier = Modifier.fillMaxSize()
     ){
         loadImage(
-            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundLogin.png",
+            path = "",
             contentDescription = "Background do Login",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -59,7 +59,7 @@ fun Login() {
             Box(
                 modifier = Modifier
                     .constrainAs(capeloBox) {
-                        top.linkTo(parent.top, margin = 50.dp)
+                        top.linkTo(parent.top, margin = 40.dp)
                         start.linkTo(parent.start, margin = 100.dp)
                         end.linkTo(parent.end, margin = 100.dp)
                     }
@@ -74,7 +74,7 @@ fun Login() {
 
             Text(text = "ConnectSTUDENT",
                 modifier = Modifier.constrainAs(titulo){
-                    top.linkTo(parent.top, margin = 130.dp)
+                    top.linkTo(parent.top, margin = 120.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -100,7 +100,7 @@ fun Login() {
                         Color.White,
                         shape = RoundedCornerShape(30.dp)
                     )
-                    .shadow(3.dp, shape = RoundedCornerShape(25.dp),clip = true > 10.dp,)
+
 
 
 
