@@ -32,5 +32,5 @@ fun Main() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    Main()
+    Login()
 }

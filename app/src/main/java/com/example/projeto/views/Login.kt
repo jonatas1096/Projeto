@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +25,10 @@ import com.example.projeto.ui.theme.LARANJA
 fun Login() {
 
     var email by remember {
+        mutableStateOf("")
+    }
+
+    var senha by remember {
         mutableStateOf("")
     }
 
@@ -45,7 +50,7 @@ fun Login() {
             modifier = Modifier.fillMaxSize()
 
         ) {
-            val (capeloBox,areaLogin, botao) = createRefs()
+            val (capeloBox, areaLogin, titulo, pauloroberto) = createRefs()
 
             //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
             Box(
@@ -63,6 +68,18 @@ fun Login() {
                     modifier = Modifier
                 )
             }
+
+            Text(text = "ConnectStudent",
+                modifier = Modifier.constrainAs(titulo){
+                    top.linkTo(parent.top, margin = 155.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                ,
+                fontSize = 28.sp,
+                color = Color.White
+                )
+
 
             //Box que vai guardar email e senha:
             Box(
@@ -101,7 +118,7 @@ fun Login() {
                         color = Color(49, 48, 48, 255),
                         fontSize = 16.sp,
                         modifier = Modifier
-                            .padding(bottom = 40.dp)
+                            .padding(bottom = 80.dp)
                     )
 
 
@@ -110,27 +127,77 @@ fun Login() {
                         value = email,
                         onValueChange = {email = it},
                         placeholder = {
-                                      Text(text = "Email")
+                            Text(text = "Email",
+                                fontSize = 19.sp)
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedBorderColor = LARANJA
                         ),
-                        modifier = Modifier.padding(horizontal = 40.dp)
+                        shape = RoundedCornerShape(40.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 40.dp)
+                            .padding(bottom = 20.dp)
                     )
+
+
+                    //Senha
+                    OutlinedTextField(
+                        value = senha,
+                        onValueChange = { senha = it},
+                        placeholder = {
+                            Text(text = "Senha",
+                                fontSize = 19.sp)
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedBorderColor = LARANJA
+                        ),
+                        shape = RoundedCornerShape(50.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 40.dp)
+                            .padding(bottom = 55.dp)
+                    )
+
 
 
                     //Logar
                     Button(onClick = {
 
                     },
-
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = LARANJA,
+                            contentColor = Color.White,
+                        ),
+                        shape = RoundedCornerShape(30.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 90.dp)
                     ) {
-
+                        Text(text = "Logar!",
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold)
                     }
                 }
 
             }
 
+
+
+            //Paulo Roberto
+            Box(
+                modifier = Modifier.constrainAs(pauloroberto){
+                    top.linkTo(parent.top, margin = 420.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end, margin = 270.dp)
+                    bottom.linkTo(parent.bottom)
+
+                }
+                    .size(140.dp)
+            ) {
+                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/pauloroberto.png",
+                    contentDescription = "Aqui está o Paulo Roberto",
+                    contentScale = ContentScale.None,
+                    modifier = Modifier)
+            }
 
 
         }
