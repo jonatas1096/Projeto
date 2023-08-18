@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.projeto.layoutsprontos.loadImage
+import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 
 
@@ -37,7 +38,7 @@ fun Login() {
         modifier = Modifier.fillMaxSize()
     ){
         loadImage(
-            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlaranja.png",
+            path = "",
             contentDescription = "Background Laranja",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -69,15 +70,16 @@ fun Login() {
                 )
             }
 
-            Text(text = "ConnectStudent",
+            Text(text = "ConnectSTUDENT",
                 modifier = Modifier.constrainAs(titulo){
-                    top.linkTo(parent.top, margin = 155.dp)
+                    top.linkTo(parent.top, margin = 130.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
                 ,
-                fontSize = 28.sp,
-                color = Color.White
+                fontSize = 78.sp,
+                color = Color.White,
+                fontFamily = Jomhuria
                 )
 
 
