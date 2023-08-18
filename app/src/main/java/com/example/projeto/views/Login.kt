@@ -9,6 +9,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -38,8 +40,8 @@ fun Login() {
         modifier = Modifier.fillMaxSize()
     ){
         loadImage(
-            path = "",
-            contentDescription = "Background Laranja",
+            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundLogin.png",
+            contentDescription = "Background do Login",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
 
@@ -98,6 +100,10 @@ fun Login() {
                         Color.White,
                         shape = RoundedCornerShape(30.dp)
                     )
+                    .shadow(3.dp, shape = RoundedCornerShape(25.dp),clip = true > 10.dp,)
+
+
+
 
             ) {
                 Column(
@@ -208,6 +214,7 @@ fun Login() {
 
 
 }
+
 
 
 
