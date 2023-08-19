@@ -15,6 +15,7 @@ val Jomhuria = FontFamily(
     Font(R.font.jomhuria_regular, FontWeight.Bold)
 )
 
+
 val Typography = Typography(
     body1 = TextStyle(
         fontFamily = FontFamily.Default,

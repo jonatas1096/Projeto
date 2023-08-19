@@ -52,8 +52,6 @@ fun Login() {
     }
 
 
-
-
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
 
@@ -147,7 +145,7 @@ fun Login() {
                             color = Color(49, 48, 48, 255),
                             fontSize = 16.sp,
                             modifier = Modifier
-                                .padding(bottom = 80.dp)
+                                .padding(bottom = 40.dp)
                         )
 
 
@@ -163,8 +161,12 @@ fun Login() {
                                 focusedBorderColor = Color(0xFFFFFFFF),
                                 focusedLabelColor = LARANJA,
                             ),
+                            keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email
+                            ),
                             maxLines = 1,
-                            shape = RoundedCornerShape(40.dp),
+                            shape = RoundedCornerShape(50.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .padding(horizontal = 40.dp)
                                 .padding(bottom = 20.dp)
@@ -181,8 +183,10 @@ fun Login() {
                                 )
                             },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = LARANJA,
-                                focusedBorderColor = Color(0xFFFFFFFF)
+                                unfocusedBorderColor = Color.White,
+                                focusedBorderColor = Color.White,
+                                focusedLabelColor = Color.White,
+                                backgroundColor = Color(0xFFF2f2f2),
                             ),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password
@@ -190,6 +194,7 @@ fun Login() {
                             maxLines = 1,
                             visualTransformation = PasswordVisualTransformation(),
                             shape = RoundedCornerShape(50.dp),
+                            singleLine = true,
                             modifier = Modifier
                                 .padding(horizontal = 40.dp)
                                 .padding(bottom = 55.dp)
