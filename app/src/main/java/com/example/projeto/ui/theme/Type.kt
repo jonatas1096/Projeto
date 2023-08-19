@@ -15,6 +15,10 @@ val Jomhuria = FontFamily(
     Font(R.font.jomhuria_regular, FontWeight.Bold)
 )
 
+val Dongle = FontFamily(
+    Font(R.font.dongle_regular),
+    Font(R.font.dongle_bold, FontWeight.Bold),
+)
 
 val Typography = Typography(
     body1 = TextStyle(

@@ -2,11 +2,9 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -14,18 +12,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.projeto.R
+import com.example.projeto.layoutsprontos.OutlinedLogin
 import com.example.projeto.layoutsprontos.loadImage
+import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 
@@ -139,72 +141,55 @@ fun Login() {
 
                         Text(
                             text = "Bem vindo!",
-                            color = Color.Black,
-                            fontSize = 26.sp,
+                            color = Color(0xFF858585),
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Dongle,
                             modifier = Modifier
-                                .padding(top = 10.dp)
+                                .padding(top = 5.dp)
                                 .padding(bottom = 0.dp)
                         )
 
                         Text(
                             text = "Logue-se para participar!",
-                            color = Color(49, 48, 48, 255),
-                            fontSize = 16.sp,
+                            color = Color(0xFF8D8D8D),
+                            fontSize = 26.sp,
+                            fontFamily = Dongle,
                             modifier = Modifier
-                                .padding(bottom = 30.dp)
+                                .padding(bottom = 23.dp)
                         )
 
 
                         //Email
-                        OutlinedTextField(
-                            value = email,
-                            onValueChange = { email = it },
-                            label = {
-                                Text(text = "Email")
-                            },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = Color.White,
-                                focusedBorderColor = LARANJA,
-                                focusedLabelColor = LARANJA,
-                                backgroundColor = Color(0xFFF2f2f2),
-                                cursorColor = LARANJA,
-                            ),
+                        OutlinedLogin(value = email,
+                            onValueChange = {email = it},
+                            label = "Email",
                             keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email
+                                keyboardType = KeyboardType.Email
                             ),
-                            maxLines = 1,
-                            shape = RoundedCornerShape(50.dp),
-                            singleLine = true,
-                            modifier = Modifier
-                                .padding(horizontal = 40.dp)
-                                .padding(bottom = 5.dp)
+                            visualTransformation = VisualTransformation.None,
+                            leadingIcon = {
+                                Icon(painterResource(id = R.drawable.ic_email),
+                                    contentDescription = "Ícone de email",
+                                    modifier = Modifier.size(22.dp))
+                            }
                         )
 
 
                         //Senha
-                        OutlinedTextField(
-                            value = senha,
-                            onValueChange = { senha = it },
-                            label = {
-                                Text(
-                                    text = "Senha",
-                                )
-                            },
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = Color.White,
-                                focusedBorderColor = LARANJA,
-                                focusedLabelColor = LARANJA,
-                                backgroundColor = Color(0xFFF2f2f2),
-                            ),
+                        OutlinedLogin(value = senha,
+                            onValueChange = {senha = it},
+                            label = "Senha",
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password
                             ),
-                            maxLines = 1,
                             visualTransformation = PasswordVisualTransformation(),
-                            shape = RoundedCornerShape(50.dp),
-                            singleLine = true,
-                            modifier = Modifier
-                                .padding(horizontal = 40.dp)
+                            leadingIcon = {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_senha),
+                                    contentDescription = "Ícone da senha",
+                                modifier = Modifier.size(22.dp))
+                            }
 
                         )
 
@@ -216,12 +201,15 @@ fun Login() {
                                     fontSize = 28.sp,
                                     fontFamily = Jomhuria,
                                     color = LARANJA,
-                                    modifier = Modifier.padding(bottom = 50.dp)
+                                    modifier = Modifier
+                                        .padding(bottom = 0.dp)
                                         .clickable {
 
                                         }
 
                                 )
+
+
 
 
 
@@ -238,37 +226,38 @@ fun Login() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 90.dp)
+                                .padding(top = 55.dp)
                         ) {
                             Text(
                                 text = "Logar!",
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
                             )
                         }
+
+
 
 
 
                         //Registrar-se:
                         //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
                         val textodiferente = buildAnnotatedString {
-                            withStyle(style = SpanStyle(Color.Black)){
-                                append("Ainda não possui uma conta?")
+                            withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
+                                append("Não possui uma conta?")
                             }
                             withStyle(style = SpanStyle(LARANJA)){
                                 append(" Registre-se!")
                             }
                         }
                         Text(text = textodiferente,
-                        fontFamily = Jomhuria,
-                        fontSize = 22.sp,
-                        modifier = Modifier
-                            .padding(start = 30.dp)
-                            .clickable {
+                            fontFamily = Jomhuria,
+                            fontSize = 26.sp,
+                            modifier = Modifier
+                                .padding(start = 30.dp)
+                                .clickable {
 
-                            }
+                                }
                         )
-
-
 
 
                     }
@@ -281,7 +270,7 @@ fun Login() {
             Box(
                 modifier = Modifier
                     .constrainAs(pauloroberto) {
-                        top.linkTo(parent.top, margin = 390.dp)
+                        top.linkTo(parent.top, margin = 420.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end, margin = 270.dp)
                         bottom.linkTo(parent.bottom)
