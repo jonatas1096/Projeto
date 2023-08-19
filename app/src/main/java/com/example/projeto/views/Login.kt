@@ -3,8 +3,10 @@ package com.example.projeto.views
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -12,9 +14,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +51,7 @@ fun Login() {
         loadImage(
             path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlogin.png",
             contentDescription = "Background do Login",
-            contentScale = ContentScale.None,
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
 
         )
@@ -56,7 +62,7 @@ fun Login() {
             modifier = Modifier.fillMaxSize()
 
         ) {
-            val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto) = createRefs()
+            val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto,esqueceusenha) = createRefs()
 
             //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
             Box(
@@ -77,14 +83,14 @@ fun Login() {
 
             Text(text = "ConnectSTUDENT",
                 modifier = Modifier.constrainAs(titulo){
-                    top.linkTo(parent.top, margin = 100.dp)
+                    top.linkTo(parent.top, margin = 90.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
                 ,
                 fontSize = 78.sp,
                 color = Color.White,
-                fontFamily = Jomhuria
+                fontFamily = Jomhuria,
                 )
 
 
@@ -141,11 +147,11 @@ fun Login() {
                         )
 
                         Text(
-                            text = "Lorem ipsum lorem ipsu lorem!",
+                            text = "Logue-se para participar!",
                             color = Color(49, 48, 48, 255),
                             fontSize = 16.sp,
                             modifier = Modifier
-                                .padding(bottom = 40.dp)
+                                .padding(bottom = 30.dp)
                         )
 
 
@@ -157,9 +163,11 @@ fun Login() {
                                 Text(text = "Email")
                             },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
-                                unfocusedBorderColor = LARANJA,
-                                focusedBorderColor = Color(0xFFFFFFFF),
+                                unfocusedBorderColor = Color.White,
+                                focusedBorderColor = LARANJA,
                                 focusedLabelColor = LARANJA,
+                                backgroundColor = Color(0xFFF2f2f2),
+                                cursorColor = LARANJA,
                             ),
                             keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email
@@ -169,7 +177,7 @@ fun Login() {
                             singleLine = true,
                             modifier = Modifier
                                 .padding(horizontal = 40.dp)
-                                .padding(bottom = 20.dp)
+                                .padding(bottom = 5.dp)
                         )
 
 
@@ -184,8 +192,8 @@ fun Login() {
                             },
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedBorderColor = Color.White,
-                                focusedBorderColor = Color.White,
-                                focusedLabelColor = Color.White,
+                                focusedBorderColor = LARANJA,
+                                focusedLabelColor = LARANJA,
                                 backgroundColor = Color(0xFFF2f2f2),
                             ),
                             keyboardOptions = KeyboardOptions(
@@ -197,8 +205,23 @@ fun Login() {
                             singleLine = true,
                             modifier = Modifier
                                 .padding(horizontal = 40.dp)
-                                .padding(bottom = 55.dp)
+
                         )
+
+
+
+                            //Esqueceu a senha
+
+                                Text(text = "Esqueceu a sua senha?",
+                                    fontSize = 28.sp,
+                                    fontFamily = Jomhuria,
+                                    color = LARANJA,
+                                    modifier = Modifier.padding(bottom = 50.dp)
+                                        .clickable {
+
+                                        }
+
+                                )
 
 
 
@@ -222,6 +245,32 @@ fun Login() {
                                 fontWeight = FontWeight.Bold
                             )
                         }
+
+
+
+                        //Registrar-se:
+                        //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
+                        val textodiferente = buildAnnotatedString {
+                            withStyle(style = SpanStyle(Color.Black)){
+                                append("Ainda não possui uma conta?")
+                            }
+                            withStyle(style = SpanStyle(LARANJA)){
+                                append(" Registre-se!")
+                            }
+                        }
+                        Text(text = textodiferente,
+                        fontFamily = Jomhuria,
+                        fontSize = 22.sp,
+                        modifier = Modifier
+                            .padding(start = 30.dp)
+                            .clickable {
+
+                            }
+                        )
+
+
+
+
                     }
 
                 }
@@ -232,7 +281,7 @@ fun Login() {
             Box(
                 modifier = Modifier
                     .constrainAs(pauloroberto) {
-                        top.linkTo(parent.top, margin = 420.dp)
+                        top.linkTo(parent.top, margin = 390.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end, margin = 270.dp)
                         bottom.linkTo(parent.bottom)
