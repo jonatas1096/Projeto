@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.OutlinedLogin
 import com.example.projeto.layoutsprontos.loadImage
@@ -34,7 +35,7 @@ import com.example.projeto.ui.theme.LARANJA
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Login() {
+fun Login(navController: NavController) {
 
     var email by remember {
         mutableStateOf("")
@@ -255,7 +256,7 @@ fun Login() {
                             modifier = Modifier
                                 .padding(start = 30.dp)
                                 .clickable {
-
+                                    navController.navigate("Registrar")
                                 }
                         )
 
@@ -293,10 +294,3 @@ fun Login() {
 }
 
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    Login()
-}

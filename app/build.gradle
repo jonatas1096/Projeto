@@ -62,8 +62,16 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
     //inseridas:
+
+    //Glide
     implementation "com.github.bumptech.glide:compose:1.0.0-alpha.1"
+    //Constrain Layout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    //Navhost navigate
+    def nav_version = "2.5.3"
+    implementation "androidx.navigation:navigation-compose:$nav_version"
+    //SplashScreen
+    implementation "androidx.core:core-splashscreen:1.0.1"
 
 
 }
