@@ -34,31 +34,46 @@ import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 
 
-
+@Composable
 fun Registrar(navController: NavController) {
-
-
-    @Composable
-    fun Registrar(){
 
         //Background
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-           loadImage(path = "",
+           loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundprovisorio.png",
                contentDescription = "Background Registrar",
                contentScale = ContentScale.Crop,
                modifier = Modifier.fillMaxSize()
            )
         }
 
+
         //Constraint
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ) {
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(35.dp, 220.dp, 35.dp, 240.dp)
 
+        ) {
+            val (box) = createRefs()
+
+            Box(
+                modifier = Modifier
+                    .background(Color.White, shape = RoundedCornerShape(25.dp))
+                    .fillMaxSize()
+                    .constrainAs(box) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    }
+
+            ) {
+
+
+            }
 
         }
-    }
-
 }
+

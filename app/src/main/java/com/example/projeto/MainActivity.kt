@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "Login"){
+    NavHost(navController = navController, startDestination = "Registrar"){
         //tela de login principal
         composable("Login"){
             Login(navController)

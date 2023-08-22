@@ -66,7 +66,7 @@ fun Login(navController: NavController) {
             modifier = Modifier.fillMaxSize()
 
         ) {
-            val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto,esqueceusenha) = createRefs()
+            val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto) = createRefs()
 
             //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
             Box(
