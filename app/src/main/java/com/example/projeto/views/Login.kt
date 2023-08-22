@@ -2,6 +2,7 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,9 +21,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
@@ -149,6 +150,7 @@ fun Login(navController: NavController) {
                             modifier = Modifier
                                 .padding(top = 5.dp)
                                 .padding(bottom = 0.dp)
+
                         )
 
                         Text(
@@ -157,7 +159,8 @@ fun Login(navController: NavController) {
                             fontSize = 26.sp,
                             fontFamily = Dongle,
                             modifier = Modifier
-                                .padding(bottom = 23.dp)
+                                .padding(bottom = 20.dp)
+
                         )
 
 
@@ -199,7 +202,7 @@ fun Login(navController: NavController) {
                             //Esqueceu a senha
 
                                 Text(text = "Esqueceu a sua senha?",
-                                    fontSize = 28.sp,
+                                    fontSize = 30.sp,
                                     fontFamily = Jomhuria,
                                     color = LARANJA,
                                     modifier = Modifier
@@ -209,6 +212,41 @@ fun Login(navController: NavController) {
                                         }
 
                                 )
+
+                        //Gambiarrazinha p colocar a linha entre as opções
+                        Surface(
+                            modifier = Modifier
+                                .background(Color(0xFFB8B6B6))
+                                .height(1.dp)
+                                .width(100.dp)
+                                .border(2.dp, Color.Black)
+                                .padding(start = 30.dp)
+                        ) {
+
+                        }
+
+
+                        //Registrar-se:
+                        //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
+                        val textodiferente = buildAnnotatedString {
+                            withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
+                                append("Não possui uma conta?")
+                            }
+                            withStyle(style = SpanStyle(LARANJA)){
+                                append(" Registre-se!")
+                            }
+                        }
+                        Text(text = textodiferente,
+                            fontFamily = Jomhuria,
+                            fontSize = 30.sp,
+                            modifier = Modifier
+                                //.padding(start = 30.dp)
+                                .clickable {
+                                    navController.navigate("Registrar")
+                                }
+                                .padding(0.dp)
+                        )
+
 
 
 
@@ -227,7 +265,7 @@ fun Login(navController: NavController) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 90.dp)
-                                .padding(top = 55.dp)
+                                .padding(top = 38.dp)
                         ) {
                             Text(
                                 text = "Logar!",
@@ -240,25 +278,6 @@ fun Login(navController: NavController) {
 
 
 
-                        //Registrar-se:
-                        //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
-                        val textodiferente = buildAnnotatedString {
-                            withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
-                                append("Não possui uma conta?")
-                            }
-                            withStyle(style = SpanStyle(LARANJA)){
-                                append(" Registre-se!")
-                            }
-                        }
-                        Text(text = textodiferente,
-                            fontFamily = Jomhuria,
-                            fontSize = 26.sp,
-                            modifier = Modifier
-                                .padding(start = 30.dp)
-                                .clickable {
-                                    navController.navigate("Registrar")
-                                }
-                        )
 
 
                     }
@@ -271,7 +290,7 @@ fun Login(navController: NavController) {
             Box(
                 modifier = Modifier
                     .constrainAs(pauloroberto) {
-                        top.linkTo(parent.top, margin = 420.dp)
+                        top.linkTo(parent.top, margin = 490.dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end, margin = 270.dp)
                         bottom.linkTo(parent.bottom)
