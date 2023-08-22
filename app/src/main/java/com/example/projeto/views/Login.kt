@@ -216,7 +216,7 @@ fun Login(navController: NavController) {
                         //Gambiarrazinha p colocar a linha entre as opções
                         Surface(
                             modifier = Modifier
-                                .background(Color(0xFFB8B6B6))
+                                .border(2.dp, Color(0xFF9C9C9C))
                                 .height(1.dp)
                                 .width(100.dp)
                                 .border(2.dp, Color.Black)
