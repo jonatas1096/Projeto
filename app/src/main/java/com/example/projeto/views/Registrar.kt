@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.example.projeto.layoutsprontos.BotaoEscolha
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
 
@@ -78,24 +79,19 @@ fun Registrar(navController: NavController) {
                 Column(
 
                 ) {
-                    Button(onClick = {
+                    BotaoEscolha(onClick = {
 
                     },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFFF2f2f2),
-                        ),
-                        shape = RoundedCornerShape(25.dp),
-                        contentPadding = PaddingValues(0.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    
-                    ) {
-                        Text(text = "Aluno",
-                        fontFamily = Dongle,
-                        color = Color(0xFFF5E5E5E),
-                        fontSize = 38.sp,
-                        fontWeight = FontWeight.Bold,
-                        )
-                    }
+                        text = "Aluno",
+                    )
+
+
+                    BotaoEscolha(onClick = {
+
+                    },
+                        text = "Professor e Equipe Escolar",
+                        fontSize = 28   .sp
+                    )
                 }
 
             }
