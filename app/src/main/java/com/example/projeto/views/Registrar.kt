@@ -1,26 +1,29 @@
 package com.example.projeto.views
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Surface
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.layoutsprontos.loadImage
-
+import com.example.projeto.ui.theme.Dongle
 
 
 @Composable
 fun Registrar(navController: NavController) {
         //Eu vou testar com dois constraints porque sim.
 
+        var escolhaTextField by remember { mutableStateOf("Aluno") }
+        var escolhaTextField2 by remember { mutableStateOf("Professor e Equipe Escolar") }
 
         //Background
         Box(
@@ -62,6 +65,8 @@ fun Registrar(navController: NavController) {
             Box(
                 modifier = Modifier
                     .background(Color.White, shape = RoundedCornerShape(25.dp))
+                    .padding(horizontal = 25.dp)
+                    .padding(top = 40.dp)
                     .fillMaxSize()
                     .constrainAs(box) {
                         start.linkTo(parent.start)
@@ -70,6 +75,28 @@ fun Registrar(navController: NavController) {
                         end.linkTo(parent.end)
                     }
             ){
+                Column(
+
+                ) {
+                    Button(onClick = {
+
+                    },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFFF2f2f2),
+                        ),
+                        shape = RoundedCornerShape(25.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    
+                    ) {
+                        Text(text = "Aluno",
+                        fontFamily = Dongle,
+                        color = Color(0xFFF5E5E5E),
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
 
             }
 
@@ -88,15 +115,16 @@ fun Registrar(navController: NavController) {
 
         //Box da gambiarra de imagem para o Béto
         Box(
-            modifier = Modifier.size(130.dp)
-                .constrainAs(beto){
+            modifier = Modifier
+                .size(130.dp)
+                .constrainAs(beto) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom,margin = 510.dp)
+                    bottom.linkTo(parent.bottom, margin = 510.dp)
                     end.linkTo(parent.end)
                 }
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coala.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coala1.png",
                 contentDescription = "Béto",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
@@ -104,8 +132,9 @@ fun Registrar(navController: NavController) {
 
         //Box da gambiarra de imagem para a Coruja-ruja
         Box(
-            modifier = Modifier.size(150.dp)
-                .constrainAs(coruja){
+            modifier = Modifier
+                .size(150.dp)
+                .constrainAs(coruja) {
                     top.linkTo(parent.top, margin = 230.dp)
                     start.linkTo(parent.start, margin = 290.dp)
                     bottom.linkTo(parent.bottom)
@@ -113,7 +142,7 @@ fun Registrar(navController: NavController) {
                 }
 
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coruja_ruja.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coruja1.png",
                 contentDescription = "Coruja",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
