@@ -77,7 +77,7 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
-fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector){
+fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector, modifier: Modifier){
 
     Button(onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -85,7 +85,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
         ),
         shape = RoundedCornerShape(25.dp),
         contentPadding = PaddingValues(0.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
 
     ) {
         IconButton(
@@ -133,7 +133,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
                     Image(
                         imageVector = imageVector2,
                         contentDescription = "",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 }
 

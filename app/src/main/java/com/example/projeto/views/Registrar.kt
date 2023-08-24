@@ -82,9 +82,7 @@ fun Registrar(navController: NavController) {
                     .padding(horizontal = 20.dp)
                     .padding(top = 50.dp)
             ){
-                Column(
-
-                ) {
+                Column {
 
                     BotaoEscolha(onClick = {
 
@@ -94,15 +92,24 @@ fun Registrar(navController: NavController) {
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
                         descricao = "Icone aluno",
                         imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
+                        modifier = Modifier.fillMaxWidth()
                         )
 
+                    //Separar os dois botões, tive que meter mais essa gambiarra tb
+                    Spacer(modifier = Modifier.fillMaxWidth()
+                        .height(20.dp)
+                    )
 
-                    /*BotaoEscolha(onClick = {
+                    BotaoEscolha(onClick = {
 
                     },
-                        text = "Professor e Equipe Escolar",
-                        fontSize = 28.sp,
-                    )*/
+                        text = "Professor e Equipe escolar",
+                        fontSize = 24.sp,
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_professor),
+                        descricao = "Icone professor e equipe escolar",
+                        imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
 
                 }
