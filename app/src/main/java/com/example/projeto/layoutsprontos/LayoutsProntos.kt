@@ -1,15 +1,16 @@
 package com.example.projeto.layoutsprontos
 
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.VisualTransformation
@@ -20,6 +21,14 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.LARANJA
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.vectorResource
+import com.example.projeto.R
+
 
 
 //Carregar uma imagem do github:
@@ -68,7 +77,7 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
-fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp){
+fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector){
 
     Button(onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -79,12 +88,57 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp){
         modifier = Modifier.fillMaxWidth()
 
     ) {
-        Text(text = text,
-            fontFamily = Dongle,
-            color = Color(0xFFF5E5E5E),
-            fontSize = fontSize,
-            fontWeight = FontWeight.Bold,
-        )
+        IconButton(
+            onClick = {
+        },
+
+        ) {
+
+            Row(
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(
+                    onClick = {
+                        // Ação ao clicar no ícone
+                    }
+                ) {
+                    Image(
+                        imageVector = imageVector,
+                        contentDescription = descricao,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Text(
+                    text = text,
+                    fontFamily = Dongle,
+                    color = Color(0xFFF5E5E5E),
+                    fontSize = fontSize,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 5.dp)
+                )
+
+                //Spacer para separar o nome do play:
+                Spacer(modifier = Modifier.width(125.dp)
+                    .border(1.dp, Color.Red))
+
+
+                IconButton(
+                    onClick = {
+                        // Ação ao clicar no ícone
+                    }
+                ) {
+                    Image(
+                        imageVector = imageVector2,
+                        contentDescription = "",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+            }
+        }
     }
 }
 
