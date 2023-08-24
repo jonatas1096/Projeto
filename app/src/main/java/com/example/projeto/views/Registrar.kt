@@ -2,6 +2,7 @@ package com.example.projeto.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -23,8 +24,13 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import com.example.projeto.layoutsprontos.loadImage
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.example.projeto.R
-
+import com.example.projeto.ui.theme.Jomhuria
+import com.example.projeto.ui.theme.LARANJA
 
 
 @Composable
@@ -77,12 +83,15 @@ fun Registrar(navController: NavController) {
                         bottom.linkTo(parent.bottom)
                         end.linkTo(parent.end)
                     }
-                    .width(328.dp)
+                    .width(348.dp)
                     .height(340.dp)
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 15.dp)
                     .padding(top = 50.dp)
             ){
-                Column {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
                     BotaoEscolha(onClick = {
 
@@ -92,27 +101,60 @@ fun Registrar(navController: NavController) {
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
                         descricao = "Icone aluno",
                         imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        spacerWidth = 180.dp
                         )
 
                     //Separar os dois botões, tive que meter mais essa gambiarra tb
-                    Spacer(modifier = Modifier.fillMaxWidth()
-                        .height(20.dp)
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.dp)
                     )
 
                     BotaoEscolha(onClick = {
 
                     },
                         text = "Professor e Equipe escolar",
-                        fontSize = 24.sp,
+                        fontSize = 27.sp,
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_professor),
                         descricao = "Icone professor e equipe escolar",
                         imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        spacerWidth = 0.dp
                     )
 
 
+                    //"Logue-se aqui"
+
+                    Text(text = "Já possui uma conta?",
+                        fontFamily = Jomhuria,
+                        fontSize = 34.sp,
+                        color = Color(0xFFF5E5E5E),
+                        modifier = Modifier
+                            //.padding(start = 30.dp)
+                            .clickable {
+                                navController.navigate("Login")
+                            }
+                            .padding(0.dp)
+                    )
+
+                    Text(text = "Logue-se aqui!",
+                        fontFamily = Jomhuria,
+                        fontSize = 34.sp,
+                        color = LARANJA,
+                        modifier = Modifier
+                            //.padding(start = 30.dp)
+                            .clickable {
+                                navController.navigate("Login")
+                            }
+                            .padding(0.dp)
+                    )
+
+
+
                 }
+
+
 
             }
 

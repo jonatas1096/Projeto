@@ -27,6 +27,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.Dp
 import com.example.projeto.R
 
 
@@ -77,7 +78,7 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
-fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector, modifier: Modifier){
+fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector, modifier: Modifier, spacerWidth: Dp){
 
     Button(onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -117,11 +118,11 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
                     color = Color(0xFFF5E5E5E),
                     fontSize = fontSize,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 5.dp)
+                    modifier = Modifier.padding(top = 5.dp, start = (0).dp)
                 )
 
                 //Spacer para separar o nome do play:
-                Spacer(modifier = Modifier.width(125.dp)
+                Spacer(modifier = Modifier.width(spacerWidth)
                     .border(1.dp, Color.Red))
 
 
