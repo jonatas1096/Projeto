@@ -27,175 +27,187 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.example.projeto.R
+import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 
 
 @Composable
 fun Registrar(navController: NavController) {
-        //Eu vou testar com dois constraints porque sim.
+    //Eu vou testar com dois constraints porque sim.
 
 
-        //Background
-        Box(
+    //Background
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundprovisorio.png",
+            contentDescription = "Background Registrar",
+            contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
+        )
+    }
+
+
+    //Constraint principal de escolha
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+
+    ) {
+        val (boxPrincipal,boxSOMBRA,beto,coruja,texto1,texto2) = createRefs()
+
+        //Começando com a gambiarra brasileira né
+        Surface(
+            shape = RoundedCornerShape(25.dp),
+            elevation = 18.dp,
+            modifier = Modifier
+                .constrainAs(boxSOMBRA) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+                .width(348.dp)
+                .height(360.dp)
+        ){}
+
+        //Box principal para registro
+        Box(
+            modifier = Modifier
+                .background(Color.White, shape = RoundedCornerShape(25.dp))
+                .constrainAs(boxPrincipal) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+                .width(348.dp)
+                .height(360.dp)
+                .padding(horizontal = 15.dp)
+                .padding(top = 50.dp)
+        ){
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                BotaoEscolha(onClick = {
+
+                },
+                    text = "Aluno",
+                    fontSize = 34.sp,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
+                    descricao = "Icone aluno",
+                    imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
+                    modifier = Modifier.fillMaxWidth(),
+                    spacerWidth = 180.dp
+                )
+
+                //Separar os dois botões, tive que meter mais essa gambiarra tb
+                Spacer(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(16.dp)
+                )
+
+                BotaoEscolha(onClick = {
+
+                },
+                    text = "Professor e Equipe escolar",
+                    fontSize = 27.sp,
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_professor),
+                    descricao = "Icone professor e equipe escolar",
+                    imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
+                    modifier = Modifier.fillMaxWidth(),
+                    spacerWidth = 0.dp
+                )
+
+
+
+
+            }
+
+        }
+
+        //"Logue-se aqui"
+
+        Text(text = "Já possui uma conta?",
+            fontFamily = Dongle,
+            fontWeight = FontWeight.Bold,
+            fontSize = 30.sp,
+            color = Color(0xFFF5E5E5E),
+            modifier = Modifier
+                .constrainAs(texto1){
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top, margin = 30.dp)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+                //.padding(start = 30.dp)
+                .clickable {
+                    navController.navigate("Login")
+                }
+                .padding(0.dp)
+        )
+
+        Text(text = "Logue-se aqui!",
+            fontFamily = Dongle,
+            fontSize = 36.sp,
+            fontWeight = FontWeight.Bold,
+            color = LARANJA,
+            modifier = Modifier
+                .constrainAs(texto2){
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top, margin = 88.dp)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(parent.end)
+                }
+                .clickable {
+                    navController.navigate("Login")
+                }
+                .padding(0.dp)
+        )
+
+
+        //Box da gambiarra de imagem para o Béto
+        Box(
+            modifier = Modifier
+                .size(130.dp)
+                .constrainAs(beto) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom, margin = 460.dp)
+                    end.linkTo(parent.end)
+                }
         ) {
-           loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundprovisorio.png",
-               contentDescription = "Background Registrar",
-               contentScale = ContentScale.Crop,
-               modifier = Modifier.fillMaxSize()
-           )
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coala1.png",
+                contentDescription = "Béto",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
         }
 
 
-        //Constraint principal de escolha
-        ConstraintLayout(
+
+        //Box da gambiarra de imagem para a Coruja-ruja
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-
-        ) {
-            val (boxPrincipal,boxSOMBRA,beto,coruja) = createRefs()
-
-            /*Começando com a gambiarra brasileira né
-            Surface(
-                shape = RoundedCornerShape(25.dp),
-                elevation = 18.dp,
-                modifier = Modifier
-                    .constrainAs(boxSOMBRA) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                    }
-                    .width(310.dp)
-                    .height(380.dp)
-            ){}*/
-
-            //Box principal para registro
-            Box(
-                modifier = Modifier
-                    .background(Color.White, shape = RoundedCornerShape(25.dp))
-                    .constrainAs(boxPrincipal) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                    }
-                    .width(348.dp)
-                    .height(340.dp)
-                    .padding(horizontal = 15.dp)
-                    .padding(top = 50.dp)
-            ){
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-
-                    BotaoEscolha(onClick = {
-
-                    },
-                        text = "Aluno",
-                        fontSize = 34.sp,
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
-                        descricao = "Icone aluno",
-                        imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
-                        modifier = Modifier.fillMaxWidth(),
-                        spacerWidth = 180.dp
-                        )
-
-                    //Separar os dois botões, tive que meter mais essa gambiarra tb
-                    Spacer(modifier = Modifier
-                        .fillMaxWidth()
-                        .height(16.dp)
-                    )
-
-                    BotaoEscolha(onClick = {
-
-                    },
-                        text = "Professor e Equipe escolar",
-                        fontSize = 27.sp,
-                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_professor),
-                        descricao = "Icone professor e equipe escolar",
-                        imageVector2 = ImageVector.vectorResource(id = R.drawable.ic_play),
-                        modifier = Modifier.fillMaxWidth(),
-                        spacerWidth = 0.dp
-                    )
-
-
-                    //"Logue-se aqui"
-
-                    Text(text = "Já possui uma conta?",
-                        fontFamily = Jomhuria,
-                        fontSize = 34.sp,
-                        color = Color(0xFFF5E5E5E),
-                        modifier = Modifier
-                            //.padding(start = 30.dp)
-                            .clickable {
-                                navController.navigate("Login")
-                            }
-                            .padding(0.dp)
-                    )
-
-                    Text(text = "Logue-se aqui!",
-                        fontFamily = Jomhuria,
-                        fontSize = 34.sp,
-                        color = LARANJA,
-                        modifier = Modifier
-                            //.padding(start = 30.dp)
-                            .clickable {
-                                navController.navigate("Login")
-                            }
-                            .padding(0.dp)
-                    )
-
-
-
+                .size(150.dp)
+                .constrainAs(coruja) {
+                    bottom.linkTo(boxPrincipal.bottom, margin = (-3).dp)
+                    start.linkTo(boxPrincipal.start, margin = 232.dp)
                 }
 
-
-
-            }
-
-
-            //Box da gambiarra de imagem para o Béto
-            Box(
-                modifier = Modifier
-                    .size(130.dp)
-                    .constrainAs(beto) {
-                        bottom.linkTo(boxPrincipal.top, margin = (-110).dp)
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    }
-            ) {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coala1.png",
-                    contentDescription = "Béto",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier)
-            }
-
-
-
-            //Box da gambiarra de imagem para a Coruja-ruja
-            Box(
-                modifier = Modifier
-                    .size(150.dp)
-                    .constrainAs(coruja) {
-                        bottom.linkTo(boxPrincipal.bottom, margin = (-3).dp)
-                        start.linkTo(boxPrincipal.start, margin = 232.dp)
-                    }
-
-            ) {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coruja1.png",
-                    contentDescription = "Coruja",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier)
-            }
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coruja1.png",
+                contentDescription = "Coruja",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier)
         }
+    }
 
 
 
 }
-
