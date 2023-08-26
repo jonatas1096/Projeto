@@ -67,6 +67,7 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
         ),
         keyboardOptions = keyboardOptions,
         maxLines = 1,
+        singleLine = true,
         shape = RoundedCornerShape(50.dp),
         visualTransformation = visualTransformation,
         leadingIcon = leadingIcon,
@@ -90,8 +91,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
 
     ) {
         IconButton(
-            onClick = {
-        },
+            onClick = onClick,
 
         ) {
 
@@ -101,9 +101,9 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
                 modifier = Modifier.fillMaxWidth()
             ) {
                 IconButton(
-                    onClick = {
+                    onClick = onClick,
                         // Ação ao clicar no ícone
-                    }
+
                 ) {
                     Image(
                         imageVector = imageVector,
@@ -127,9 +127,8 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
 
 
                 IconButton(
-                    onClick = {
+                    onClick = onClick,
                         // Ação ao clicar no ícone
-                    }
                 ) {
                     Image(
                         imageVector = imageVector2,

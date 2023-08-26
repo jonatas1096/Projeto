@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.views.Login
 import com.example.projeto.views.Registrar
+import com.example.projeto.views.RegistroAluno
 
 class MainActivity : ComponentActivity() {
 
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "Registrar"){
+    NavHost(navController = navController, startDestination = "RegistroAluno"){
         //tela de login principal
         composable("Login"){
             Login(navController)
@@ -35,6 +36,11 @@ fun Main() {
         //tela para se registrar
         composable("Registrar"){
             Registrar(navController)
+        }
+        
+        //tela registro alunos
+        composable("RegistroAluno"){
+            RegistroAluno(navController)
         }
     }
 

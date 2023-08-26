@@ -60,7 +60,7 @@ fun Registrar(navController: NavController) {
     ) {
         val (boxPrincipal,boxSOMBRA,beto,coruja,texto1,texto2) = createRefs()
 
-        //Começando com a gambiarra brasileira né
+        /*Começando com a gambiarra brasileira né
         Surface(
             shape = RoundedCornerShape(25.dp),
             elevation = 18.dp,
@@ -73,7 +73,7 @@ fun Registrar(navController: NavController) {
                 }
                 .width(348.dp)
                 .height(360.dp)
-        ){}
+        ){}*/
 
         //Box principal para registro
         Box(
@@ -96,7 +96,7 @@ fun Registrar(navController: NavController) {
             ) {
 
                 BotaoEscolha(onClick = {
-
+                    navController.navigate("RegistroAluno")
                 },
                     text = "Aluno",
                     fontSize = 34.sp,
@@ -140,7 +140,7 @@ fun Registrar(navController: NavController) {
             fontSize = 30.sp,
             color = Color(0xFFF5E5E5E),
             modifier = Modifier
-                .constrainAs(texto1){
+                .constrainAs(texto1) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top, margin = 30.dp)
                     bottom.linkTo(parent.bottom)
@@ -159,7 +159,7 @@ fun Registrar(navController: NavController) {
             fontWeight = FontWeight.Bold,
             color = LARANJA,
             modifier = Modifier
-                .constrainAs(texto2){
+                .constrainAs(texto2) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top, margin = 88.dp)
                     bottom.linkTo(parent.bottom)
@@ -206,8 +206,11 @@ fun Registrar(navController: NavController) {
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
         }
+
     }
 
 
 
 }
+
+
