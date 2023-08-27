@@ -44,7 +44,7 @@ fun Registrar(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundprovisorio.png",
+        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background.png",
             contentDescription = "Background Registrar",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
