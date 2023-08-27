@@ -61,7 +61,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (boxRegistroAluno, identificacao) = createRefs()
+        val (boxRegistroAluno, pandasapeca) = createRefs()
 
         Box(
             modifier = Modifier
@@ -84,6 +84,10 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         .padding(top = 40.dp)
                         .padding(horizontal = 15.dp)
                 ) {
+
+                    //Spacer para descer os campos
+                    Spacer(modifier = Modifier.height(80.dp))
+
 
                     //Nome
                     OutlinedRegistro(
@@ -168,7 +172,6 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     //Termos e Condições
                     Row {
                         CheckBoxPersonalizada()
-                        //gambiarra p deixar clicável mais facil
 
                             TextDuasCores(color1 = Color(0xFFF5E5E5E),
                                 color2 = LARANJA,
@@ -177,32 +180,31 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     }
                     //Botão registrar
                     BotaoRegistrar(corBotao = LARANJA)
-                    //Pandinha
+                    Spacer(modifier = Modifier
+                        .height(130.dp))
 
-                    
                 }
 
         }
-
-        /*Identificação
-        Row(
+        //Pandinha
+        Box(
             modifier = Modifier
-                .constrainAs(identificacao){
-                    top.linkTo(parent.top, margin = 220.dp)
+                .constrainAs(pandasapeca) {
                     start.linkTo(parent.start)
+                    top.linkTo(parent.top, margin = 525.dp)
                     end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
                 }
+                .size(116.dp)
         ) {
-            Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
-                contentDescription = "Você está na área do Aluno.",
-                modifier = Modifier.size(80.dp))
-            
-            Text(text = "Aluno",
-                fontSize = 44.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontFamily = Dongle)
-        }*/
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/pandinha.png",
+                contentDescription = "panda sapeca",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier)
+        }
+
+        //Elipse do aluno
+        loadImage(path = , contentDescription = , contentScale = , modifier = )
     }
 
 

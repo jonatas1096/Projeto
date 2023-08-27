@@ -111,7 +111,8 @@ fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:Strin
         leadingIcon = leadingIcon,
         modifier = Modifier
             .padding(bottom = 0.dp)
-            .padding(bottom = 10.dp)
+            .padding(bottom = 5.dp)
+            .padding(horizontal = 0.dp)
             .fillMaxWidth()
             .height(60.dp)
 
