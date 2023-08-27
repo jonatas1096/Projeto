@@ -2,12 +2,13 @@ package com.example.projeto.layoutsprontos
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -25,8 +26,13 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import com.example.projeto.R
 
@@ -79,6 +85,40 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
+fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions,visualTransformation: VisualTransformation,leadingIcon: @Composable (() -> Unit)? = null){
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = {
+            Text(text = label,
+                fontFamily = Dongle,
+                fontSize = 35.sp,
+                //modifier = Modifier.padding(top = 0.dp)
+            )
+        },
+        keyboardOptions = keyboardOptions,
+        maxLines = 1,
+        singleLine = true,
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            unfocusedBorderColor = Color(0xA1000000),
+            focusedBorderColor = LARANJA,
+            focusedLabelColor = LARANJA,
+            backgroundColor = Color(0xFFFFFFFF),
+            cursorColor = LARANJA,
+        ),
+        visualTransformation = visualTransformation,
+        shape = RoundedCornerShape(50.dp),
+        leadingIcon = leadingIcon,
+        modifier = Modifier
+            .padding(bottom = 0.dp)
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+            .height(60.dp)
+
+    )
+}
+
+@Composable
 fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, imageVector: ImageVector, descricao:String, imageVector2: ImageVector, modifier: Modifier, spacerWidth: Dp){
 
     Button(onClick = onClick,
@@ -122,7 +162,8 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
                 )
 
                 //Spacer para separar o nome do play:
-                Spacer(modifier = Modifier.width(spacerWidth)
+                Spacer(modifier = Modifier
+                    .width(spacerWidth)
                     .border(1.dp, Color.Red))
 
 
@@ -142,3 +183,59 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
     }
 }
 
+@Composable
+fun CheckBoxPersonalizada(){
+    var isChecked by remember { mutableStateOf(false) }
+
+    Checkbox(
+        checked = isChecked,
+        onCheckedChange = { isChecked = it },
+        colors = CheckboxDefaults.colors(
+            checkedColor = LARANJA,
+            uncheckedColor = Color.Gray
+        ),
+
+    )
+}
+
+@Composable
+fun BotaoRegistrar(corBotao: Color, fontSize: TextUnit = 22.sp) {
+    Button(
+        onClick = {
+            // Ação ao clicar no botão
+        },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = corBotao
+        ),
+        shape = RoundedCornerShape(30.dp),
+        modifier = Modifier.width(200.dp)
+    ) {
+        Text(text = "Registrar-se",
+        color = Color.White,
+        fontSize = fontSize)
+    }
+}
+
+@Composable
+fun TextDuasCores(color1: Color, color2:Color, texto1: String, texto2: String) {
+    val text = buildAnnotatedString {
+        withStyle(style = SpanStyle(color = color1)) {
+            append(texto1)
+        }
+        withStyle(style = SpanStyle(color = color2)) {
+            append(texto2)
+        }
+    }
+
+    Text(
+        text = text,
+        fontSize = 13.sp,
+        overflow = TextOverflow.Ellipsis,
+        maxLines = 1,
+        modifier = Modifier
+            .padding(top = 13.dp, end = 17.dp)
+            .clickable(onClick = {
+
+            })
+    )
+}
