@@ -36,7 +36,7 @@ fun RegistroAluno(navController: NavController) {
             .fillMaxSize()
             .background(Color.Red)
     ) {
-        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundprovisorio.png",
+        loadImage(path = "",
             contentDescription = "Background Registrar",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
