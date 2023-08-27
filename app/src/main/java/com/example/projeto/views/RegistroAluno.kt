@@ -19,15 +19,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
-import com.example.projeto.ui.theme.Jomhuria
+import com.example.projeto.viewmodel.AuthViewModel
 
 @Composable
-fun RegistroAluno(navController: NavController) {
+fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltViewModel()) {
 
 
     //Background
@@ -36,7 +37,7 @@ fun RegistroAluno(navController: NavController) {
             .fillMaxSize()
             .background(Color.Red)
     ) {
-        loadImage(path = "",
+        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundoficial.png",
             contentDescription = "Background Registrar",
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
@@ -48,16 +49,17 @@ fun RegistroAluno(navController: NavController) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (capeloBox,titulo,identificacao) = createRefs()
+        val (capeloAluno,titulo,identificacao) = createRefs()
 
 
         //Capelo
         Box(
             modifier = Modifier
-                .constrainAs(capeloBox) {
-                    top.linkTo(parent.top, margin = 80.dp)
-                    start.linkTo(parent.start, margin = 100.dp)
-                    end.linkTo(parent.end, margin = 100.dp)
+                .constrainAs(capeloAluno) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
                 }
                 .size(150.dp)
         ) {
@@ -68,18 +70,6 @@ fun RegistroAluno(navController: NavController) {
             )
         }
 
-        //Titulo
-        Text(text = "ConnectSTUDENT",
-            modifier = Modifier.constrainAs(titulo){
-                top.linkTo(parent.top, margin = 140.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
-            ,
-            fontSize = 78.sp,
-            color = Color.White,
-            fontFamily = Jomhuria,
-        )
 
         //Identificação
         Row(
@@ -92,7 +82,7 @@ fun RegistroAluno(navController: NavController) {
         ) {
             Icon(imageVector = ImageVector.vectorResource(id = R.drawable.ic_aluno),
                 contentDescription = "Você está na área do Aluno.",
-                modifier = Modifier.size(40.dp))
+                modifier = Modifier.size(80.dp))
             
             Text(text = "Aluno",
                 fontSize = 44.sp,
