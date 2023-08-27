@@ -61,7 +61,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (boxRegistroAluno, pandasapeca) = createRefs()
+        val (boxRegistroAluno, pandasapeca, elipseAluno) = createRefs()
 
         Box(
             modifier = Modifier
@@ -204,7 +204,18 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         }
 
         //Elipse do aluno
-        loadImage(path = , contentDescription = , contentScale = , modifier = )
+        Box(
+            modifier = Modifier.constrainAs(elipseAluno){
+                top.linkTo(parent.top, margin = 60.dp)
+            }
+                .size(120.dp)
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/elipse_aluno.png",
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
+        }
+
     }
 
 
