@@ -27,11 +27,7 @@ class MainActivity : ComponentActivity() {
 fun Main() {
     val navController = rememberNavController()
 
-<<<<<<< HEAD
-    NavHost(navController = navController, startDestination = "Login"){
-=======
     NavHost(navController = navController, startDestination = "RegistroAluno"){
->>>>>>> 4e4e55f91197b7476c5b59d0d3ad30e1994c0c11
         //tela de login principal
         composable("Login"){
             Login(navController)
