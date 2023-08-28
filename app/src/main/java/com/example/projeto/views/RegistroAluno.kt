@@ -206,11 +206,13 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         //Elipse do aluno
         Box(
             modifier = Modifier.constrainAs(elipseAluno){
-                top.linkTo(parent.top, margin = 60.dp)
+                top.linkTo(parent.top, margin = 30.dp)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
             }
                 .size(120.dp)
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/elipse_aluno.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/elipsealuno.png",
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
