@@ -187,7 +187,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     //Botão registrar
                     BotaoRegistrar(
                         onClick = { //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.cadastro(email, senha, object : ListenerAuth{
+                            viewModel.cadastro(nome, email, senha,rm, codigoturma, object : ListenerAuth{
                                 override fun onSucess(mensagem: String) {
                                     Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
                                     navController.navigate("Login")
