@@ -200,11 +200,9 @@ fun CheckBoxPersonalizada(){
 }
 
 @Composable
-fun BotaoRegistrar(corBotao: Color, fontSize: TextUnit = 22.sp) {
+fun BotaoRegistrar(onClick: () -> Unit, corBotao: Color, fontSize: TextUnit = 22.sp) {
     Button(
-        onClick = {
-            // Ação ao clicar no botão
-        },
+        onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = corBotao
         ),

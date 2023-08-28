@@ -1,5 +1,6 @@
 package com.example.projeto.views
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,6 +31,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.*
+import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
@@ -42,6 +45,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     var senha by remember { mutableStateOf("") }
     var rm by remember { mutableStateOf("") }
     var codigoturma by remember { mutableStateOf("") }
+
+    var context = LocalContext.current
 
     //Background
     Box(
@@ -61,7 +66,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (boxRegistroAluno, pandasapeca, elipseAluno) = createRefs()
+        val (boxRegistroAluno, pandasapeca, elipseAluno,icAluno,identificacao) = createRefs()
 
         Box(
             modifier = Modifier
@@ -178,10 +183,27 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                                 texto1 = "Eu li e concordo com os ",
                                 texto2 = "Termos & Condições")
                     }
+
                     //Botão registrar
-                    BotaoRegistrar(corBotao = LARANJA)
+                    BotaoRegistrar(
+                        onClick = { //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
+                            viewModel.cadastro(email, senha, object : ListenerAuth{
+                                override fun onSucess(mensagem: String) {
+                                    Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
+                                    navController.navigate("Login")
+                                }
+
+                                override fun onFailure(erro: String) {
+                                    Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
+                                }
+
+                            })
+                        },
+                        corBotao = LARANJA)
                     Spacer(modifier = Modifier
                         .height(130.dp))
+
+
 
                 }
 
@@ -205,19 +227,44 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
 
         //Elipse do aluno
         Box(
-            modifier = Modifier.constrainAs(elipseAluno){
-                top.linkTo(parent.top, margin = 10.dp)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .constrainAs(elipseAluno) {
+                    top.linkTo(parent.top, margin = 10.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
                 .size(170.dp)
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/elipse_aluno.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/alunocirculo.png",
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
         }
 
+        //Icone de identificação para aluno
+        Icon(
+            painterResource(id = R.drawable.ic_aluno),
+            contentDescription = "Ícone de Codigo de Turma no registro",
+            modifier = Modifier
+                .constrainAs(icAluno) {
+                    top.linkTo(parent.top, margin = 45.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end, margin = 4.dp)
+                }
+                .size(90.dp))
+        
+        //Identificação da página
+        Text(text = "Aluno",
+            fontSize = 42.sp,
+            color = LARANJA,
+            fontFamily = Dongle,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.constrainAs(identificacao){
+                top.linkTo(elipseAluno.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }
+        )
     }
 
 

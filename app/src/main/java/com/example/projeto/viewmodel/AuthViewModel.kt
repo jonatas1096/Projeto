@@ -13,9 +13,9 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(private val authRepositorio: AuthRepositorio): ViewModel() {
 
-    fun cadastro(email:String, senha:String, listenerAuth: ListenerAuth){
+    fun cadastro(email: String, senha: String, listenerAuth: ListenerAuth){
         viewModelScope.launch {
-            authRepositorio.cadastro(email,senha,listenerAuth)
+            authRepositorio.cadastro(email, senha, listenerAuth)
         }
     }
 }
