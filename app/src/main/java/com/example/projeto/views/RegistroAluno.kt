@@ -212,7 +212,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             }
                 .size(170.dp)
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/aluno_elipse.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/elipse_aluno.png",
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
