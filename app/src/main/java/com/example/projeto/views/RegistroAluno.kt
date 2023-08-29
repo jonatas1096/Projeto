@@ -89,10 +89,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         .padding(top = 40.dp)
                         .padding(horizontal = 15.dp)
                 ) {
-
-                    //Spacer para descer os campos
-                    Spacer(modifier = Modifier.height(80.dp))
-
+                    
 
                     //Nome
                     OutlinedRegistro(
