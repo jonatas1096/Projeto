@@ -3,6 +3,7 @@ package com.example.projeto.datasource
 import com.example.projeto.listener.ListenerAuth
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
@@ -152,6 +153,33 @@ class Authentication @Inject constructor() {
             }
       }
 
+
+    //Após cadastrar vamos chamar a função de login.
+    fun loginAluno(email:String, senha: String, listenerAuth: ListenerAuth){
+
+        if (email.isEmpty()){
+            listenerAuth.onFailure("Insira o seu email!")
+        }
+        else if(senha.isEmpty()){
+            listenerAuth.onFailure("Insira a sua senha!")
+        }
+        else{
+            auth.signInWithEmailAndPassword(email,senha).addOnCompleteListener{login ->
+                if (login.isSuccessful){
+                    listenerAuth.onSucess("Login efetuado com sucesso. Bem vindo(a)!")
+                }
+            }
+                .addOnFailureListener{exception ->
+                    val erro = when(exception){
+                        is FirebaseAuthInvalidCredentialsException -> "Senha incorreta."
+                        is FirebaseNetworkException -> "Sem conexão."
+
+                        else -> "Dados inválidos."
+                    }
+                    listenerAuth.onFailure(erro)
+                }
+        }
+    }
 
 
 

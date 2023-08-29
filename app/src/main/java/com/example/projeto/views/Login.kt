@@ -1,6 +1,7 @@
 package com.example.projeto.views
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -28,14 +30,16 @@ import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.OutlinedLogin
 import com.example.projeto.layoutsprontos.loadImage
+import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
+import com.example.projeto.viewmodel.AuthViewModel
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Login(navController: NavController) {
+fun Login(navController: NavController, viewModel: AuthViewModel) {
 
     var email by remember {
         mutableStateOf("")
@@ -45,6 +49,7 @@ fun Login(navController: NavController) {
         mutableStateOf("")
     }
 
+    val context = LocalContext.current
 
 
     //Background ocupando toda a tela
@@ -139,9 +144,8 @@ fun Login(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
 
-
                         Text(
-                            text = "Bem vindo!",
+                            text = "Bem vindo(a)!",
                             color = Color(0xFF858585),
                             fontSize = 36.sp,
                             fontWeight = FontWeight.Bold,
@@ -254,7 +258,17 @@ fun Login(navController: NavController) {
                         //Logar
                         Button(
                             onClick = {
+                                viewModel.login(email,senha, object : ListenerAuth{
+                                    override fun onSucess(mensagem: String) {
+                                        Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
+                                        navController.navigate("Index")
+                                    }
 
+                                    override fun onFailure(erro: String) {
+                                        Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
+                                    }
+
+                                })
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = LARANJA,

@@ -18,4 +18,8 @@ class AuthViewModel @Inject constructor(private val authRepositorio: AuthReposit
             authRepositorio.cadastro(nome, email, senha,rm, codigoturma, listenerAuth)
         }
     }
+
+    fun login(email: String, senha: String, listenerAuth: ListenerAuth){
+        authRepositorio.login(email,senha,listenerAuth)
+    }
 }

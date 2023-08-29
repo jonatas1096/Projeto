@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.viewmodel.AuthViewModel
+import com.example.projeto.views.Index
 import com.example.projeto.views.Login
 import com.example.projeto.views.Registrar
 import com.example.projeto.views.RegistroAluno
@@ -34,10 +35,10 @@ fun Main() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "RegistroAluno"){
+    NavHost(navController = navController, startDestination = "Index"){
         //tela de login principal
         composable("Login"){
-            Login(navController)
+            Login(navController, authViewModel)
         }
 
         //tela para se registrar
@@ -48,6 +49,11 @@ fun Main() {
         //tela registro alunos
         composable("RegistroAluno"){
             RegistroAluno(navController, authViewModel)
+        }
+
+        //Index
+        composable("Index"){
+            Index(navController)
         }
     }
 

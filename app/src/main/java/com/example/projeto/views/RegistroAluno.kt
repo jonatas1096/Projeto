@@ -48,6 +48,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
 
     var context = LocalContext.current
 
+    var checkboxmarcada by remember { mutableStateOf(false) }
+
     //Background
     Box(
         modifier = Modifier
@@ -76,8 +78,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 .constrainAs(boxRegistroAluno) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
                 }
 
 
@@ -86,7 +88,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(top = 40.dp)
+                        .padding(top = 120.dp)
                         .padding(horizontal = 15.dp)
                 ) {
                     
@@ -173,7 +175,10 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     )
                     //Termos e Condições
                     Row {
-                        CheckBoxPersonalizada()
+                        CheckBoxPersonalizada{isChecked ->
+
+                           checkboxmarcada = isChecked
+                        }
 
                             TextDuasCores(color1 = Color(0xFFF5E5E5E),
                                 color2 = LARANJA,
@@ -182,23 +187,36 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     }
 
                     //Botão registrar
-                    BotaoRegistrar(
-                        onClick = { //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.cadastro(nome, email, senha,rm, codigoturma, object : ListenerAuth{
-                                override fun onSucess(mensagem: String) {
-                                    Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
-                                    navController.navigate("Login")
-                                }
+                    if (checkboxmarcada){
+                        BotaoRegistrar(
+                            onClick = {
+                                //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
+                                viewModel.cadastro(nome, email, senha,rm, codigoturma, object : ListenerAuth{
+                                    override fun onSucess(mensagem: String) {
+                                        Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
+                                        navController.navigate("Login")
+                                    }
 
-                                override fun onFailure(erro: String) {
-                                    Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
-                                }
+                                    override fun onFailure(erro: String) {
+                                        Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
+                                    }
 
-                            })
-                        },
-                        corBotao = LARANJA)
-                    Spacer(modifier = Modifier
-                        .height(130.dp))
+                                })
+                            },
+                            corBotao = LARANJA)
+                        Spacer(modifier = Modifier
+                            .height(130.dp))
+                    }
+                    else{
+                        BotaoRegistrar(
+                            onClick = {
+                               Toast.makeText(context,"Você deve concordar com os termos para prosseguir!",Toast.LENGTH_SHORT).show()
+                            },
+                            corBotao = LARANJA)
+                        Spacer(modifier = Modifier
+                            .height(130.dp))
+                    }
+
 
 
 
@@ -226,9 +244,10 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         Box(
             modifier = Modifier
                 .constrainAs(elipseAluno) {
-                    top.linkTo(parent.top, margin = 10.dp)
+                    bottom.linkTo(parent.bottom, margin = 635.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    top.linkTo(parent.top)
                 }
                 .size(170.dp)
         ) {
@@ -244,22 +263,24 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             contentDescription = "Ícone de Codigo de Turma no registro",
             modifier = Modifier
                 .constrainAs(icAluno) {
-                    top.linkTo(parent.top, margin = 45.dp)
+                    bottom.linkTo(parent.bottom, margin = 635.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end, margin = 4.dp)
+                    end.linkTo(parent.end, margin = 5.dp)
+                    top.linkTo(parent.top)
                 }
-                .size(90.dp))
+                .size(90.dp))//
         
         //Identificação da página
         Text(text = "Aluno",
-            fontSize = 42.sp,
+            fontSize = 46.sp,
             color = LARANJA,
             fontFamily = Dongle,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(identificacao){
-                top.linkTo(elipseAluno.bottom)
+                bottom.linkTo(parent.bottom, margin = 438.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
+                top.linkTo(parent.top)
             }
         )
     }

@@ -13,4 +13,8 @@ class AuthRepositorio @Inject constructor(private val auth: Authentication) {
 
         auth.cadastroAluno(nome, email, senha,rm, codigoturma, listenerAuth)
     }
+
+    fun login(email: String, senha: String, listenerAuth: ListenerAuth){
+        auth.loginAluno(email,senha,listenerAuth)
+    }
 }

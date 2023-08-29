@@ -185,15 +185,18 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
 }
 
 @Composable
-fun CheckBoxPersonalizada(){
+fun CheckBoxPersonalizada(onCheckedChange : (Boolean) -> Unit){
     var isChecked by remember { mutableStateOf(false) }
 
     Checkbox(
         checked = isChecked,
-        onCheckedChange = { isChecked = it },
+        onCheckedChange = {
+            isChecked = it
+            onCheckedChange(it)
+        },
         colors = CheckboxDefaults.colors(
             checkedColor = LARANJA,
-            uncheckedColor = Color.Gray
+            uncheckedColor = Color.Gray,
         ),
 
     )
