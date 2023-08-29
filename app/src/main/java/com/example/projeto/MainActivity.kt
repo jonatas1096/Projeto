@@ -35,7 +35,7 @@ fun Main() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "Index"){
+    NavHost(navController = navController, startDestination = "RegistroAluno"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel)

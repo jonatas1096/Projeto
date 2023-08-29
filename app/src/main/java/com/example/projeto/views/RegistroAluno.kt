@@ -70,16 +70,15 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     ) {
         val (boxRegistroAluno, pandasapeca, elipseAluno,icAluno,identificacao) = createRefs()
 
+        //Box principal
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
+                .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroAluno) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
+                    top.linkTo(parent.top, margin = 71.dp)
                 }
 
 
@@ -88,7 +87,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(top = 120.dp)
+                        .padding(top = 97.dp)
                         .padding(horizontal = 15.dp)
                 ) {
                     
@@ -227,10 +226,9 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         Box(
             modifier = Modifier
                 .constrainAs(pandasapeca) {
+                    top.linkTo(identificacao.bottom, margin = 395.dp)
                     start.linkTo(parent.start)
-                    top.linkTo(parent.top, margin = 525.dp)
                     end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
                 }
                 .size(116.dp)
         ) {
@@ -244,10 +242,9 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         Box(
             modifier = Modifier
                 .constrainAs(elipseAluno) {
-                    bottom.linkTo(parent.bottom, margin = 635.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(parent.top)
+                    top.linkTo(parent.top, margin = (-14).dp)
                 }
                 .size(170.dp)
         ) {
@@ -263,10 +260,9 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             contentDescription = "Ícone de Codigo de Turma no registro",
             modifier = Modifier
                 .constrainAs(icAluno) {
-                    bottom.linkTo(parent.bottom, margin = 635.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end, margin = 5.dp)
-                    top.linkTo(parent.top)
+                    top.linkTo(parent.top, margin = 25.dp)
                 }
                 .size(90.dp))//
         
@@ -277,11 +273,11 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             fontFamily = Dongle,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(identificacao){
-                bottom.linkTo(parent.bottom, margin = 438.dp)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                top.linkTo(parent.top)
+                top.linkTo(parent.top, margin = 138.dp)
             }
+
         )
     }
 

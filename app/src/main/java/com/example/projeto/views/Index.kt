@@ -22,9 +22,9 @@ fun Index(navController: NavController) {
         fontSize = 30.sp,
         color = Color.White)
 
-        Text(text = "Eu preciso descansar, sair, fazer o que eu gosto.", fontSize = 30.sp,
+        Text(text = "Eu preciso descansar, sair, fazer o que eu gosto. >(", fontSize = 30.sp,
             color = Color.White)
-        Text(text = "Esse final de semana eu vou S-A-I-R", fontSize = 40.sp,
+        Text(text = "Esse final de semana eu vou sair. S-A-I-R.", fontSize = 40.sp,
             color = Color.White)
     }
 }
