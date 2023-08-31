@@ -25,10 +25,4 @@ class AuthViewModel @Inject constructor(private val authRepositorio: AuthReposit
     }
     /////////
 
-
-    //Viewmodel dos professores/administração
-    fun cpsCadastro(nome:String, email: String, senha: String, id:String, codigoEtec:String, listenerAuth: ListenerAuth){
-
-        cpsCadastro(nome, email, senha, id, codigoEtec, listenerAuth)
-    }
 }

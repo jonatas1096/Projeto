@@ -93,7 +93,6 @@ fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:Strin
             Text(text = label,
                 fontFamily = Dongle,
                 fontSize = 35.sp,
-                //modifier = Modifier.padding(top = 0.dp)
             )
         },
         keyboardOptions = keyboardOptions,

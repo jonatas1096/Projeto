@@ -29,8 +29,8 @@ import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerAuth
+import com.example.projeto.ui.theme.AZULCLARO
 import com.example.projeto.ui.theme.Dongle
-import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
 
 @Composable
@@ -40,8 +40,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
     var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
-    var rm by remember { mutableStateOf("") }
-    var codigoturma by remember { mutableStateOf("") }
+    var id by remember { mutableStateOf("") }
+    var codigoEtec by remember { mutableStateOf("") }
 
     var context = LocalContext.current
 
@@ -142,9 +142,9 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                 )
                 //RM
                 OutlinedRegistro(
-                    value = rm,
-                    onValueChange = {rm = it},
-                    label = "RM",
+                    value = id,
+                    onValueChange = {id = it},
+                    label = "ID",
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     ),
@@ -152,15 +152,15 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                     leadingIcon = {
                         Icon(
                             painterResource(id = R.drawable.ic_rm),
-                            contentDescription = "Ícone de RM no registro",
+                            contentDescription = "Ícone de ID no registro",
                             modifier = Modifier.size(28.dp))
                     }
                 )
                 //Código turma
                 OutlinedRegistro(
-                    value = codigoturma,
-                    onValueChange = {codigoturma = it},
-                    label = "Código da Turma",
+                    value = codigoEtec,
+                    onValueChange = {codigoEtec = it},
+                    label = "Código da ETEC",
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text
                     ),
@@ -168,7 +168,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                     leadingIcon = {
                         Icon(
                             painterResource(id = R.drawable.ic_codigoturma),
-                            contentDescription = "Ícone de Codigo de Turma no registro",
+                            contentDescription = "Ícone de Codigo da ETEC no registro",
                             modifier = Modifier.size(28.dp))
                     }
                 )
@@ -180,7 +180,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                     }
 
                     TextDuasCores(color1 = Color(0xFFF5E5E5E),
-                        color2 = LARANJA,
+                        color2 = AZULCLARO,
                         texto1 = "Eu li e concordo com os ",
                         texto2 = "Termos & Condições")
                 }
@@ -190,19 +190,9 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                     BotaoRegistrar(
                         onClick = {
                             //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.cadastro(nome, email, senha,rm, codigoturma, object : ListenerAuth{
-                                override fun onSucess(mensagem: String) {
-                                    Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
-                                    navController.navigate("Login")
-                                }
-
-                                override fun onFailure(erro: String) {
-                                    Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
-                                }
-
-                            })
+                            viewModel.
                         },
-                        corBotao = LARANJA)
+                        corBotao = AZULCLARO)
                     Spacer(modifier = Modifier
                         .height(130.dp))
                 }
@@ -211,7 +201,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                         onClick = {
                             Toast.makeText(context,"Você deve concordar com os termos para prosseguir!",Toast.LENGTH_SHORT).show()
                         },
-                        corBotao = LARANJA)
+                        corBotao = AZULCLARO)
                     Spacer(modifier = Modifier
                         .height(130.dp))
                 }
@@ -222,11 +212,11 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
             }
 
         }
-        //Pandinha
+        //Detetive Mel
         Box(
             modifier = Modifier
                 .constrainAs(pandasapeca) {
-                    top.linkTo(identificacao.bottom, margin = 395.dp)
+                    top.linkTo(identificacao.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
@@ -238,7 +228,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                 modifier = Modifier)
         }
 
-        //Elipse do aluno
+        //Elipse do Professor
         Box(
             modifier = Modifier
                 .constrainAs(elipseAluno) {
@@ -267,9 +257,9 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                 .size(90.dp))//
 
         //Identificação da página
-        Text(text = "Aluno",
-            fontSize = 46.sp,
-            color = LARANJA,
+        Text(text = "Professores e Administração",
+            fontSize = 36.sp,
+            color = AZULCLARO,
             fontFamily = Dongle,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(identificacao){
