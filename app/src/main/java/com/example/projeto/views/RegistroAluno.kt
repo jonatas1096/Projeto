@@ -2,33 +2,30 @@ package com.example.projeto.views
 
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerAuth
@@ -50,6 +47,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
 
     var checkboxmarcada by remember { mutableStateOf(false) }
 
+    val scrollState = rememberScrollState()
+
     //Background
     Box(
         modifier = Modifier
@@ -67,6 +66,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     //Começo constraint
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
+            .verticalScroll(scrollState)
     ) {
         val (boxRegistroAluno, pandasapeca, elipseAluno,icAluno,identificacao) = createRefs()
 
@@ -282,12 +282,4 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     }
 
 
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAluno(){
-    RegistroAluno(navController = rememberNavController())
 }

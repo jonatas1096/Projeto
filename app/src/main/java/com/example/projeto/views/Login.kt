@@ -2,9 +2,7 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -51,6 +49,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
 
     val context = LocalContext.current
 
+    val scrollState = rememberScrollState()
 
     //Background ocupando toda a tela
     Box(
@@ -68,7 +67,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
 
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
-
+                .verticalScroll(scrollState)
         ) {
             val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto) = createRefs()
 
@@ -94,8 +93,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
                     top.linkTo(parent.top, margin = 90.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
-                ,
+                },
                 fontSize = 78.sp,
                 color = Color.White,
                 fontFamily = Jomhuria,
@@ -108,10 +106,9 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
                 elevation = 15.dp,
                 modifier = Modifier
                     .constrainAs(areaLoginSOMBRA) {
-                        top.linkTo(parent.top, margin = 130.dp)
+                        top.linkTo(titulo.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
                     }
                     .width(310.dp)
                     .height(430.dp)
@@ -123,13 +120,13 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
                 Box(
                     modifier = Modifier
                         .constrainAs(areaLogin) {
-                            top.linkTo(parent.top, margin = 130.dp)
+                            top.linkTo(titulo.bottom)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom)
+
                         }
                         .width(310.dp)
-                        .height(430.dp)
+                        //.height(430.dp)
                         .background(
                             Color.White,
                             shape = RoundedCornerShape(30.dp)
@@ -303,10 +300,8 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
             Box(
                 modifier = Modifier
                     .constrainAs(pauloroberto) {
-                        top.linkTo(parent.top, margin = 490.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end, margin = 270.dp)
-                        bottom.linkTo(parent.bottom)
+                        start.linkTo(areaLogin.end, margin = (-359).dp)
+                        top.linkTo(areaLogin.bottom, margin = (-100).dp)
 
                     }
                     .size(140.dp)
