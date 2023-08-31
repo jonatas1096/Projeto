@@ -32,9 +32,10 @@ import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.AZULCLARO
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.viewmodel.AuthViewModel
+import com.example.projeto.viewmodel.AuthViewModelCPS
 
 @Composable
-fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltViewModel()) {
+fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hiltViewModel()) {
 
     //iniciando as variaveis para o cadastro:
     var nome by remember { mutableStateOf("") }
@@ -190,7 +191,17 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModel = hiltVie
                     BotaoRegistrar(
                         onClick = {
                             //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.
+                            viewModel.cpsCadastro(nome, email, senha,id, codigoEtec, object : ListenerAuth{
+                                override fun onSucess(mensagem: String) {
+                                    Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
+                                    navController.navigate("Login")
+                                }
+
+                                override fun onFailure(erro: String) {
+                                    Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
+                                }
+
+                            })
                         },
                         corBotao = AZULCLARO)
                     Spacer(modifier = Modifier
