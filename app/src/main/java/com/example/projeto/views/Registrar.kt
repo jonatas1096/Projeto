@@ -47,7 +47,24 @@ fun Registrar(navController: NavController) {
             .fillMaxSize()
 
     ) {
-        val (boxPrincipal,boxSOMBRA,beto,coruja,texto1,texto2) = createRefs()
+        val (boxPrincipal,boxSOMBRA, beto, coruja, texto1, texto2, arrow) = createRefs()
+
+        //Arrow voltar
+        Box(modifier = Modifier.constrainAs(arrow){
+            top.linkTo(parent.top, margin = 8.dp)
+            start.linkTo(parent.start, margin = 18.dp)
+        }
+            .size(30.dp)
+            .clickable(onClick = {
+                navController.popBackStack()
+            })
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/arrow.png",
+                contentDescription = "Icone para voltar de página",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
+        }
+
 
         /*Começando com a gambiarra brasileira né
         Surface(

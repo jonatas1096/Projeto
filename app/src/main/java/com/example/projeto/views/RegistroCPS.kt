@@ -2,6 +2,7 @@ package com.example.projeto.views
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -69,7 +70,24 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
         modifier = Modifier.fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        val (boxRegistroCPS, pandasapeca, elipseAluno,icAluno,identificacao) = createRefs()
+        val (boxRegistroCPS, pandasapeca, elipseAluno, icAluno, identificacao, arrow) = createRefs()
+
+        //Arrow voltar
+        Box(modifier = Modifier.constrainAs(arrow){
+            top.linkTo(parent.top, margin = 8.dp)
+            start.linkTo(parent.start, margin = 18.dp)
+        }
+            .size(30.dp)
+            .clickable(onClick = {
+                navController.popBackStack()
+            })
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/arrow.png",
+                contentDescription = "Icone para voltar de página",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
+        }
+
 
         //Box principal
         Box(
@@ -104,8 +122,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     visualTransformation = VisualTransformation.None,
                     leadingIcon = {
                         Icon(
-                            painterResource(id = R.drawable.ic_aluno),
-                            contentDescription = "Ícone de Aluno no registro",
+                            painterResource(id = R.drawable.ic_professor),
+                            contentDescription = "Ícone de Professor e Administração no registro",
                             modifier = Modifier.size(28.dp))
                     }
                 )
@@ -249,7 +267,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 }
                 .size(170.dp)
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/alunocirculo.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/professorescirculo.png",
                 contentDescription = "",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
