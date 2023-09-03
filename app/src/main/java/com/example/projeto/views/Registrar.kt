@@ -103,7 +103,7 @@ fun Registrar(navController: NavController) {
                 )
 
                 BotaoEscolha(onClick = {
-
+                    navController.navigate("RegistroCPS")
                 },
                     text = "Professor e Equipe escolar",
                     fontSize = 27.sp,

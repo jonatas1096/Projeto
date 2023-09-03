@@ -68,7 +68,10 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         modifier = Modifier.fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        val (boxRegistroAluno, pandasapeca, elipseAluno,icAluno,identificacao) = createRefs()
+        val (boxRegistroAluno, pandasapeca, elipseAluno, icAluno, identificacao, arrow) = createRefs()
+
+        //Arrow voltar
+        
 
         //Box principal
         Box(
