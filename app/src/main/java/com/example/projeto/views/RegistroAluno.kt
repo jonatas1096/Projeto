@@ -279,7 +279,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         //Icone de identificação para aluno
         Icon(
             painterResource(id = R.drawable.ic_aluno),
-            contentDescription = "Ícone de Codigo de Turma no registro",
+            contentDescription = "Ícone de identificação Alunos no registro",
             modifier = Modifier
                 .constrainAs(icAluno) {
                     start.linkTo(parent.start)

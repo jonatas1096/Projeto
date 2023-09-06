@@ -203,6 +203,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                         texto1 = "Eu li e concordo com os ",
                         texto2 = "Termos & Condições")
                 }
+                Spacer(modifier = Modifier
+                    .height(10.dp))
 
                 //Botão registrar
                 if (checkboxmarcada){
@@ -222,8 +224,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             })
                         },
                         corBotao = AZULCLARO)
-                    Spacer(modifier = Modifier
-                        .height(130.dp))
+
                 }
                 else{
                     BotaoRegistrar(
@@ -231,8 +232,6 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             Toast.makeText(context,"Você deve concordar com os termos para prosseguir!",Toast.LENGTH_SHORT).show()
                         },
                         corBotao = AZULCLARO)
-                    Spacer(modifier = Modifier
-                        .height(130.dp))
                 }
 
 
@@ -245,13 +244,13 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
         Box(
             modifier = Modifier
                 .constrainAs(pandasapeca) {
-                    top.linkTo(identificacao.bottom)
+                    top.linkTo(identificacao.bottom, margin = 367.dp)
                     start.linkTo(parent.start)
-                    end.linkTo(parent.end)
+
                 }
-                .size(116.dp)
+                .size(166.dp)
         ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/pandinha.png",
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/detetive_mel.png",
                 contentDescription = "panda sapeca",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
@@ -275,8 +274,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
 
         //Icone de identificação para aluno
         Icon(
-            painterResource(id = R.drawable.ic_aluno),
-            contentDescription = "Ícone de Codigo de Turma no registro",
+            painterResource(id = R.drawable.ic_professor),
+            contentDescription = "Ícone de identificação Professores ou Administração",
             modifier = Modifier
                 .constrainAs(icAluno) {
                     start.linkTo(parent.start)

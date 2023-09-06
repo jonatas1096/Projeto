@@ -8,6 +8,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.projeto.layoutsprontos.postagem
 import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
 import com.example.projeto.views.*
@@ -34,7 +35,7 @@ fun Main() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authViewModelCPS: AuthViewModelCPS = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "RegistroCPS"){
+    NavHost(navController = navController, startDestination = "Postagens"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel)
@@ -58,6 +59,11 @@ fun Main() {
         //Index
         composable("Index"){
             Index(navController)
+        }
+
+        //Teste
+        composable("Postagens"){
+            postagem(navController)
         }
     }
 

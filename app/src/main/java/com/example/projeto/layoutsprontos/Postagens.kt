@@ -1,0 +1,167 @@
+package com.example.projeto.layoutsprontos
+
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
+
+
+@Composable
+fun postagem(navController: NavController) {
+
+    //Container principal da postagem. Esse é o retângulo que vai guardar tudo
+    Box(
+        modifier = Modifier
+            .background(color = Color.White)
+            .fillMaxWidth()
+            .size(420.dp)
+            .padding(bottom = 15.dp)
+            .border(2.dp, Color.Red)
+    ) {
+
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+            .border(2.dp, Color.Black)
+    ) {
+
+        val (foto, nome, texto, imagemPost, fotoReacao, comentarios, compartilhamentos, linha) = createRefs()
+
+
+            //Essa é uma box para guardar a imagem do perfil do usuário.
+            Box(
+                modifier = Modifier
+                    .constrainAs(foto) {
+                        start.linkTo(parent.start, margin = 7.dp)
+                        top.linkTo(parent.top, margin = 7.dp)
+                    }
+                    .size(50.dp)
+                    .clip(CircleShape)
+            ){
+                loadImage(path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
+                    contentDescription = "Foto",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier)
+            }
+
+
+        //Nome do usuário
+            Text(text = "Bóga",
+                color = Color(56, 56, 56, 255),
+                fontWeight = FontWeight.Bold,
+                fontSize = 17.sp,
+            modifier = Modifier.constrainAs(nome){
+                start.linkTo(foto.end, margin = 7.dp)
+                top.linkTo(parent.top, margin = 5.dp)
+            })
+
+
+        //Texto da publicação
+        Row(
+            modifier = Modifier
+                .constrainAs(texto) {
+
+                    start.linkTo(parent.start)
+                    top.linkTo(foto.bottom, margin = 5.dp)
+                }
+
+                .padding(start = 10.dp)
+                .padding(end = 20.dp)
+
+        ) {
+            Text(text = "É simplesmente INACEITÁVEL o que foi feito comigo. Me fizeram de trouxa, de palhaço. Você me paga, chapéu de palha!",
+                fontSize = 13.sp,
+                color = Color(39, 39, 39, 255),
+
+            )
+        }
+
+
+        //Imagem da publicação
+        Row(
+            modifier = Modifier
+                .constrainAs(imagemPost) {
+                    start.linkTo(parent.start)
+                    top.linkTo(texto.bottom, margin = 5.dp)
+                }
+                .fillMaxWidth()
+                .size(220.dp)
+        ) {
+            loadImage(path = "https://pbs.twimg.com/media/F44MGzBXoAECev7?format=jpg&name=large",
+                contentDescription = "Buggy cotoco",
+                contentScale = ContentScale.None,
+                modifier = Modifier)
+        }
+
+        //Fotinha
+        Box(
+            modifier = Modifier
+                .constrainAs(fotoReacao) {
+                    start.linkTo(parent.start, margin = 8.dp)
+                    top.linkTo(imagemPost.bottom, margin = 5.dp)
+                }
+                .size(28.dp)
+                .clip(CircleShape)
+        ) {
+            loadImage(path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
+                contentDescription = "Foto",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
+        }
+
+        //Comentarios
+        Text(text = "211 Comentários",
+            fontSize = 12.sp,
+            color = Color(90, 90, 90, 255),
+
+            modifier = Modifier.constrainAs(comentarios){
+                end.linkTo(parent.end, margin = 146.dp)
+                top.linkTo(imagemPost.bottom, margin = 12.dp)
+            }
+        )
+
+        //Comentarios
+        Text(text = "48 Compartilhamentos",
+            fontSize = 12.sp,
+            color = Color(90, 90, 90, 255),
+
+            modifier = Modifier.constrainAs(compartilhamentos){
+                end.linkTo(parent.end, margin = 10.dp)
+                top.linkTo(imagemPost.bottom, margin = 12.dp)
+            }
+        )
+
+
+        Row(
+            modifier = Modifier.constrainAs(linha){
+                top.linkTo(fotoReacao.bottom, margin = 6.dp)
+            }
+                .fillMaxWidth()
+                .size(1.dp)
+                .background(color = Color(209, 209, 209, 255))
+        ) {
+
+        }
+        }
+    }
+
+}
+
+
+/*
+@Preview (showBackground = true)
+@Composable
+fun postagemPreview(){
+    postagem()
+}*/

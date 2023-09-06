@@ -278,8 +278,8 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
                                 .padding(top = 38.dp)
                         ) {
                             Text(
-                                text = "Logar!",
-                                fontSize = 16.sp,
+                                text = "Login",
+                                fontSize = 17.sp,
                                 fontWeight = FontWeight.Bold,
                             )
                         }
