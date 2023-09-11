@@ -9,6 +9,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -197,11 +199,31 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
 
                         checkboxmarcada = isChecked
                     }
+                    val dialogo = remember { mutableStateOf(false) } //variavel para a lógica dos termos e condições
 
                     TextDuasCores(color1 = Color(0xFFF5E5E5E),
                         color2 = AZULCLARO,
                         texto1 = "Eu li e concordo com os ",
-                        texto2 = "Termos & Condições")
+                        texto2 = "Termos & Condições",
+                        onclick = {
+                            dialogo.value = true
+                        },
+                        fontSize = 13.sp
+                    )
+
+                    if (dialogo.value){
+                        if (dialogo.value){
+                            AlertDialogPersonalizado(
+                                dialogo = dialogo,
+                                onDismissRequest = {
+                                    dialogo.value = false
+                                },
+                                cor = AZULCLARO
+                            )
+
+                        }
+
+                    }
                 }
                 Spacer(modifier = Modifier
                     .height(10.dp))

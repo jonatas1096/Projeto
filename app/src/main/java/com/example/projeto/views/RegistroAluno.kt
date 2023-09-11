@@ -1,5 +1,6 @@
 package com.example.projeto.views
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -24,6 +27,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -34,6 +38,7 @@ import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltViewModel()) {
 
@@ -73,10 +78,11 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
         val (boxRegistroAluno, pandasapeca, elipseAluno, icAluno, identificacao, arrow) = createRefs()
 
         //Arrow voltar
-        Box(modifier = Modifier.constrainAs(arrow){
-            top.linkTo(parent.top, margin = 8.dp)
-            start.linkTo(parent.start, margin = 18.dp)
-        }
+        Box(modifier = Modifier
+            .constrainAs(arrow) {
+                top.linkTo(parent.top, margin = 8.dp)
+                start.linkTo(parent.start, margin = 18.dp)
+            }
             .size(30.dp)
             .clickable(onClick = {
                 navController.popBackStack()
@@ -201,10 +207,30 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                            checkboxmarcada = isChecked
                         }
 
-                            TextDuasCores(color1 = Color(0xFFF5E5E5E),
+                        val dialogo = remember { mutableStateOf(false) } //variavel para a lógica dos termos e condições
+
+                            TextDuasCores(
+                                color1 = Color(0xFFF5E5E5E),
                                 color2 = LARANJA,
                                 texto1 = "Eu li e concordo com os ",
-                                texto2 = "Termos & Condições")
+                                texto2 = "Termos & Condições",
+                                onclick = {
+                                    dialogo.value = true
+
+                                },
+                                fontSize = 13.sp
+                            )
+
+                        if (dialogo.value){
+                            AlertDialogPersonalizado(
+                                dialogo = dialogo,
+                                onDismissRequest = {
+                                    dialogo.value = false
+                                },
+                                cor = LARANJA
+                            )
+
+                        }
                     }
 
                     //Botão registrar

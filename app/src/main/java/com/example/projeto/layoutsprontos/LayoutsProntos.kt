@@ -1,11 +1,10 @@
 package com.example.projeto.layoutsprontos
 
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import android.content.Context
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -24,18 +23,29 @@ import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.LARANJA
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
-
+import com.example.projeto.bottomNavigation.BottomNavItem
+import com.example.projeto.ui.theme.AZULCLARO
 
 
 //Carregar uma imagem do github:
@@ -46,7 +56,7 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
     model = path,
     contentDescription = contentDescription,
     contentScale = contentScale,
-    modifier = Modifier
+    modifier = modifier
     )
 
  }
@@ -218,7 +228,7 @@ fun BotaoRegistrar(onClick: () -> Unit, corBotao: Color, fontSize: TextUnit = 22
 }
 
 @Composable
-fun TextDuasCores(color1: Color, color2:Color, texto1: String, texto2: String) {
+fun TextDuasCores(color1: Color, color2:Color, texto1: String, texto2: String, fontSize: TextUnit, onclick: () -> Unit) {
     val text = buildAnnotatedString {
         withStyle(style = SpanStyle(color = color1)) {
             append(texto1)
@@ -228,15 +238,283 @@ fun TextDuasCores(color1: Color, color2:Color, texto1: String, texto2: String) {
         }
     }
 
+
+
     Text(
         text = text,
-        fontSize = 13.sp,
+        fontSize = fontSize,
         overflow = TextOverflow.Ellipsis,
         maxLines = 1,
         modifier = Modifier
             .padding(top = 13.dp, end = 17.dp)
             .clickable(onClick = {
+                onclick()
 
             })
     )
+}
+
+
+@Composable
+fun AlertDialogPersonalizado(
+    dialogo: MutableState<Boolean>,
+    onDismissRequest: () -> Unit,
+    cor: Color
+) {
+    val scrollState = rememberScrollState()
+
+    if (dialogo.value) {
+
+        Dialog(
+            onDismissRequest = { onDismissRequest() },
+            properties = DialogProperties(
+                dismissOnClickOutside = true,
+            ),
+        ) {
+            // Conteúdo
+            //Esse card serve para nao bugar e ficar sem fundo
+            Card(
+                elevation = 5.dp,
+                shape = RoundedCornerShape(16.dp),
+                backgroundColor = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(460.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .verticalScroll(scrollState)
+                ) {
+                    Text(text = "Termos e Condições",
+                        fontSize = 37.sp,
+                        fontFamily = Dongle,
+                        color = cor,
+                        fontWeight = FontWeight.Bold
+                    )
+                    //Linha apenas para estética
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(2.dp)
+                            .background(color = Color(209, 209, 209, 255))
+                    ) {}
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = "Bem-vindo à nossa rede social móvel para alunos e professores da [ETEC Zona Leste]. Estes termos e condições regem o uso do nosso aplicativo. Ao utilizá-lo, você concorda expressamente com os seguintes termos e condições:",
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(bottom = 18.dp)
+                        )
+                    //Privacidade
+                        Text(text = "1. Privacidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Respeitamos sua privacidade e comprometemo-nos a proteger seus dados pessoais. Para obter informações detalhadas sobre como os coletamos, usamos e protegemos suas informações pessoais, consulte algum dos desenvolvedores."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Cadastro de usuário
+                        Text(text = "2. Cadastro de usuário:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Para utilizar nosso aplicativo, você deve criar uma conta. Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades que ocorrerem em sua conta durante o uso."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Uso Aceitável
+                        Text(text = "3. Uso Aceitável:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Você concorda em utilizar nosso aplicativo de maneira respeitosa e ética. Comportamentos inadequados como assédio, machismo, racismo ou qualquer outro tipo de discurso de ódio que viole os direitos de terceiros, não será tolerado."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Propriedade Intelectual:
+                        Text(text = "4. Propriedade Intelectual:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Todo o conteúdo gerado pelos usuários como postagens, fotos, vídeos ou comentários, pertence aos respectivos criadores. Você não tem permissão para usar esse conteúdo sem a devida autorização."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Responsabilidade:
+                        Text(text = "5. Responsabilidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Você reconhece que os desenvolvedores não são responsáveis por qualquer dano, perda, inconveniência ou prejuízo causado pelo uso de nosso aplicativo. Utilize-o por sua conta e risco."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Encerramento de Conta:
+                        Text(text = "6. Encerramento de conta:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Você pode encerrar sua conta a qualquer momento contactando qualquer um dos desenvolvedores. Isso resultará na exclusão permanente de seus dados, ou seja, não podemos recuperar informações de contas excluídas."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Diretrizes de Conteúdo:
+                        Text(text = "7. Diretrizes de Conteúdo:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "É estritamente proibido qualquer tipo de postagem que inclua conteúdo ilegal, como discurso de ódio, nudez, violência, etc. O usuário irá arcar com as consequências caso o mesmo ocorra."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    //Rescisão de Serviço:
+                        Text(text = "8. Rescisão de Serviço:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                        Text(text = "Reservamos o direito para que os desenvolvedores possam encerrar ou modificar o serviço a qualquer momento, com ou sem aviso prévio."
+                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(text = "Entendido",
+                        color = cor,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .clickable(
+                                onClick = { onDismissRequest() }
+                            )
+                            .padding(start = 200.dp)
+                    )
+                }
+            }
+        }
+
+
+
+    }
+}
+
+@Composable
+fun BottomNavigationBar(items: List<BottomNavItem>, navController: NavController, modifier: Modifier = Modifier, onClickItem: (BottomNavItem) -> Unit, ModifierIcon : Modifier){
+
+    val backStackEntry = navController.currentBackStackEntryAsState()
+
+    BottomNavigation(
+        modifier = modifier,
+        backgroundColor = Color(0xFFFAFAFA),
+        elevation = 20.dp
+    ) {
+        items.forEach{ item ->
+
+            val selected = item.route == backStackEntry.value?.destination?.route
+            BottomNavigationItem(
+                selected = selected,
+                onClick = {onClickItem(item)},
+                selectedContentColor = AZULCLARO,
+                unselectedContentColor = Color(0xFF383838),
+                icon = {
+                    Column(
+                        horizontalAlignment = CenterHorizontally
+                    ) {
+                        if (item.badgeCount > 0){
+                            BadgedBox(
+                                badge = {
+                                    Surface(
+                                        color = AZULCLARO,
+                                        shape = CircleShape,
+                                        modifier = Modifier
+                                           // .border(2.dp, Color.Black)
+                                            .size(20.dp)
+                                            //.clip(CircleShape)
+                                    ) {
+                                        Column(
+                                            verticalArrangement = Arrangement.Center,
+                                            horizontalAlignment = CenterHorizontally,
+                                            modifier = Modifier.fillMaxSize()
+                                        ) {
+                                            if (item.badgeCount > 99){
+                                                Text(text = "99+",
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold,
+                                                    textAlign = TextAlign.Center,
+                                                    fontSize = 11.sp
+
+                                                )
+                                            }
+                                            else{
+                                                Text(text = item.badgeCount.toString(),
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold,
+                                                    textAlign = TextAlign.Center,
+                                                    fontSize = 11.sp
+
+                                                )
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                            ) {
+                                Icon(imageVector = item.icon,
+                                    contentDescription = item.nome,
+                                    modifier = item.iconModifier ?: Modifier
+                                )
+                            }
+                        }
+                        else{
+                            Icon(imageVector = item.icon,
+                                contentDescription = item.nome,
+                                modifier = item.iconModifier ?: Modifier
+                            )
+                        }
+                        if (selected){
+                            Text(text = item.nome,
+                                textAlign = TextAlign.Center,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+
+                }
+            )
+        }
+    }
+
+}
+
+@Composable
+fun botaoDrawer(onClick: () -> Unit){
+
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier
+            .size(40.dp)
+            .padding(start = 5.dp)
+            .padding(top = 15.dp)
+    ){
+        Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
+            contentDescription = "Publicar",)
+    }
+}
+
+
+@Composable
+fun drawerPersonalizado(){
+
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .border(2.dp, Color.Black)
+        .zIndex(1F)) {
+        Text(text = "Texto1")
+        Text(text = "Texto2")
+        Text(text = "Texto3")
+        Text(text = "Texto4")
+    }
+}
+
+
+@Composable
+fun CardPostagem(cardState: Boolean, onCardClose: () -> Unit){
+
+    if (cardState){
+        Card(
+            modifier = Modifier
+                .fillMaxSize()
+            .padding(16.dp),
+            elevation = 8.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
+                IconButton(
+                    onClick = { onCardClose() },
+                ) {
+                    Image(ImageVector.vectorResource(id = R.drawable.ic_fechar),
+                        contentDescription = "Fechar o Card")
+                }
+                Text("Conteúdo do Card")
+                Spacer(modifier = Modifier.height(16.dp))
+
+            }
+        }
+    }
+
+
+}
+
+
+//Preview:
+@Composable
+@Preview(showBackground = true)
+fun previewLayouts(){
+
 }
