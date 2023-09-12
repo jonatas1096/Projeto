@@ -60,6 +60,11 @@ fun Main() {
             Index(navController)
         }
 
+        //Publicar
+        composable("Publicar"){
+            Publicar(navController)
+        }
+
         /*Teste
         composable("Postagens"){
             postagem(navController)

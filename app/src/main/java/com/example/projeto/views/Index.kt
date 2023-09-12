@@ -2,7 +2,6 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -10,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -29,7 +27,7 @@ import com.example.projeto.layoutsprontos.*
 import kotlinx.coroutines.launch
 
 
-@OptIn(ExperimentalMaterialApi::class)
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Index(navController: NavController) {
@@ -37,6 +35,8 @@ fun Index(navController: NavController) {
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var galeriaState by remember { mutableStateOf(false) }
 
 
     Scaffold(
@@ -64,7 +64,6 @@ fun Index(navController: NavController) {
         //Tô usando o content para mesclar o constraintLayout à aplicação em geral, assim ele fica em cima da bottomBar (tipo camadas).
         content = {
 
-
             //ConstraintLayout para o que precisar ser posicionado melhor
             ConstraintLayout(
                 modifier = Modifier
@@ -74,6 +73,8 @@ fun Index(navController: NavController) {
 
                 val (publicar) = createRefs()
                 var cardState by remember { mutableStateOf(false) }
+                var galleryState by remember { mutableStateOf(false) }
+
 
                 //Gambiarra para colocar sombra no Button de publicar
                 Surface(
@@ -89,22 +90,18 @@ fun Index(navController: NavController) {
                 ) {
                     IconButton(
                         onClick = {
-                            cardState = true
+                            //cardState = true
+                           navController.navigate("Publicar")
                         },
 
                     ){
                         Image(ImageVector.vectorResource(id = R.drawable.ic_publicar),
-                            contentDescription = "Publicar")
+                            contentDescription = "Ir para publicar nova postagem")
                     }
 
                 }
-
-                CardPostagem(cardState = cardState,
-                    onCardClose = {cardState = false}
-                )
-
-
             }//Fechamento do Constraint
+
 
 
             //Começando a lógica da área das postagens

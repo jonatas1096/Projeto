@@ -2,6 +2,13 @@ package com.example.projeto.layoutsprontos
 
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -26,8 +33,12 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
@@ -40,12 +51,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.ui.theme.AZULCLARO
+import kotlinx.coroutines.launch
 
 
 //Carregar uma imagem do github:
@@ -481,35 +494,142 @@ fun drawerPersonalizado(){
 }
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CardPostagem(cardState: Boolean, onCardClose: () -> Unit){
+
+    //toda a palhaçada do jetpack só pra abrir o bottomshet
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
+    val scope = rememberCoroutineScope()
+    //
 
     if (cardState){
         Card(
             modifier = Modifier
                 .fillMaxSize()
-            .padding(16.dp),
-            elevation = 8.dp
+                .padding(16.dp),
+            elevation = 18.dp
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-            ) {
+            //Essa aqui é a parte de baixo (vai entender kkkk)
+            BottomSheetScaffold(
+                scaffoldState = scaffoldState,
+                sheetContent = {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(240.dp))
+                    {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 10.dp)
+                                .padding(end = 10.dp),
+                            horizontalAlignment = CenterHorizontally,
+                        ) {
+                            //botão para subir o bottomsheet
+                            IconButton(onClick = {
+                                scope.launch {
+                                    if (sheetState.isCollapsed){
+                                        sheetState.expand()
+                                    }
+                                    else{
+                                        sheetState.collapse()
+                                    }
+
+                                }
+                            }) {
+                                Image(ImageVector.vectorResource(id = R.drawable.ic_minus),
+                                    contentDescription = "Subir o BottomSheet",
+                                    modifier = Modifier
+                                        .size(80.dp),
+                                    colorFilter = ColorFilter.tint(Color(0xFFC5C4C4))
+                                )
+                            }
+
+                            //Midias
+                            Row(
+                                //contentAlignment = CenterStart,
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .border(1.dp, Color.Red)
+                                   .clickable(
+                                       onClick = {
+
+
+                                       })
+                            ) {
+                                //Imagem da imagem
+                                Image(ImageVector.vectorResource(id = R.drawable.ic_imagem),
+                                    contentDescription = "Adicionar foto ou video",
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                    /*colorFilter = ColorFilter.tint(Color(0xFFC5C4C4)
+                                    )*/
+                                )
+                                
+                                //Só pra espaçar um pouco a imagem e o texto
+                                Spacer(modifier = Modifier
+                                    .width(20.dp)
+                                    .border(2.dp, Color.Green))
+
+                                //Texto da Imagem
+                                Text(text = "Foto/vídeo",
+                                    fontSize = 25.sp,
+                                    color = Color(0xFF303030),
+                                )
+                            }
+
+                        }
+
+                    }
+            },
+                sheetBackgroundColor = Color(0xFFFFFFFF),
+                sheetShape = RoundedCornerShape(25.dp, 25.dp,0.dp, 0.dp),
+                sheetElevation = 8.dp,
+                )
+            { //e a partir destas chaves é a parte de cima
+                Card(modifier = Modifier.fillMaxSize(),
+                    elevation = 10.dp,
+                    backgroundColor = Color(0xFFFAFAFA)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .size(10.dp)
+                            .border(2.dp, Color.Black)
+                    ) {
+                        Text("Container top")
+
+                    }
+                }
+            }
+
+            //ConstraintLayout para posicionar o que precisa
+            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+                val (fecharcard) = createRefs()
+
                 IconButton(
                     onClick = { onCardClose() },
-                ) {
+                    modifier = Modifier
+                        .constrainAs(fecharcard) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                        .size(60.dp)
+                ){
                     Image(ImageVector.vectorResource(id = R.drawable.ic_fechar),
-                        contentDescription = "Fechar o Card")
+                        contentDescription = "Fechar o Card",
+                    )
                 }
-                Text("Conteúdo do Card")
-                Spacer(modifier = Modifier.height(16.dp))
-
             }
+
         }
     }
 
 
 }
+
+
 
 
 //Preview:
