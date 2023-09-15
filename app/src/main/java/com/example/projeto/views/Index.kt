@@ -35,8 +35,7 @@ fun Index(navController: NavController) {
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    var galeriaState by remember { mutableStateOf(false) }
+
 
 
     Scaffold(
@@ -72,8 +71,6 @@ fun Index(navController: NavController) {
             ) {
 
                 val (publicar) = createRefs()
-                var cardState by remember { mutableStateOf(false) }
-                var galleryState by remember { mutableStateOf(false) }
 
 
                 //Gambiarra para colocar sombra no Button de publicar
@@ -81,11 +78,11 @@ fun Index(navController: NavController) {
                     shape = CircleShape,
                     elevation = 10.dp,
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(55.dp)
                         .constrainAs(publicar) {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom, margin = 40.dp)
+                            bottom.linkTo(parent.bottom, margin = 20.dp)
                         }
                 ) {
                     IconButton(
@@ -123,11 +120,11 @@ fun Index(navController: NavController) {
            //Gambiarra para colocar sombra na bottomNavigation (a padrão dela por algum motivo nao estava indo).
            Surface(
                elevation = 6.dp,
-               shape = RoundedCornerShape(35.dp),
+               //shape = RoundedCornerShape(35.dp),
                modifier = Modifier
-                   .padding(horizontal = 30.dp)
-                   .padding(bottom = 15.dp)
-                   .height(60.dp)
+                   /*.padding(horizontal = 30.dp)
+                   .padding(bottom = 15.dp)*/
+                   .height(55.dp)
 
            ) {
                BottomNavigationBar(
@@ -152,7 +149,7 @@ fun Index(navController: NavController) {
                            route = null,
                            badgeCount = 0,
                            icon = ImageVector.vectorResource(id = R.drawable.ic_blank)
-                       ).withIconModifier(Modifier.size(1.dp)),
+                       ).withIconModifier(Modifier.size(10.dp)),
                        BottomNavItem(
                            nome = "Notificações",
                            route = "Notificacoes",

@@ -34,7 +34,7 @@ fun Main() {
     val authViewModel: AuthViewModel = hiltViewModel()
     val authViewModelCPS: AuthViewModelCPS = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "Profile"){
+    NavHost(navController = navController, startDestination = "Publicar"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel)
@@ -65,6 +65,7 @@ fun Main() {
             Publicar(navController)
         }
 
+        //Profile (estudos Anahi)
         composable("Profile"){
             Profile(navController)
         }
