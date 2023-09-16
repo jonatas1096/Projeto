@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
+import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.example.projeto.views.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,8 +34,9 @@ fun Main() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
     val authViewModelCPS: AuthViewModelCPS = hiltViewModel()
+    val publicacaoViewModel: PublicacaoViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "Publicar"){
+    NavHost(navController = navController, startDestination = "Login"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel)
@@ -57,12 +59,12 @@ fun Main() {
 
         //Index
         composable("Index"){
-            Index(navController)
+            Index(navController, publicacaoViewModel)
         }
 
         //Publicar
         composable("Publicar"){
-            Publicar(navController)
+            Publicar(navController, publicacaoViewModel)
         }
 
         //Profile (estudos Anahi)
