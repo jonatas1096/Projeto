@@ -17,10 +17,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,15 +30,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.projeto.R
+import com.example.projeto.viewmodel.PublicacaoViewModel
 
 import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Publicar(navController: NavController) {
+fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
     ////////////////////////////////
 
     //toda a palhaçada do jetpack só pra abrir o bottomshet
@@ -172,7 +176,8 @@ fun Publicar(navController: NavController) {
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color(0xFFE7E6E6)
                         ),
-                        modifier = Modifier.padding(5.dp)
+                        modifier = Modifier
+                            .padding(5.dp)
                             .padding(start = 20.dp)
                     ) {
                         Text(text = "Publicar",
@@ -224,18 +229,22 @@ fun Publicar(navController: NavController) {
                     .height(150.dp)
             )
 
-            //Coluna das imagens
+            /*Coluna das imagens
             Box(modifier = Modifier
                 .constrainAs(boxImagem) {
                     top.linkTo(areaTexto.bottom)
                 }
                 .fillMaxWidth()
                 .height(220.dp)
-            ){
+            ){*/
                 //As imagens tem que vir dentro dessa column
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .constrainAs(boxImagem) {
+                            top.linkTo(areaTexto.bottom)
+                        }
+                        .fillMaxWidth()
+                        .height(220.dp)
                         .border(2.dp, Color.Green)
                 ) {
                     items(imagensColuna) { imagem ->
@@ -243,13 +252,22 @@ fun Publicar(navController: NavController) {
                         Image(
                             bitmap = imagem.asImageBitmap(),
                             contentDescription = "Imagem Selecionada",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                //Esse modificador abaixo serviu para adequar a imagem totalmente à coluna.
+                                .aspectRatio(
+                                    ratio = imagem.width.toFloat() / imagem.height.toFloat(),
+                                    matchHeightConstraintsFirst = false
+                                )
+
                         )
                     }
 
                 }
 
 
-            }
+            //}
 
             //Fim Constraint.
             //

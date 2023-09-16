@@ -18,24 +18,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.bottomNavigation.withIconModifier
 import com.example.projeto.layoutsprontos.*
+import com.example.projeto.listener.ListenerPublicacao
+import com.example.projeto.viewmodel.PublicacaoViewModel
 import kotlinx.coroutines.launch
 
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Index(navController: NavController) {
+fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
 
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
+    var rmEncontrado : String = ""
 
+    viewModel.rmUsuario(object : ListenerPublicacao{
+        override fun onSucess(rm: String) {
+            rmEncontrado = rm
+            println("O rm é (agora ja na index) $rmEncontrado")
+        }
+
+        override fun onFailure(erro: String) {
+            "Nenhum rm encontrado."
+        }
+
+    })
 
 
     Scaffold(
