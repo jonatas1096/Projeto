@@ -262,7 +262,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
             }
 
         }
-        //Detetive Mel
+        /*Detetive Mel
         Box(
             modifier = Modifier
                 .constrainAs(pandasapeca) {
@@ -276,7 +276,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 contentDescription = "panda sapeca",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
-        }
+        }*/
 
         //Elipse do Professor
         Box(

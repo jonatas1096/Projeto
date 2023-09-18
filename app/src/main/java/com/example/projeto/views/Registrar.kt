@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -26,8 +27,6 @@ import com.example.projeto.ui.theme.LARANJA
 
 @Composable
 fun Registrar(navController: NavController) {
-    //Eu vou testar com dois constraints porque sim.
-
 
     //Background
     Box(
@@ -66,7 +65,7 @@ fun Registrar(navController: NavController) {
         }
 
 
-        /*Começando com a gambiarra brasileira né
+        //Começando com a gambiarra brasileira né
         Surface(
             shape = RoundedCornerShape(25.dp),
             elevation = 18.dp,
@@ -79,7 +78,7 @@ fun Registrar(navController: NavController) {
                 }
                 .width(348.dp)
                 .height(360.dp)
-        ){}*/
+        ){}
 
         //Box principal para registro
         Box(
@@ -178,7 +177,7 @@ fun Registrar(navController: NavController) {
         )
 
 
-        //Box da gambiarra de imagem para o Béto
+        /*Box da gambiarra de imagem para o Béto
         Box(
             modifier = Modifier
                 .size(130.dp)
@@ -193,11 +192,11 @@ fun Registrar(navController: NavController) {
                 contentDescription = "Béto",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier)
-        }
+        }*/
 
 
 
-        //Box da gambiarra de imagem para a Coruja-ruja
+        /*Box da gambiarra de imagem para a Coruja-ruja
         Box(
             modifier = Modifier
                 .size(150.dp)
@@ -211,7 +210,7 @@ fun Registrar(navController: NavController) {
                 contentDescription = "Coruja",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
-        }
+        }*/
 
     }
 

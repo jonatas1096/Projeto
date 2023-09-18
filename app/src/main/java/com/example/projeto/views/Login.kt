@@ -306,24 +306,6 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                 }
 
 
-
-            //Paulo Roberto
-            Box(
-                modifier = Modifier
-                    .constrainAs(pauloroberto) {
-                        start.linkTo(areaLogin.end, margin = (-359).dp)
-                        top.linkTo(areaLogin.bottom, margin = (-100).dp)
-
-                    }
-                    .size(140.dp)
-            ) {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/pauloroberto.png",
-                    contentDescription = "Aqui está o Paulo Roberto",
-                    contentScale = ContentScale.None,
-                    modifier = Modifier)
-            }
-
-
         }
 
 

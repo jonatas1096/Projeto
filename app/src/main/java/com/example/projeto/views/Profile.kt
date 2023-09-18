@@ -53,9 +53,9 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     //unica forma que eu consegui pra abrir a galeria sendo uma função composable
     //aqui é só a lógica da galeria
     var galeriaState by remember { mutableStateOf(false) }
-    var imagemSelecionada: Bitmap? by remember { mutableStateOf(null) }
     var exibirImagemPadrao by remember { mutableStateOf(true) }
     //
+    val imagemUrl = remember { mutableStateOf<String?>(null) }
 
 
 
@@ -66,56 +66,25 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     val storageRef = storage.reference
     val alunoRM = UserData.rmEncontrado
     val cpsID = UserData.cpsIDEncontrado
-    val imagePath = "Alunos/$alunoRM"
-    println("aqui ta o rm pra ir no path $alunoRM")
     //
     //
     val context = LocalContext.current
+    //
 
-
-
-    //Foto do usuário atual:
-    var imagemPerfil: String? = null
-    //println("primeiro println do valor de imagemPerfil: $imagemPerfil")
-
-
-    /*DisposableEffect(imagemPerfil) {
-
-        val alunoDocument = firestore.collection("Alunos").document(alunoRM)
-        alunoDocument.get()
-            .addOnSuccessListener { documentSnapshot ->
-                if (documentSnapshot.exists()) {
-                    val fotoURL = documentSnapshot.getString("fotoURL")
-                    imagemPerfil = fotoURL
-                    println("URL da imagem: $imagemPerfil")
-                } else {
-                    Toast.makeText(context, "Documento não encontrado.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        onDispose {
-            // Isso será chamado quando o Composable for descartado
-            // Libere recursos ou faça outras tarefas de limpeza, se necessário
-        }
-    }
-    println("saiu do addOnSucess, valor: $imagemPerfil")*/
-
-    var imageUrl by mutableStateOf<String?>(null)
-
-    println("valor da image URL $imageUrl")
-
-    storageRef.child(imagePath)
-        .downloadUrl
-        .addOnSuccessListener { uri ->
-            imageUrl = uri.toString() // Defina o valor da variável imageUrl dentro do onSuccess
-            // Agora você tem a URL da imagem em "imageUrl"
-            println("valor da image URL depois de pegar $imageUrl")
+    //Lógica para pegar a url da imagem que o usuário vai subir pro firebase (o inicio da lógica não é aqui)
+    val alunoRef = storageRef.child("Alunos").child(alunoRM)
+    alunoRef.downloadUrl
+        .addOnSuccessListener {uri ->
+            val url = uri.toString()
+            println("URL obtida: $url")
+            imagemUrl.value = url
         }
         .addOnFailureListener { exception ->
-            // Trate qualquer erro que possa ocorrer ao obter a URL da imagem
+            println("A url não pôde ser obtida. Erro: $exception")
         }
+    //
 
-    println("valor da image URL depois de sair $imageUrl")
+
     //Fundo
     Box(
         modifier = Modifier.fillMaxSize()
@@ -135,7 +104,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 .border(2.dp, Color.Green)
                 .padding(25.dp)
         )
-
         {
 
             val (areaFoto, julio, ines) = createRefs() //criou as referencias
@@ -162,19 +130,33 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         galeriaState = true
                         exibirImagemPadrao = false
                     })
-            ) {
-                println("aqui dentro da surface agora $imageUrl")
-                loadImage(
-                    path = imageUrl ?: "https://th.bing.com/th/id/OIG.1k6zLX7FZtyQUntYbbFo?pid=ImgGn",
-                    contentDescription = "Imagem default do usuário",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
+            ) {//Aqui é uma lógica para a foto de perfil. Se a URL não estiver vazia, a imagem vem do firebase. Senão, uma padrão do github vai ser exibida no lugar (else).
+                imagemUrl.value?.let {url ->
+                    if (imagemUrl.value != null){
+                        loadImage(
+                            path = url,
+                            contentDescription = "Imagem default do usuário",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    else{
+                        loadImage(
+                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                            contentDescription = "Imagem default do usuário",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                    }
+                }
 
             }
 
 
 
+
+            //////////////////
             //Estudos Anahi
             loadImage(path = "https://static.wikia.nocookie.net/cocorico/images/e/e3/Julio-careca.jpg/revision/latest?cb=20211011002720&path-prefix=pt-br",
                 contentDescription = "julio careca",
@@ -199,7 +181,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     }
 
             )
-
+            //////////////////
         }
 
     }
@@ -219,7 +201,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 val outputStream = ByteArrayOutputStream()
                 imagem.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 val imageData = outputStream.toByteArray()
-
 
 
 
@@ -243,7 +224,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                             alunoDocument.set(alunoFoto, SetOptions.merge())
                                 .addOnSuccessListener {
                                     Toast.makeText(context, "Foto de perfil atualizada com sucesso!", Toast.LENGTH_SHORT).show()
-
+                                    navController.navigate("Profile")
                                 }
                                 .addOnFailureListener { exception ->
                                     Toast.makeText(context, "Erro ao atualizar a foto de perfil: $exception", Toast.LENGTH_SHORT).show()
@@ -251,10 +232,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         }
                         .addOnFailureListener{exception ->
                             Toast.makeText(context, "Erro ao fazer upload da imagem: $exception", Toast.LENGTH_SHORT).show()
-
                         }
 
-                    navController.navigate("Profile")
                 }
                 else{
 

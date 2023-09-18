@@ -270,7 +270,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 }
 
         }
-        //Pandinha
+        /*Pandinha
         Box(
             modifier = Modifier
                 .constrainAs(pandasapeca) {
@@ -284,7 +284,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 contentDescription = "panda sapeca",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
-        }
+        }*/
 
         //Elipse do aluno
         Box(
