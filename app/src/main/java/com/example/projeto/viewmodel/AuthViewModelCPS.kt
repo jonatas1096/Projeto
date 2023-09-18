@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.repositorio.AuthRepositorioCPS
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,5 +22,9 @@ class AuthViewModelCPS @Inject constructor(private val authRepositorioCPS: AuthR
             authRepositorioCPS.cpsCadastro(nome, email, senha, id, codigoEtec, listenerAuth)
         }
 
+    }
+
+    fun verificarUsuarioLogado(): Flow<Boolean> {
+        return authRepositorioCPS.verificarUsuarioLogado()
     }
 }

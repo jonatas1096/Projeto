@@ -5,39 +5,71 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.bottomNavigation.withIconModifier
+import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
+import com.example.projeto.listener.ListenerPublicacao
+import com.example.projeto.viewmodel.PublicacaoViewModel
 import kotlinx.coroutines.launch
 
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Index(navController: NavController) {
+fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
 
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-    var galeriaState by remember { mutableStateOf(false) }
 
+    var usuarioObtido = ""
+    var nomeObtido = ""
+
+   /* //Variaveis que fazem parte da identificação do usuário
+    var usuarioEncontrado = ""
+    var nomeEncontrado = ""
+    //
+    viewModel.usuarioEncontrado(object : ListenerPublicacao{
+        override fun onSucess(usuario: String, nome:String) {
+            usuarioEncontrado = usuario
+            println("O código é (agora ja na index) $usuarioEncontrado")
+            nomeEncontrado = nome
+            println("nome: $nomeEncontrado")
+        }
+
+        override fun onFailure(erro: String) {
+            "Nenhum usuario encontrado."
+        }
+
+    })*/
+    viewModel.usuarioEncontrado(object : ListenerPublicacao{
+        override fun onSucess(rm:String, cpsID:String, nome:String) {
+            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")
+            UserData.setUserData(rm, cpsID, nome)
+        }
+        override fun onFailure(erro: String) {
+            "Nenhum usuario encontrado."
+        }
+
+    })
+
+    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -58,7 +90,7 @@ fun Index(navController: NavController) {
                 }
             )
        },
-        drawerContent = { drawerPersonalizado() },
+        drawerContent = { drawerPersonalizado(navController) },
         drawerBackgroundColor = Color.White,
 
         //Tô usando o content para mesclar o constraintLayout à aplicação em geral, assim ele fica em cima da bottomBar (tipo camadas).
@@ -72,8 +104,6 @@ fun Index(navController: NavController) {
             ) {
 
                 val (publicar) = createRefs()
-                var cardState by remember { mutableStateOf(false) }
-                var galleryState by remember { mutableStateOf(false) }
 
 
                 //Gambiarra para colocar sombra no Button de publicar
@@ -81,11 +111,11 @@ fun Index(navController: NavController) {
                     shape = CircleShape,
                     elevation = 10.dp,
                     modifier = Modifier
-                        .size(60.dp)
+                        .size(55.dp)
                         .constrainAs(publicar) {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom, margin = 40.dp)
+                            bottom.linkTo(parent.bottom, margin = 20.dp)
                         }
                 ) {
                     IconButton(
@@ -123,11 +153,11 @@ fun Index(navController: NavController) {
            //Gambiarra para colocar sombra na bottomNavigation (a padrão dela por algum motivo nao estava indo).
            Surface(
                elevation = 6.dp,
-               shape = RoundedCornerShape(35.dp),
+               //shape = RoundedCornerShape(35.dp),
                modifier = Modifier
-                   .padding(horizontal = 30.dp)
-                   .padding(bottom = 15.dp)
-                   .height(60.dp)
+                   /*.padding(horizontal = 30.dp)
+                   .padding(bottom = 15.dp)*/
+                   .height(55.dp)
 
            ) {
                BottomNavigationBar(
@@ -145,14 +175,14 @@ fun Index(navController: NavController) {
                            icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
                        ).withIconModifier(
                            Modifier
-                               .size(28.dp)
+                               .size(32.dp)
                                .padding(end = 2.dp)),
                        BottomNavItem( //esse é uma gambiarra daquelas kkkk
                            nome = "",
                            route = null,
                            badgeCount = 0,
                            icon = ImageVector.vectorResource(id = R.drawable.ic_blank)
-                       ).withIconModifier(Modifier.size(1.dp)),
+                       ).withIconModifier(Modifier.size(10.dp)),
                        BottomNavItem(
                            nome = "Notificações",
                            route = "Notificacoes",
@@ -160,11 +190,11 @@ fun Index(navController: NavController) {
                            icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
                        ).withIconModifier(Modifier.size(32.dp)),
                        BottomNavItem(
-                           nome = "Chat",
-                           route = "Chat",
+                           nome = "Icone Usuário",
+                           route = "Profile",
                            badgeCount = 0,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
-                       ).withIconModifier(Modifier.size(25.dp))
+                           icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
+                       ).withIconModifier(Modifier.size(30.dp))
                    ),
                    navController = navController,
                    onClickItem = { item ->
@@ -181,13 +211,6 @@ fun Index(navController: NavController) {
         backgroundColor = Color.White
     )
 
+    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
-
-}
-
-
-@Composable
-@Preview (showBackground = true)
-fun preview(){
-    Index(navController = rememberNavController())
 }

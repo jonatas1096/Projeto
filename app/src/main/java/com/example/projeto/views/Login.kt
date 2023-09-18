@@ -33,11 +33,21 @@ import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
+import com.example.projeto.viewmodel.AuthViewModelCPS
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Login(navController: NavController, viewModel: AuthViewModel) {
+fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: AuthViewModelCPS) {
+
+    var alunoLogado = viewModel.verificarUsuarioLogado().collectAsState(initial = false).value
+    var cpsLogado = viewModelCPS.verificarUsuarioLogado().collectAsState(initial = false).value
+
+    LaunchedEffect(alunoLogado, cpsLogado) {
+        if (alunoLogado || cpsLogado) {
+            navController.navigate("Index")
+        }
+    }
 
     var email by remember {
         mutableStateOf("")
@@ -66,7 +76,8 @@ fun Login(navController: NavController, viewModel: AuthViewModel) {
 
 
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
             val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto) = createRefs()

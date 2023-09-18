@@ -7,6 +7,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 
@@ -18,6 +21,10 @@ class AuthenticationCPS @Inject constructor() {
 
     //Usado para interagir com o Firestore, aqui conseguimos usar isso para puxar os dados dele e manipular tudo
     val firestore = FirebaseFirestore.getInstance()
+    //Usadas para saber se o usuário está logado ou não (e manter ele logado se precisar):
+    val _verificarUsuario = MutableStateFlow(false)
+    val verificarUsuario: StateFlow<Boolean> = _verificarUsuario
+
 
     //Agora o processo vai se repetir para os professores, com a diferença de alguns parâmetros sendo diferentes.
 
@@ -129,5 +136,13 @@ class AuthenticationCPS @Inject constructor() {
                 }
 
             }
+    }
+
+    fun verificarUsuarioLogado(): Flow<Boolean> {
+
+        val usuarioLogado = FirebaseAuth.getInstance().currentUser
+
+        _verificarUsuario.value = usuarioLogado != null
+        return  verificarUsuario
     }
 }
