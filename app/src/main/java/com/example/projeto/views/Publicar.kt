@@ -17,7 +17,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
@@ -26,7 +25,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -34,7 +32,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.viewmodel.PublicacaoViewModel
-
 import kotlinx.coroutines.launch
 
 
@@ -53,7 +50,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     var galeriaState by remember { mutableStateOf(false) }
     //a lista das imagens p ser exibidas
     val imagensColuna = remember { mutableStateListOf<Bitmap>() }
-    println("Aqui é o ponto inicial $galeriaState")
+
 
 
     BottomSheetScaffold(
@@ -90,7 +87,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         )
                     }
 
-                    println("antes de clicar $galeriaState")
+
                     //Midias
                     Row(
 
@@ -100,7 +97,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                             .clickable(
                                 onClick = {
                                     galeriaState = true
-                                    println("cliquei $galeriaState")
                                 })
                     ) {
                         //Imagem da imagem
@@ -133,7 +129,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         sheetBackgroundColor = Color(0xFFFFFFFF),
         sheetShape = RoundedCornerShape(25.dp, 25.dp,0.dp, 0.dp),
         sheetElevation = 8.dp,
-        //modifier = Modifier.padding(top = 35.dp)
     )
     {
         ConstraintLayout(
@@ -192,8 +187,8 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     titulo = it
                 },
                 label = {
-                    Text(text = "Título da publicação:",
-                        fontSize = 10.sp,
+                    Text(text = "Título da publicação",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 },
@@ -205,7 +200,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     .constrainAs(areaTitulo) {
                         top.linkTo(parent.top, margin = 50.dp)
                     }
-                    .height(40.dp)
+                    .height(60.dp)
             )
 
 
@@ -229,15 +224,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     .height(150.dp)
             )
 
-            /*Coluna das imagens
-            Box(modifier = Modifier
-                .constrainAs(boxImagem) {
-                    top.linkTo(areaTexto.bottom)
-                }
-                .fillMaxWidth()
-                .height(220.dp)
-            ){*/
-                //As imagens tem que vir dentro dessa column
                 LazyColumn(
                     modifier = Modifier
                         .constrainAs(boxImagem) {

@@ -12,6 +12,10 @@ import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.example.projeto.views.*
+import com.google.firebase.FirebaseApp
+import android.app.Application
+import com.google.firebase.firestore.FirebaseFirestore
+
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,13 +27,12 @@ class MainActivity : ComponentActivity() {
             Main()
 
         }
+
     }
 }
 
 @Composable
 fun Main() {
-
-
 
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = hiltViewModel()
@@ -39,7 +42,7 @@ fun Main() {
     NavHost(navController = navController, startDestination = "Login"){
         //tela de login principal
         composable("Login"){
-            Login(navController, authViewModel)
+            Login(navController, authViewModel, authViewModelCPS)
         }
 
         //tela para se registrar
@@ -69,7 +72,7 @@ fun Main() {
 
         //Profile (estudos Anahi)
         composable("Profile"){
-            Profile(navController)
+            Profile(navController, publicacaoViewModel)
         }
     }
 

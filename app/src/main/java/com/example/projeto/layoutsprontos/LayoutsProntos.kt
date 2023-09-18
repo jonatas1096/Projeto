@@ -1,14 +1,7 @@
 package com.example.projeto.layoutsprontos
 
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.app.AlertDialog
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -33,12 +26,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.Alignment.Companion.CenterStart
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
@@ -51,14 +39,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.ui.theme.AZULCLARO
-import kotlinx.coroutines.launch
+import com.google.firebase.auth.FirebaseAuth
 
 
 //Carregar uma imagem do github:
@@ -480,7 +466,9 @@ fun botaoDrawer(onClick: () -> Unit){
 
 
 @Composable
-fun drawerPersonalizado(){
+fun drawerPersonalizado(navController: NavController){
+
+    val context = LocalContext.current
 
     Column(modifier = Modifier
         .fillMaxSize()
@@ -489,7 +477,29 @@ fun drawerPersonalizado(){
         Text(text = "Texto1")
         Text(text = "Texto2")
         Text(text = "Texto3")
-        Text(text = "Texto4")
+
+        TextButton(
+            onClick = {
+                val alertDialog = AlertDialog.Builder(context)
+                alertDialog.setTitle("Deslogar conta")
+                alertDialog.setMessage("Deseja deslogar a conta do aplicativo?")
+                alertDialog.setPositiveButton("Sim"){_,_ ->
+                    FirebaseAuth.getInstance().signOut()
+                    navController.navigate("Login")
+
+                }
+                alertDialog.setNegativeButton("Não"){_,_ ->
+
+                }
+                    .show()
+        }) {
+            Text(
+                text = "Sair",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+
+            )
+        }
     }
 }
 

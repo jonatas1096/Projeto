@@ -5,14 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.bottomNavigation.withIconModifier
+import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.viewmodel.PublicacaoViewModel
@@ -38,20 +37,39 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
-    var rmEncontrado : String = ""
 
-    viewModel.rmUsuario(object : ListenerPublicacao{
-        override fun onSucess(rm: String) {
-            rmEncontrado = rm
-            println("O rm é (agora ja na index) $rmEncontrado")
+    var usuarioObtido = ""
+    var nomeObtido = ""
+
+   /* //Variaveis que fazem parte da identificação do usuário
+    var usuarioEncontrado = ""
+    var nomeEncontrado = ""
+    //
+    viewModel.usuarioEncontrado(object : ListenerPublicacao{
+        override fun onSucess(usuario: String, nome:String) {
+            usuarioEncontrado = usuario
+            println("O código é (agora ja na index) $usuarioEncontrado")
+            nomeEncontrado = nome
+            println("nome: $nomeEncontrado")
         }
 
         override fun onFailure(erro: String) {
-            "Nenhum rm encontrado."
+            "Nenhum usuario encontrado."
+        }
+
+    })*/
+    viewModel.usuarioEncontrado(object : ListenerPublicacao{
+        override fun onSucess(rm:String, cpsID:String, nome:String) {
+            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")
+            UserData.setUserData(rm, cpsID, nome)
+        }
+        override fun onFailure(erro: String) {
+            "Nenhum usuario encontrado."
         }
 
     })
 
+    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -72,7 +90,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             )
        },
-        drawerContent = { drawerPersonalizado() },
+        drawerContent = { drawerPersonalizado(navController) },
         drawerBackgroundColor = Color.White,
 
         //Tô usando o content para mesclar o constraintLayout à aplicação em geral, assim ele fica em cima da bottomBar (tipo camadas).
@@ -157,7 +175,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                            icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
                        ).withIconModifier(
                            Modifier
-                               .size(28.dp)
+                               .size(32.dp)
                                .padding(end = 2.dp)),
                        BottomNavItem( //esse é uma gambiarra daquelas kkkk
                            nome = "",
@@ -172,11 +190,11 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                            icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
                        ).withIconModifier(Modifier.size(32.dp)),
                        BottomNavItem(
-                           nome = "Chat",
-                           route = "Chat",
+                           nome = "Icone Usuário",
+                           route = "Profile",
                            badgeCount = 0,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
-                       ).withIconModifier(Modifier.size(25.dp))
+                           icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
+                       ).withIconModifier(Modifier.size(30.dp))
                    ),
                    navController = navController,
                    onClickItem = { item ->
@@ -193,13 +211,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         backgroundColor = Color.White
     )
 
+    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
-
-}
-
-
-@Composable
-@Preview (showBackground = true)
-fun preview(){
-    Index(navController = rememberNavController())
 }

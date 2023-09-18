@@ -3,6 +3,7 @@ package com.example.projeto.repositorio
 import com.example.projeto.datasource.Authentication
 import com.example.projeto.listener.ListenerAuth
 import dagger.hilt.android.scopes.ViewModelScoped
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -20,4 +21,7 @@ class AuthRepositorio @Inject constructor(private val auth: Authentication) {
     }
     ///////
 
+    fun verificarUsuarioLogado(): Flow<Boolean>{
+        return auth.verificarUsuarioLogado()
+    }
 }

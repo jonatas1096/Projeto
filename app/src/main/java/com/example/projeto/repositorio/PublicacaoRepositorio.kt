@@ -9,7 +9,7 @@ import javax.inject.Inject
 @ViewModelScoped
 class PublicacaoRepositorio@Inject constructor(private val pub: NovaPublicacao) {
 
-    fun rmUsuario(listenerPublicacao: ListenerPublicacao){
+    fun encontrandoUsuario(listenerPublicacao: ListenerPublicacao){
 
         pub.reconhecerUsuario(listenerPublicacao)
     }

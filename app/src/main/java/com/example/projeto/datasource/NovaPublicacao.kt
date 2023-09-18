@@ -19,24 +19,73 @@ class NovaPublicacao  @Inject constructor() {
         var usuarioUID = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         var rm = "" //vamo armazenar aqui o rm depois
+        var cpsID = "" //aqui armazenaremos o ID do professor
+        var nome = "" //e aqui o nome
 
+
+        //Começando procurando nos alunos
         if (usuarioUID != null) {
-            val alunoColecao = firestore.collection("Alunos")
+            val usuarioColecao = firestore.collection("Alunos")
 
-            alunoColecao.whereEqualTo("usuarioID", usuarioUID)
+            usuarioColecao.whereEqualTo("usuarioID", usuarioUID)
                 .get()
                 .addOnSuccessListener { documents ->
-                    if (!documents.isEmpty) {
+                    println("Entrou no documento para alunos")
+                    if (!documents.isEmpty) { //(caso não esteja vazio)
+                        //Pegando o RM
                         val rmEncontrado = documents.documents[0].getString("rm")
                         if (rmEncontrado != null) {
                             rm = rmEncontrado
-                            println("Rm: $rm")
-                            listenerPublicacao.onSucess(rm)
+                            listenerPublicacao.onSucess(rm,cpsID,nome)
+                        }
+
+                        //Pegando o nome
+                        val nomeEncontrado = documents.documents[0].getString("nome")
+                        if (nomeEncontrado != null) {
+                            nome = nomeEncontrado
+                            listenerPublicacao.onSucess(rm,cpsID,nome)
                         }
 
                     } else {
                         // Nenhum documento com esse UID encontrado
                        listenerPublicacao.onFailure("Nenhum rm foi encontrado.")
+                    }
+
+                }
+                .addOnFailureListener { exception ->
+                    // Qualquer falha
+                    println("Erro aleatório: $exception")
+                }
+        }
+
+        //Agora procurando nos professores
+        if (usuarioUID != null) {
+            val usuarioColecao = firestore.collection("Cps")
+            usuarioColecao.whereEqualTo("cpsID", usuarioUID)
+                .get()
+                .addOnSuccessListener { documents ->
+
+                    println("Entrou no documento para professores")
+                    if (!documents.isEmpty) { //(caso não esteja vazio)
+                        //Pegando o cpsID
+                        val cpsidEncontrado = documents.documents[0].getString("id")
+                        if (cpsidEncontrado != null) {
+                            cpsID = cpsidEncontrado
+                            println("cpsID: $cpsID")
+                            listenerPublicacao.onSucess(rm,cpsID,nome)
+                        }
+
+                        //Pegando o nome
+                        val nomeEncontrado = documents.documents[0].getString("nome")
+                        if (nomeEncontrado != null) {
+                            nome = nomeEncontrado
+                            println("Nome: $nome")
+                            listenerPublicacao.onSucess(rm,cpsID,nome)
+                        }
+
+                    } else {
+                        // Nenhum documento com esse UID encontrado
+                        listenerPublicacao.onFailure("Nenhum cps ID foi encontrado.")
                     }
 
                 }
@@ -73,5 +122,7 @@ class NovaPublicacao  @Inject constructor() {
 
 
     }*/
+
+
 }
 
