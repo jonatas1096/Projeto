@@ -38,26 +38,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
 
-    var usuarioObtido = ""
-    var nomeObtido = ""
-
-   /* //Variaveis que fazem parte da identificação do usuário
-    var usuarioEncontrado = ""
-    var nomeEncontrado = ""
-    //
-    viewModel.usuarioEncontrado(object : ListenerPublicacao{
-        override fun onSucess(usuario: String, nome:String) {
-            usuarioEncontrado = usuario
-            println("O código é (agora ja na index) $usuarioEncontrado")
-            nomeEncontrado = nome
-            println("nome: $nomeEncontrado")
-        }
-
-        override fun onFailure(erro: String) {
-            "Nenhum usuario encontrado."
-        }
-
-    })*/
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
         override fun onSucess(rm:String, cpsID:String, nome:String) {
             println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")

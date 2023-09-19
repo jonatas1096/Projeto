@@ -2,6 +2,8 @@ package com.example.projeto.layoutsprontos
 
 
 import android.app.AlertDialog
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -27,6 +29,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
@@ -45,6 +48,8 @@ import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.ui.theme.AZULCLARO
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 
 
 //Carregar uma imagem do github:
@@ -500,6 +505,21 @@ fun drawerPersonalizado(navController: NavController){
 
             )
         }
+    }
+}
+
+
+@Composable
+fun arrowVoltar(onClick: () -> Unit, modifier: Modifier = Modifier, color:Color){
+
+    IconButton(
+        onClick = onClick,
+        modifier = modifier
+    ){
+        Image(ImageVector.vectorResource(id = R.drawable.ic_arrow),
+            contentDescription = "Ícone para voltar de página",
+            colorFilter = ColorFilter.tint(color)
+        )
     }
 }
 
