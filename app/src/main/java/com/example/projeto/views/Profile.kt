@@ -52,13 +52,13 @@ import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
 fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
 
     // Unica forma que eu consegui pra abrir a galeria sendo uma função composable
     // aqui é só a lógica da galeria
-    val imagemUrl = remember { mutableStateOf<String?>(null) }
+
     var galeriaState by remember { mutableStateOf(false) }
     var exibirImagemPadrao by remember { mutableStateOf(true) }
 
@@ -74,33 +74,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     val cpsID = UserData.cpsIDEncontrado
     val context = LocalContext.current
 
-    // Lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (o início da lógica não é aqui, eu só renderizo antes)
-    if (!alunoRM.isNullOrEmpty()) {
-        val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
-        alunoRef.downloadUrl
-            .addOnSuccessListener { uri ->
-                val url = uri.toString()
-                println("URL obtida: $url")
-                imagemUrl.value = url
-            }
-            .addOnFailureListener { exception ->
-                println("A URL não pôde ser obtida. Erro: $exception")
-            }
-    } else if (!cpsID.isNullOrEmpty()) {
-        val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
-        cpsRef.downloadUrl
-            .addOnSuccessListener { uri ->
-                val url = uri.toString()
-                println("URL obtida: $url")
-                imagemUrl.value = url
-            }
-            .addOnFailureListener { exception ->
-                println("A URL não pôde ser obtida. Erro: $exception")
-            }
-    }
-
-
-
+    val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
 
 
     // Fundo
@@ -172,7 +146,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 // Aqui é uma lógica para a foto de perfil.
                 // Primeiro, antes de qualquer outra coisa eu já carrego a imagem padrão do github.
                 // Depois, uma imagem será carregada no lugar caso a imagemURL não for "null".
-                // Se for null, a padrão vai continuar por lá
+                // Ou seja, caso algo de errado com a do usuário a padrão vai continuar por lá
                 loadImage(
                     path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
                     contentDescription = "Imagem default do usuário",
@@ -216,7 +190,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
             // Estudos Anahi
             loadImage(
-                path = "https://static.wikia.nocookie.net/cocorico/images/e/e3/Julio-careca.jpg/revision/latest?cb=20211011002720&path-prefix=pt-br",
+                path = imagemUrl.value ?: "https://static.wikia.nocookie.net/cocorico/images/e/e3/Julio-careca.jpg/revision/latest?cb=20211011002720&path-prefix=pt-br",
                 contentDescription = "julio careca",
                 contentScale = ContentScale.None,
                 modifier = Modifier
@@ -271,7 +245,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 imagem.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                 val imageData = outputStream.toByteArray()
 
-                //Começando com o aluno, infelizente vai ficar dois blocão de texto.
+                //Começando com o aluno, infelizmente vai ficar dois blocão de texto.
                 if (cpsID.isEmpty()) { //se o cpsID estiver vazio, entendemos que é um aluno que está logado:
                     val alunoPastaRef = storageRef.child("Alunos/Fotos de Perfil/$alunoRM")
 
@@ -334,6 +308,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             }
         }
     }
+
 
 
 }

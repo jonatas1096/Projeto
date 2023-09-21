@@ -1,6 +1,8 @@
 package com.example.projeto.views
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,18 +29,39 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
-
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
 
+
+    //Variaveis para o funcionamento das publicações na index
     val scrollState = rememberScrollState()
     val scaffoldState = rememberScaffoldState(rememberDrawerState(DrawerValue.Closed))
     val scope = rememberCoroutineScope()
 
+    // A instância do firebase firestore:
+    val firestore = Firebase.firestore  // Também funcionaria assim: val firestore = FirebaseFirestore.getInstance()
+
+
+    // A instância do firebase storage e as variáveis que vou precisar:
+    val storage = Firebase.storage
+    val storageRef = storage.reference
+    val alunoRM = UserData.rmEncontrado
+    val cpsID = UserData.cpsIDEncontrado
+
+    //Uma variavel para auxiliar no armazenamento da URL do aluno/professor
+    val imagemUrl = remember { mutableStateOf<String?>(null) }
+
+
+    //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
         override fun onSucess(rm:String, cpsID:String, nome:String) {
             println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")
@@ -49,7 +73,36 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
     })
 
-    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
+    // Agora um lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
+    if (!alunoRM.isNullOrEmpty()) {
+        val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
+        alunoRef.downloadUrl
+            .addOnSuccessListener { uri ->
+                val url = uri.toString()
+                println("URL obtida: $url")
+                imagemUrl.value = url
+                UserData.updateUrl(url)
+            }
+            .addOnFailureListener { exception ->
+                println("A URL não pôde ser obtida. Erro: $exception")
+            }
+    } else if (!cpsID.isNullOrEmpty()) {
+        val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
+        cpsRef.downloadUrl
+            .addOnSuccessListener { uri ->
+                val url = uri.toString()
+                println("URL obtida: $url")
+                imagemUrl.value = url
+                UserData.updateUrl(url)
+            }
+            .addOnFailureListener { exception ->
+                println("A URL não pôde ser obtida. Erro: $exception")
+            }
+    }
+
+
+    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}, imagem: ${UserData.imagemUrl}")
+
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -121,9 +174,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     .verticalScroll(scrollState)
             ) {
                 Postagem()
-                Postagem()
-                Postagem()
-                Postagem()
+
             }
 
 

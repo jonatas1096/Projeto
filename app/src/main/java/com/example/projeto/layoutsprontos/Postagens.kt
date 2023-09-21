@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
+import com.example.projeto.datasource.UserData
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -31,6 +34,32 @@ fun Postagem(/*navController: NavController*/) {
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
     val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
+
+    val firestore = Firebase.firestore
+
+    var fotoPerfil: String? = null
+    var nomePostagem: String? = null
+    var textoPostagem: String? = null
+    var tituloPostagem: String? = null
+    var urlPostagem: String? = null
+
+    firestore.collection("Postagens")
+    val caminhoDocumento = "Postagens/2023_09_21_17_24_11"
+
+    firestore.document(caminhoDocumento).get()
+        .addOnSuccessListener {document ->
+            if (document.exists()) {
+                // O documento existe, você pode acessar seus campos aqui
+                 fotoPerfil = document.getString("fotoPerfil")
+                nomePostagem = document.getString("nome")
+                textoPostagem = document.getString("texto")
+                tituloPostagem = document.getString("titulo")
+               // urlPostagem = document.getString("imagensPostagem")
+            } else {
+                // O documento não existe
+                println("O documento não existe.")
+            }
+        }
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
     Box(
@@ -59,7 +88,7 @@ fun Postagem(/*navController: NavController*/) {
                     .size(50.dp)
                     .clip(CircleShape)
             ){
-                loadImage(path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
+                loadImage(path = fotoPerfil?: "",
                     contentDescription = "Foto",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -68,7 +97,7 @@ fun Postagem(/*navController: NavController*/) {
 
 
         //Nome do usuário
-            Text(text = "Bóga",
+            Text(text = "$nomePostagem",
                 color = Color(56, 56, 56, 255),
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
@@ -91,7 +120,7 @@ fun Postagem(/*navController: NavController*/) {
                 .padding(end = 20.dp)
 
         ) {
-            Text(text = "É simplesmente INACEITÁVEL o que foi feito comigo. Me fizeram de trouxa, de palhaço. Você me paga, chapéu de palha!",
+            Text(text = "$textoPostagem",
                 fontSize = 13.sp,
                 color = Color(39, 39, 39, 255),
 
@@ -109,7 +138,7 @@ fun Postagem(/*navController: NavController*/) {
                 .fillMaxWidth()
                 .size(220.dp)
         ) {
-            loadImage(path = "https://pbs.twimg.com/media/F44MGzBXoAECev7?format=jpg&name=large",
+            loadImage(path = "",
                 contentDescription = "Buggy cotoco",
                 contentScale = ContentScale.None,
                 modifier = Modifier)

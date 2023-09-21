@@ -8,7 +8,6 @@ interface ListenerPublicacao {
         UserData.rmEncontrado = rm
         UserData.cpsIDEncontrado = cpsID
         UserData.nomeEncontrado = nome
-
     }
     fun onFailure(erro:String)
 }

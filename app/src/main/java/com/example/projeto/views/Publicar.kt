@@ -6,6 +6,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -31,8 +32,19 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.projeto.R
+import com.example.projeto.datasource.UserData
+import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.util.TimeZone
+import kotlinx.coroutines.coroutineScope
+import java.util.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -45,11 +57,17 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
     //
+    //
+    var context = LocalContext.current
+
 
     //unica forma que eu consegui pra abrir a galeria sendo uma função composable
     var galeriaState by remember { mutableStateOf(false) }
     //a lista das imagens p ser exibidas
     val imagensColuna = remember { mutableStateListOf<Bitmap>() }
+
+    //Iniciar o processo de publicação
+    var publicacaoState by remember { mutableStateOf(false) }
 
 
 
@@ -138,12 +156,25 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             //Começo constraint layout.
             //Eu vou começar por ele pra que as coisas que eu posicionar aqui tenham um menor hierarquia nas camadas em geral.
             //Tô optando por ele porque a forma padrão tava bugando dms
-            val (areaPublicar, areaTexto,areaTitulo, boxImagem) = createRefs()
+            val (arrow, areaPublicar, areaTexto,areaTitulo, boxImagem) = createRefs()
 
             var titulo by remember { mutableStateOf("") }
             var texto by remember { mutableStateOf("") }
 
 
+            // Arrow voltar (seta que volta)
+            arrowVoltar(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .constrainAs(arrow) {
+                        start.linkTo(parent.start, margin = 5.dp)
+                        top.linkTo(parent.top, margin = 10.dp)
+                    }
+                    .size(35.dp),
+                color = Color(0xFF000000)
+            )
             Box(
                 modifier = Modifier
                     .constrainAs(areaPublicar) {
@@ -164,20 +195,37 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                     )
-                    Button(
-                        onClick = {
-
-                    },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFFE7E6E6)
-                        ),
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .padding(start = 20.dp)
-                    ) {
-                        Text(text = "Publicar",
-                        color = Color(0xFFBDBBBB))
+                    if (titulo.isEmpty() || texto.isEmpty()){
+                        Button(
+                            onClick = {
+                                Toast.makeText(context,"O título e o texo da publicação são obrigatórios!",Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFFE7E6E6)
+                            ),
+                            modifier = Modifier
+                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                        ) {
+                            Text(text = "Publicar",
+                                color = Color(0xFFBDBBBB))
+                        }
                     }
+                    else{
+                        Button(
+                            onClick = {
+                                publicacaoState = true
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFFB4CEE7)
+                            ),
+                            modifier = Modifier
+                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                        ) {
+                            Text(text = "Publicar",
+                                color = Color(0xFFBDBBBB))
+                        }
+                    }
+
                 }
             }
             //Area do título
@@ -258,20 +306,31 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             //Fim Constraint.
             //
 
-        }
+            if (galeriaState) {
+                println("chamou a função $galeriaState")
+                SelecionarImagem{ imagem ->
+                    if (imagem != null) {
+                        imagensColuna.add(imagem)
+                        println("Adicinou a imagem.")
+                        galeriaState = false
+                    }
+                }
+            }
 
+            if (publicacaoState){
+                println("Chamou a função de publicacao = $publicacaoState")
 
-    }
-
-    if (galeriaState) {
-        println("chamou a função $galeriaState")
-        SelecionarImagem{ imagem ->
-            if (imagem != null) {
-                imagensColuna.add(imagem)
-                println("Adicinou a imagem.")
-                galeriaState = false
+                criarPublicacao( // (essa função tá lá em baixo, to passando os parâmetros que ela espera)
+                   UserData.imagemUrl,
+                   UserData.nomeEncontrado,
+                   titulo,
+                   texto,
+                   imagensColuna
+                )
             }
         }
+
+
     }
 
 
@@ -311,4 +370,120 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
             // Serve para executar alguma coisa como limpeza quando a execução acaba, nao sei como usar
         }
     }
+}
+
+
+
+//Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
+
+@SuppressLint("CoroutineCreationDuringComposition")
+@Composable
+fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>){
+
+    // A instância do firebase firestore (vou usar para os dados normais, nome, titulo e texto):
+    val firestore = Firebase.firestore
+
+    // A instância do firebase storage e as variáveis que vou precisar (vou subir as fotos da publicação):
+    val storage = Firebase.storage
+    val storageRef = storage.reference
+    val alunoRM = UserData.rmEncontrado
+    val cpsID = UserData.cpsIDEncontrado
+
+    //abaixo uma formatação que vai ser a chave para que os usuários não sobreescrevam as próprias publicações.
+    val timeZone = TimeZone.getTimeZone("America/Sao_Paulo")
+    val sdf = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.getDefault())
+    sdf.timeZone = timeZone
+
+    val dataHoraAtual = Calendar.getInstance(timeZone).time
+    val formatoFinal = sdf.format(dataHoraAtual)
+
+
+    //Começo da lógica do post:
+
+    LaunchedEffect(Unit) {
+        if (alunoRM.isEmpty()) { //se o alunoRM estiver vazio, entendemos que é um professor que está tentando fazer uma postagem:
+
+            /////////////
+            //Parte para mandar as imagens para o storage
+            val cpsPastaRef = storageRef.child("$cpsID/$formatoFinal")
+            println(formatoFinal)
+
+            val referenciaHora = formatoFinal
+            coroutineScope {
+                if (imagensPublicacao != null) {
+                    for ((index, imagem) in imagensPublicacao.withIndex()) {
+                        val caminhoImagem =
+                            "$cpsPastaRef/imagem$index.jpg" // Caminho exclusivo para cada imagem
+
+                        val byteArrayOutputStream = ByteArrayOutputStream()
+                        imagem.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                        val bytes = byteArrayOutputStream.toByteArray()
+
+                        val imagemRef = storageRef.child(caminhoImagem)
+
+                        try {
+                            // Upload da imagem
+                            imagemRef.putBytes(bytes).await()
+                            println("Upload da imagem $index concluído.")
+                        } catch (e: Exception) {
+                            println("Erro ao fazer upload da imagem $index: $e")
+                            // Lidar com o erro, se necessário
+                        }
+                    }
+
+                }
+            }
+
+            println("proximo passo")
+            /////////////
+
+            /////////////
+            //Agora os demais dados
+            val postagensColecao = firestore.collection("Postagens")
+
+            //Primeiro buscando as imagens que acabei de subir anteriormente para o storage
+            //vamos armazenar o link de todas elas aqui:
+            coroutineScope {
+                val imagensUrls = mutableListOf<String>()
+
+
+                val pastaImagens = storageRef.child("/gs:/tcc-projeto-f3873.appspot.com/$cpsID/$formatoFinal")
+                pastaImagens.listAll()
+                    .addOnSuccessListener { ImagensEncontradas ->
+                        println("Encontrou a pasta")
+                        for (item in ImagensEncontradas.items) {
+                            item.downloadUrl.addOnSuccessListener { uri ->
+                                val url = uri.toString()
+                                println("Printando a url $url")
+                                imagensUrls.add(url)
+
+                            }
+                                .addOnFailureListener { erro ->
+                                    println("Erro ao entrar na pasta $erro")
+                                }
+
+                            val usuarioPostagem = hashMapOf(
+                                "fotoPerfil" to UserData.imagemUrl,
+                                "nome" to nome,
+                                "titulo" to titulo,
+                                "texto" to texto,
+                                "imagensPostagem" to imagensUrls //(lista de urls)
+
+                            )
+
+                            postagensColecao.document("$referenciaHora")
+                                .set(usuarioPostagem)
+                                .addOnSuccessListener {
+                                    println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$referenciaHora")
+                                }
+                                .addOnFailureListener { erro ->
+                                    println("Erro ao adicionar documento: $erro")
+                                }
+                            /////////////
+                        }
+                    }
+            }
+
+            }
+        }
 }

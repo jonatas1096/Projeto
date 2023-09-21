@@ -1,6 +1,7 @@
 package com.example.projeto.datasource
 
 import android.media.Image
+import androidx.compose.runtime.Composable
 import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.listener.ListenerPublicacao
 import com.google.firebase.auth.FirebaseAuth
@@ -10,7 +11,9 @@ import javax.inject.Inject
 
 class NovaPublicacao  @Inject constructor() {
 
-    //Primeiro separei uma função para reconhecer quem está logado
+    //Essa classe separada vem com o objetivo de montar a lógica de uma nova publicação, mas, antes de tudo precisei implementar um
+    //método para obter dados do usuários logado e saber quem está usando o app.
+    //Então, primeiro separei uma função para reconhecer quem está logado:
     fun reconhecerUsuario(listenerPublicacao:ListenerPublicacao){
         //Iniciando o banco de dados
         val firestore = FirebaseFirestore.getInstance()
@@ -95,33 +98,6 @@ class NovaPublicacao  @Inject constructor() {
                 }
         }
     }
-
-
-
-    /*fun criarPublicacao(texto:String, titulo:String, listenerPublicacao: ListenerPublicacao){
-
-
-
-
-        if (titulo.isEmpty()) {
-            ListenerPublicacao.onSucess("Insira o título da sua publicação..")
-        } else if (texto.isEmpty()) {
-            ListenerPublicacao.onFailure("Insira a descrição da publicação.")
-        }
-
-        /*val postsMap = hashMapOf(
-            "nome" to nome,
-            "texto" to texto,
-            "titulo" to titulo,
-            "foto" to foto,
-            "rm" to rm
-        )
-
-
-        db.collection("Posts").document("titulo").set(postsMap)*/
-
-
-    }*/
 
 
 }

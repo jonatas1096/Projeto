@@ -46,6 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
+import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.ui.theme.AZULCLARO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
@@ -522,6 +523,8 @@ fun arrowVoltar(onClick: () -> Unit, modifier: Modifier = Modifier, color:Color)
         )
     }
 }
+
+
 
 
 //Preview:
