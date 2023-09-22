@@ -25,6 +25,7 @@ import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 
 @SuppressLint("SuspiciousIndentation")
@@ -41,25 +42,12 @@ fun Postagem(/*navController: NavController*/) {
     var nomePostagem: String? = null
     var textoPostagem: String? = null
     var tituloPostagem: String? = null
-    var urlPostagem: String? = null
+    val imagensUrls = mutableListOf<String>()
+
 
     firestore.collection("Postagens")
-    val caminhoDocumento = "Postagens/2023_09_21_17_24_11"
+    val caminhoDocumento = "Postagens/2023_09_22_17_23_16"
 
-    firestore.document(caminhoDocumento).get()
-        .addOnSuccessListener {document ->
-            if (document.exists()) {
-                // O documento existe, você pode acessar seus campos aqui
-                 fotoPerfil = document.getString("fotoPerfil")
-                nomePostagem = document.getString("nome")
-                textoPostagem = document.getString("texto")
-                tituloPostagem = document.getString("titulo")
-               // urlPostagem = document.getString("imagensPostagem")
-            } else {
-                // O documento não existe
-                println("O documento não existe.")
-            }
-        }
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
     Box(

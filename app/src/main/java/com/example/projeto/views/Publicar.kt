@@ -337,6 +337,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
 }
 
+//Função para abrir a galeria e selecionar imagens
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
@@ -374,8 +375,8 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
 
 
 
-//Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
 
+//Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>){
@@ -396,15 +397,16 @@ fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
 
     val dataHoraAtual = Calendar.getInstance(timeZone).time
     val formatoFinal = sdf.format(dataHoraAtual)
+    //////////////////
+
 
 
     //Começo da lógica do post:
-
     LaunchedEffect(Unit) {
         if (alunoRM.isEmpty()) { //se o alunoRM estiver vazio, entendemos que é um professor que está tentando fazer uma postagem:
 
             /////////////
-            //Parte para mandar as imagens para o storage
+            //1 - Parte para mandar as imagens para o storage
             val cpsPastaRef = storageRef.child("$cpsID/$formatoFinal")
             println(formatoFinal)
 
@@ -433,21 +435,24 @@ fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
 
                 }
             }
-
+            // As imagens foram enviadas para o storage
             println("proximo passo")
             /////////////
 
             /////////////
-            //Agora os demais dados
+            //Agora os demais dados do post
             val postagensColecao = firestore.collection("Postagens")
 
             //Primeiro buscando as imagens que acabei de subir anteriormente para o storage
-            //vamos armazenar o link de todas elas aqui:
+            //vamos armazenar o link de todas elas dentro do imagensUrls:
             coroutineScope {
                 val imagensUrls = mutableListOf<String>()
-
+                println("Valor da lista: $imagensUrls")
 
                 val pastaImagens = storageRef.child("/gs:/tcc-projeto-f3873.appspot.com/$cpsID/$formatoFinal")
+                val totalImagens = pastaImagens.listAll().await().items.size //pegando o total de imagens que subiu para o storage
+                var imagesEnviadasComSucesso = 0 //essa variavel vai servir para "barrar" o código de continuar até que de fato as urls sejam obtidas e subam corretamente
+
                 pastaImagens.listAll()
                     .addOnSuccessListener { ImagensEncontradas ->
                         println("Encontrou a pasta")
@@ -456,34 +461,41 @@ fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                 val url = uri.toString()
                                 println("Printando a url $url")
                                 imagensUrls.add(url)
+                                imagesEnviadasComSucesso++ //faz parte da lógica de barrar o código
 
+
+                                //Esse bloco só vai ser executado caso as  duas variaveis tenham o mesmo valor
+                                //Ou seja, se o total de imagens for igual as imagens que foram enviadas, tudo está perfeitamente bem.
+                                if (imagesEnviadasComSucesso == totalImagens) {
+                                    println("Imagens enviadas: $imagensUrls, total de imagens $totalImagens")
+                                    val usuarioPostagem = hashMapOf(
+                                        "fotoPerfil" to UserData.imagemUrl,
+                                        "nome" to nome,
+                                        "titulo" to titulo,
+                                        "texto" to texto,
+                                        "imagensPostagem" to imagensUrls //(lista de urls)
+                                    )
+
+
+                                    postagensColecao.document("$referenciaHora")
+                                        .set(usuarioPostagem)
+                                        .addOnSuccessListener {
+                                            println("Dentro do on listener: $imagensUrls")
+                                            println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$referenciaHora")
+                                        }
+                                        .addOnFailureListener { erro ->
+                                            println("Erro ao adicionar documento: $erro")
+                                        }
+                                }
                             }
                                 .addOnFailureListener { erro ->
                                     println("Erro ao entrar na pasta $erro")
                                 }
-
-                            val usuarioPostagem = hashMapOf(
-                                "fotoPerfil" to UserData.imagemUrl,
-                                "nome" to nome,
-                                "titulo" to titulo,
-                                "texto" to texto,
-                                "imagensPostagem" to imagensUrls //(lista de urls)
-
-                            )
-
-                            postagensColecao.document("$referenciaHora")
-                                .set(usuarioPostagem)
-                                .addOnSuccessListener {
-                                    println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$referenciaHora")
-                                }
-                                .addOnFailureListener { erro ->
-                                    println("Erro ao adicionar documento: $erro")
-                                }
-                            /////////////
                         }
                     }
             }
 
-            }
+
+         }
         }
 }
