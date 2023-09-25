@@ -35,6 +35,7 @@ import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -58,7 +59,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     val scope = rememberCoroutineScope()
     //
     //
-    var context = LocalContext.current
+    val context = LocalContext.current
 
 
     //unica forma que eu consegui pra abrir a galeria sendo uma função composable
@@ -320,7 +321,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             if (publicacaoState){
                 println("Chamou a função de publicacao = $publicacaoState")
 
-                criarPublicacao( // (essa função tá lá em baixo, to passando os parâmetros que ela espera)
+                CriarPublicacao( // (essa função tá lá em baixo, to passando os parâmetros que ela espera)
                    UserData.imagemUrl,
                    UserData.nomeEncontrado,
                    titulo,
@@ -379,7 +380,7 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
 //Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>){
+fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>){
 
     // A instância do firebase firestore (vou usar para os dados normais, nome, titulo e texto):
     val firestore = Firebase.firestore
@@ -471,17 +472,19 @@ fun criarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                     val usuarioPostagem = hashMapOf(
                                         "fotoPerfil" to UserData.imagemUrl,
                                         "nome" to nome,
+                                        "cpsID" to UserData.cpsIDEncontrado,
                                         "titulo" to titulo,
                                         "texto" to texto,
-                                        "imagensPostagem" to imagensUrls //(lista de urls)
+                                        "imagensPostagem" to imagensUrls, //(lista de urls)
+                                        "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
                                     )
 
 
-                                    postagensColecao.document("$referenciaHora")
+                                    postagensColecao.document(titulo)
                                         .set(usuarioPostagem)
                                         .addOnSuccessListener {
                                             println("Dentro do on listener: $imagensUrls")
-                                            println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$referenciaHora")
+                                            println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$titulo")
                                         }
                                         .addOnFailureListener { erro ->
                                             println("Erro ao adicionar documento: $erro")

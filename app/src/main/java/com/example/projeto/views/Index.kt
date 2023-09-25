@@ -4,7 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -17,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,14 +29,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
 import com.example.projeto.bottomNavigation.withIconModifier
+import com.example.projeto.datasource.PostagemData
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -40,6 +48,8 @@ import java.time.LocalDateTime
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
+
+    val postagensOrdenadas = remember { mutableStateListOf<PostagemData>() }
 
 
     //Variaveis para o funcionamento das publicações na index
@@ -73,7 +83,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
     })
 
-    // Agora um lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
+    // Agora uma lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
     if (!alunoRM.isNullOrEmpty()) {
         val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
         alunoRef.downloadUrl
@@ -101,9 +111,55 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     }
 
 
-    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}, imagem: ${UserData.imagemUrl}")
+    //println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}, imagem: ${UserData.imagemUrl}")
+
+    LaunchedEffect(Unit){
+        println("Entrou no LaunchedEffect e vai coletar os dados do firebase.")
+        val postagensRef = firestore.collection("Postagens")
+
+        val filaOrdenar = postagensRef
+            .orderBy("ultimaAtualizacao", Query.Direction.DESCENDING)
+
+        filaOrdenar.get()
+            .addOnSuccessListener {postagens ->
+                println("Entrou no onSucess (ordenado os dados)")
+                println("Tamanho de postagens: ${postagens.size()}")
+                val postagensData = mutableListOf<PostagemData>()
+                for (posts in postagens){
+                    println("Entrou no for.")
+                    val fotoPerfil = posts.getString("fotoPerfil") ?: ""
+                    println("Coletou uma foto de perfil $fotoPerfil")
+                    val imagensPostagem = posts.get("imagensPostagem") as? List<String> ?: emptyList()
+                    println("Coletou as seguintes imagens: $imagensPostagem")
+                    val nome = posts.getString("nome") ?: ""
+                    println("Coletou o nome: $nome")
+                    val texto = posts.getString("texto") ?: ""
+                    println("Coletou o texto: $texto")
+                    val titulo = posts.getString("titulo") ?: ""
 
 
+                    println("Agora vai armazenar os dados na val postagemData.")
+                    val postagemData = PostagemData(
+                        fotoPerfil = fotoPerfil,
+                        nomeAutor = nome,
+                        textoPostagem = texto,
+                        imagensPost = imagensPostagem
+                    )
+
+                    postagensData.add(postagemData)
+                    println("Printando o conteúdo da postagemData: $postagemData")
+
+                }
+                postagensOrdenadas.clear()
+                postagensOrdenadas.addAll(postagensData)
+            }
+            .addOnFailureListener{erro ->
+                println("Não foi possivel coletar os dados $erro")
+            }
+
+    }
+    
+    
     Scaffold(
         scaffoldState = scaffoldState,
 
@@ -166,16 +222,16 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             }//Fechamento do Constraint
 
 
-
             //Começando a lógica da área das postagens
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(scrollState)
-            ) {
-                Postagem()
 
+
+            Column(
+                modifier = Modifier.border(2.dp, Color.Red))
+            {
+                ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
             }
+
+
 
 
         },
@@ -244,4 +300,22 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
     println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
+}
+
+
+@Composable
+fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController) {
+    LazyColumn{
+        items(postagens) { postagemData ->
+            println("Antes de criar a Postagem ${postagemData.imagensPost}")
+            Postagem(
+                fotoPerfil = postagemData.fotoPerfil,
+                nomeAutor = postagemData.nomeAutor,
+                textoPostagem = postagemData.textoPostagem,
+                imagensPost = postagemData.imagensPost,
+                navController = navController
+            )
+            println("Depois de criar a Postagem ${postagemData.imagensPost}")
+        }
+    }
 }

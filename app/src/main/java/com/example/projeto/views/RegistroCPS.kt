@@ -9,8 +9,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -34,7 +32,6 @@ import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.AZULCLARO
 import com.example.projeto.ui.theme.Dongle
-import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
 
 @Composable

@@ -2,15 +2,20 @@ package com.example.projeto.layoutsprontos
 
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -23,30 +28,22 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.datasource.UserData
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(/*navController: NavController*/) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, /*titulo:String,*/ navController: NavController) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
     val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
 
-    val firestore = Firebase.firestore
-
-    var fotoPerfil: String? = null
-    var nomePostagem: String? = null
-    var textoPostagem: String? = null
-    var tituloPostagem: String? = null
-    val imagensUrls = mutableListOf<String>()
-
-
-    firestore.collection("Postagens")
-    val caminhoDocumento = "Postagens/2023_09_22_17_23_16"
+    val scroll = rememberScrollState()
 
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
@@ -76,7 +73,7 @@ fun Postagem(/*navController: NavController*/) {
                     .size(50.dp)
                     .clip(CircleShape)
             ){
-                loadImage(path = fotoPerfil?: "",
+                loadImage(path = fotoPerfil,
                     contentDescription = "Foto",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -85,7 +82,7 @@ fun Postagem(/*navController: NavController*/) {
 
 
         //Nome do usuário
-            Text(text = "$nomePostagem",
+            Text(text = nomeAutor,
                 color = Color(56, 56, 56, 255),
                 fontWeight = FontWeight.Bold,
                 fontSize = 17.sp,
@@ -108,7 +105,7 @@ fun Postagem(/*navController: NavController*/) {
                 .padding(end = 20.dp)
 
         ) {
-            Text(text = "$textoPostagem",
+            Text(text = textoPostagem,
                 fontSize = 13.sp,
                 color = Color(39, 39, 39, 255),
 
@@ -125,11 +122,20 @@ fun Postagem(/*navController: NavController*/) {
                 }
                 .fillMaxWidth()
                 .size(220.dp)
+                // .verticalScroll(scroll)
+                .border(2.dp, Color.Green)
         ) {
-            loadImage(path = "",
-                contentDescription = "Buggy cotoco",
+            /*loadPostImages(
+                imagensPost = imagensPost,
+                contentDescription = "Imagem de um usuário post do usuário",
                 contentScale = ContentScale.None,
-                modifier = Modifier)
+                modifier = Modifier)*/
+            loadCoil(
+                imagensPost = imagensPost,
+                contentDescription = "Imagem de um usuário post do usuário",
+                contentScale = ContentScale.None,
+                modifier =  Modifier)
+            println("Dentro da outra função $imagensPost")
         }
 
         //Fotinha
@@ -291,7 +297,7 @@ fun Postagem(/*navController: NavController*/) {
 
         Row(
             modifier = Modifier
-                .constrainAs(linhaestetica2){
+                .constrainAs(linhaestetica2) {
                     top.linkTo(compartilhar.bottom)
                 }
                 .fillMaxWidth()

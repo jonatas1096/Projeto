@@ -14,6 +14,7 @@ import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.example.projeto.views.*
 import com.google.firebase.FirebaseApp
 import android.app.Application
+import com.example.projeto.layoutsprontos.Postagem
 import com.google.firebase.firestore.FirebaseFirestore
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +40,7 @@ fun Main() {
     val authViewModelCPS: AuthViewModelCPS = hiltViewModel()
     val publicacaoViewModel: PublicacaoViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "Login"){
+    NavHost(navController = navController, startDestination = "Index"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel, authViewModelCPS)
@@ -74,6 +75,11 @@ fun Main() {
         composable("Profile"){
             Profile(navController, publicacaoViewModel)
         }
+
+        //Testes postagens
+        /*composable("Postagens"){
+            Postagem(navController)
+        }*/
     }
 
 }

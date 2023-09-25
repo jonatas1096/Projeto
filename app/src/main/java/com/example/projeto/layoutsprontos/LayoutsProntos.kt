@@ -3,7 +3,6 @@ package com.example.projeto.layoutsprontos
 
 import android.app.AlertDialog
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -44,13 +43,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.compose.AsyncImage
 import com.example.projeto.R
 import com.example.projeto.bottomNavigation.BottomNavItem
-import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.ui.theme.AZULCLARO
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
 
 
 //Carregar uma imagem do github:
@@ -66,6 +63,28 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
 
  }
 
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun loadPostImages(imagensPost: List<String>, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
+    GlideImage(
+        model = imagensPost,
+        contentDescription = contentDescription,
+        contentScale = contentScale,
+        modifier = modifier
+    )
+}
+
+
+//TESTE COIL:
+@Composable
+fun loadCoil(imagensPost: List<String>, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
+    AsyncImage(
+        model = imagensPost,
+        contentDescription = contentDescription,
+        contentScale = contentScale,
+        modifier = modifier
+    )
+}
 
 @Composable
 fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, visualTransformation: VisualTransformation, leadingIcon: @Composable (() -> Unit)? = null){
