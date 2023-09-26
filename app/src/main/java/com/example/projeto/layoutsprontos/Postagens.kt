@@ -3,14 +3,13 @@ package com.example.projeto.layoutsprontos
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -36,15 +35,17 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, navController: NavController) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, paginas:Int, navController: NavController) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
     val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
 
     val scroll = rememberScrollState()
+    val pagerState =  rememberPagerState()
 
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
@@ -124,25 +125,23 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
 
         //Imagem da publicação
         Row(
-            modifier = Modifier
-                .constrainAs(imagemPost) {
-                    start.linkTo(parent.start)
-                    top.linkTo(texto.bottom, margin = 5.dp)
-                }
-                .fillMaxWidth()
-                .size(220.dp)
-                // .verticalScroll(scroll)
-                //.border(2.dp, Color.Green)
+            modifier = Modifier.fillMaxSize()
         ) {
-            loadCoil(
-                imagensPost = imagensPost,
-                contentDescription = "Imagem de um usuário post do usuário",
-                /*contentScale = ContentScale.Crop,
-                modifier =  Modifier.fillMaxSize()
-                    .border(2.dp, Color.Red)*/
-            )
-
+            HorizontalPager(
+                state = pagerState,
+                pageCount = paginas
+            ) { pageIndex ->
+                val imagemUrl = imagensPost.getOrNull(pageIndex) // Obtém a URL da imagem com base na página atual
+                imagemUrl?.let { url ->
+                    // Carrega e exibe a imagem usando o Coil ou Glide aqui
+                    loadCoil(
+                        imagensPost  = imagensPost,
+                        contentDescription = "Imagem da página $pageIndex"
+                    )
+                }
+            }
         }
+
 
         //Fotinha
         Box(

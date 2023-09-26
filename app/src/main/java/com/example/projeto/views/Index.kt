@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -316,6 +317,7 @@ fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController
                 textoPostagem = postagemData.textoPostagem,
                 imagensPost = postagemData.imagensPost,
                 tituloAutor = postagemData.tituloPost,
+                paginas = postagemData.imagensPost.size,
                 navController = navController
             )
             println("Depois de criar a Postagem ${postagemData.imagensPost}")
