@@ -5,5 +5,6 @@ data class PostagemData(
     val fotoPerfil: String,
     val nomeAutor: String,
     val textoPostagem: String,
-    val imagensPost: List<String>
+    val imagensPost: List<String>,
+    val tituloPost: String
 )

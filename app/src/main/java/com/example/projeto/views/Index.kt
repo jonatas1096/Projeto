@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -143,7 +144,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         fotoPerfil = fotoPerfil,
                         nomeAutor = nome,
                         textoPostagem = texto,
-                        imagensPost = imagensPostagem
+                        imagensPost = imagensPostagem,
+                        tituloPost = titulo
                     )
 
                     postagensData.add(postagemData)
@@ -305,7 +307,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 @Composable
 fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController) {
-    LazyColumn{
+    LazyColumn(){
         items(postagens) { postagemData ->
             println("Antes de criar a Postagem ${postagemData.imagensPost}")
             Postagem(
@@ -313,6 +315,7 @@ fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController
                 nomeAutor = postagemData.nomeAutor,
                 textoPostagem = postagemData.textoPostagem,
                 imagensPost = postagemData.imagensPost,
+                tituloAutor = postagemData.tituloPost,
                 navController = navController
             )
             println("Depois de criar a Postagem ${postagemData.imagensPost}")

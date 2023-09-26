@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -37,7 +38,7 @@ import kotlinx.coroutines.tasks.await
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, /*titulo:String,*/ navController: NavController) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, navController: NavController) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
@@ -59,7 +60,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
         modifier = Modifier.fillMaxSize()
     ) {
 
-        val (foto, nome, texto, imagemPost, fotoReacao, comentarios, compartilhamentos,
+        val (foto, nome, titulo, texto, imagemPost, fotoReacao, comentarios, compartilhamentos,
             linha, numeroReacoes, curtir, comentar, compartilhar, linhaestetica2) = createRefs()
 
 
@@ -85,10 +86,20 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
             Text(text = nomeAutor,
                 color = Color(56, 56, 56, 255),
                 fontWeight = FontWeight.Bold,
-                fontSize = 17.sp,
+                fontSize = 20.sp,
             modifier = Modifier.constrainAs(nome){
                 start.linkTo(foto.end, margin = 7.dp)
                 top.linkTo(parent.top, margin = 5.dp)
+            })
+
+        //Titulo da publicação
+            Text(text = tituloAutor,
+            color = Color(221, 114, 0, 255),
+            fontWeight = FontWeight.Bold,
+            fontSize = 17.sp,
+            modifier = Modifier.constrainAs(titulo){
+                start.linkTo(foto.end, margin = 7.dp)
+                top.linkTo(parent.top, margin = 30.dp)
             })
 
 
@@ -96,19 +107,17 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
         Row(
             modifier = Modifier
                 .constrainAs(texto) {
-
                     start.linkTo(parent.start)
                     top.linkTo(foto.bottom, margin = 5.dp)
                 }
-
                 .padding(start = 10.dp)
                 .padding(end = 20.dp)
-
         ) {
             Text(text = textoPostagem,
-                fontSize = 13.sp,
+                fontSize = 16.sp,
                 color = Color(39, 39, 39, 255),
-
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -123,19 +132,16 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
                 .fillMaxWidth()
                 .size(220.dp)
                 // .verticalScroll(scroll)
-                .border(2.dp, Color.Green)
+                //.border(2.dp, Color.Green)
         ) {
-            /*loadPostImages(
-                imagensPost = imagensPost,
-                contentDescription = "Imagem de um usuário post do usuário",
-                contentScale = ContentScale.None,
-                modifier = Modifier)*/
             loadCoil(
                 imagensPost = imagensPost,
                 contentDescription = "Imagem de um usuário post do usuário",
-                contentScale = ContentScale.None,
-                modifier =  Modifier)
-            println("Dentro da outra função $imagensPost")
+                /*contentScale = ContentScale.Crop,
+                modifier =  Modifier.fillMaxSize()
+                    .border(2.dp, Color.Red)*/
+            )
+
         }
 
         //Fotinha

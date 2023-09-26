@@ -5,6 +5,9 @@ import android.app.AlertDialog
 import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -63,28 +66,32 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
 
  }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun loadPostImages(imagensPost: List<String>, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
-    GlideImage(
-        model = imagensPost,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        modifier = modifier
-    )
-}
-
 
 //TESTE COIL:
 @Composable
-fun loadCoil(imagensPost: List<String>, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
-    AsyncImage(
-        model = imagensPost,
-        contentDescription = contentDescription,
-        contentScale = contentScale,
-        modifier = modifier
-    )
+fun loadCoil(imagensPost: List<String>, contentDescription:String){
+
+    LazyRow(
+        modifier = Modifier.fillMaxSize()
+            .background(Color.Black),
+        // .border(2.dp,Color.Yellow),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        userScrollEnabled = true// Espaçamento entre as imagens
+    ) {
+        items(imagensPost) { imageUrl ->
+            AsyncImage(
+                model = imageUrl, // Passa uma única URL de imagem
+                contentDescription = contentDescription,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+                //.border(2.dp,Color.Red)
+            )
+        }
+    }
 }
+
+
 
 @Composable
 fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, visualTransformation: VisualTransformation, leadingIcon: @Composable (() -> Unit)? = null){
