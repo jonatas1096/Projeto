@@ -57,12 +57,12 @@ class Authentication @Inject constructor() {
                 val rmData = documentSnapshot.data
                 //aqui usamos a variavel acima para puxar todos os dados do array que eu criei no firebase e inserir na variavel "arrayRM"
                 //Ou seja, eu fiz uma cópia do array original do firebase e armazenei em uma variavel aqui localmente.
-                val arrayRM = rmData?.get("rm_lista") as? List<String>
+
 
 
                 //Começo da validação para garantir que o aluno está matriculado na escola:
-                if (arrayRM != null) {
-                    for (item in arrayRM) {
+                if (rmData != null) {
+                    for (item in rmData.values) {
                         if (item == rmBox) {//Se o indice for igual ao rmBox (que é o rm que o usuário vai inserir, a condição vai para true).
                             condicaoRM = true
                             // Uma vez que encontramos um valor verdadeiro, não precisamos continuar o loop.
