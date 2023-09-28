@@ -5,14 +5,18 @@ object UserData {
     var cpsIDEncontrado: String = ""
     var nomeEncontrado: String = ""
     var imagemUrl: String = ""
+    var UID: String = ""
+    var emailEncontrado: String = ""
 
 
 
     //Atualizar os dados padrões:
-    fun setUserData(rm:String, cpsID:String, nome: String) {
+    fun setUserData(rm:String, cpsID:String, nome: String, uid: String, email: String) {
         rmEncontrado = rm
         cpsIDEncontrado = cpsID
         nomeEncontrado = nome
+        UID = uid
+        emailEncontrado = email
     }
 
     //Atualizar a imagem:

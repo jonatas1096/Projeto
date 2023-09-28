@@ -18,6 +18,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -84,7 +85,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .fillMaxWidth()
                 .height(240.dp))
             {
-                loadImage(path = "",
+                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_publicar.png",
                     contentDescription = "Plano de fundo do bottomsheet",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier)
@@ -111,22 +112,26 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                             contentDescription = "Subir o BottomSheet",
                             modifier = Modifier
                                 .size(80.dp),
-                            colorFilter = ColorFilter.tint(Color(0xFFC5C4C4))
+                            colorFilter = ColorFilter.tint(Color(0xFFFFFFFF))
                         )
                     }
 
 
                     //Midias
                     Row(
-
                         modifier = Modifier
                             .fillMaxWidth()
-                            .border(1.dp, Color.Red)
+                            .background((Color(243, 242, 242, 255)))
+                            .border(1.dp, Color.Black)
                             .clickable(
                                 onClick = {
                                     galeriaState = true
                                 })
                     ) {
+                        //Espaçar
+                        Spacer(modifier = Modifier
+                            .width(10.dp))
+
                         //Imagem da imagem
                         Image(ImageVector.vectorResource(id = R.drawable.ic_imagem),
                             contentDescription = "Adicionar foto ou video",
@@ -138,13 +143,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                         //Só pra espaçar um pouco a imagem e o texto
                         Spacer(modifier = Modifier
-                            .width(20.dp)
-                            .border(2.dp, Color.Green))
+                            .width(20.dp))
 
                         //Texto da Imagem
-                        Text(text = "Foto/vídeo",
-                            fontSize = 25.sp,
+                        Text(text = "Adicionar mídia",
+                            fontSize = 35.sp,
                             color = Color(0xFF303030),
+                            fontFamily = Dongle,
                         )
 
                     }
@@ -328,8 +333,8 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         modifier = Modifier.fillMaxSize()
                     ) {
                         loadImage(
-                            path = "https://i.imgur.com/avyQZS0.jpg",
-                            contentDescription = "Corujinha",
+                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagempadrao_publicar.jpg",
+                            contentDescription = "Corujinha adc.Imagem",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier)
                     }

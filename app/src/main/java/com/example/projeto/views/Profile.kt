@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -42,7 +43,10 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
+import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -76,40 +80,50 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
     val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
 
+    println("Email: ${UserData.emailEncontrado}")
+    /////////
+
+    ///
+    val nomeMaxCaracteres = 20
+    val emailMaxCaracteres = 29
+    println("O uid guardado é ${UserData.UID}")
 
     // Fundo
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
-        // Imagem que vai ficar de fundo
-        loadImage(
-            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_perfil_prtofessor.png",
-            contentDescription = "Background do Login",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
     }
 
     // Box da tela
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(20.dp)
+        .padding(horizontal = 15.dp)
     ) {
         // Constraint do quadrado e do conteúdo de dentro
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ) {
-            val (card, arrow, areaFoto, titulo, nomeUsuario, julio, ines) = createRefs()
+            val (card, arrow, areaFoto, nomeUsuario, email, backtohome, julio, ines) = createRefs()
 
-                // Firebase upar foto (teste)
-                // Área que vai guardar as informações
+
+                // Fundo laranja/aluno
                 Card(
                     elevation = 8.dp,
-                    shape = RoundedCornerShape(25.dp),
-                    modifier = Modifier.fillMaxSize()
-                        .constrainAs(card){
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .height(320.dp)
+                        .constrainAs(card) {
+                            top.linkTo(parent.top)
                         }
                 ) {
+                    loadImage(
+                        path = "",
+                        contentDescription = "Background do Login",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
 
             // Arrow voltar (seta que volta)
@@ -117,13 +131,13 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 onClick = {
                     navController.navigate("Index")
                 },
-                modifier = Modifier.constrainAs(arrow){
-                    start.linkTo(card.start, margin = 15.dp)
-                    top.linkTo(card.top)
-                }
-                    .size(40.dp)
-                    .border(2.dp, Color.Red),
-                color = Color(0xFF000000) //nesse color tu pode escolher a cor da arrow, pode ser uma padrão tipo: Color.Black,
+                modifier = Modifier
+                    .constrainAs(arrow) {
+                        start.linkTo(card.start, margin = 15.dp)
+                        top.linkTo(card.top, margin = 15.dp)
+                    }
+                    .size(30.dp),
+                color = Color(0xFFFFFFFF) //nesse color tu pode escolher a cor da arrow, pode ser uma padrão tipo: Color.Black,
                 // ou hexadecimal/rgb como deixei aí, blz?
             )
 
@@ -133,11 +147,10 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 modifier = Modifier
                     .constrainAs(areaFoto) {
                         start.linkTo(parent.start)
-                        top.linkTo(parent.top, margin = 45.dp)
+                        top.linkTo(parent.top, margin = 35.dp)
                         end.linkTo(parent.end)
                     }
                     .size(135.dp)
-                    .border(2.dp, Color.Black)
                     .clickable(onClick = {
                         galeriaState = true
                         exibirImagemPadrao = false
@@ -165,30 +178,93 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 }
             }
 
+
+            if (UserData.nomeEncontrado.length > nomeMaxCaracteres){
+                Text(
+                    text = "${UserData.nomeEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
+                    fontSize = 46.sp,
+                    color = Color.White,
+                    fontFamily = Dongle,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.constrainAs(nomeUsuario){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(areaFoto.bottom, margin = 0.dp)
+                    }
+                )
+            }
+            else{
+                Text(
+                    text = "${UserData.nomeEncontrado}",
+                    fontSize = 46.sp,
+                    color = Color.White,
+                    fontFamily = Dongle,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.constrainAs(nomeUsuario){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(areaFoto.bottom, margin = 0.dp)
+                    }
+                )
+
+            }
+
+            if (UserData.emailEncontrado.length > emailMaxCaracteres){
+                Text(
+                    text = "${UserData.emailEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
+                    fontSize = 34.sp,
+                    color = Color.White,
+                    fontFamily = Dongle,
+                    modifier = Modifier.constrainAs(email){
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(areaFoto.bottom, margin = 40.dp)
+                    }
+                )
+            }
             Text(
-                text = "Meu Perfil",
-                fontSize = 40.sp,
+                text = UserData.emailEncontrado,
+                fontSize = 34.sp,
+                color = Color.White,
                 fontFamily = Dongle,
-                modifier = Modifier.constrainAs(titulo){
+                modifier = Modifier.constrainAs(email){
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(areaFoto.top, margin = (-5).dp)
+                    top.linkTo(areaFoto.bottom, margin = 40.dp)
                 }
             )
 
-            Text(
-                text = "Usuário: ${UserData.nomeEncontrado}",
-                fontSize = 40.sp,
-                fontFamily = Dongle,
-                modifier = Modifier.constrainAs(nomeUsuario){
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(areaFoto.bottom, margin = 0.dp)
+
+            Card(
+                modifier = Modifier
+                    .constrainAs(backtohome) {
+                        start.linkTo(parent.start)
+                        top.linkTo(card.bottom, margin = (-35).dp)
+                        end.linkTo(parent.end)
+                    }
+                    .width(220.dp),
+                elevation = 8.dp,
+                shape = RoundedCornerShape(30.dp),
+                backgroundColor = Color(0xFFFCFCFC)
+            ) {
+                Column(
+                    //modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "Index",
+                        fontFamily = Dongle,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 40.sp,
+                        color = Color(0xFF838383),
+                    )
                 }
-            )
 
 
-            // Estudos Anahi
+            }
+
+
+           /* // Estudos Anahi
             loadImage(
                 path = imagemUrl.value ?: "https://static.wikia.nocookie.net/cocorico/images/e/e3/Julio-careca.jpg/revision/latest?cb=20211011002720&path-prefix=pt-br",
                 contentDescription = "julio careca",
@@ -228,7 +304,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         // Em outras palavras, o start da Ines (a esquerda) vai começar à direita do Julio.
                         bottom.linkTo(parent.bottom, margin = 10.dp)
                     }
-            )
+            )*/
         }
     }
 

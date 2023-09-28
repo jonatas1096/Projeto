@@ -33,6 +33,7 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.viewmodel.PublicacaoViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -58,23 +59,29 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
     // A instância do firebase firestore:
     val firestore = Firebase.firestore  // Também funcionaria assim: val firestore = FirebaseFirestore.getInstance()
-
+    //Instância do authentication:
+    val auth = FirebaseAuth.getInstance()
 
     // A instância do firebase storage e as variáveis que vou precisar:
     val storage = Firebase.storage
     val storageRef = storage.reference
     val alunoRM = UserData.rmEncontrado
     val cpsID = UserData.cpsIDEncontrado
-
+    var UIDref = FirebaseAuth.getInstance().currentUser?.uid.toString()
+    val email = auth.currentUser?.email
     //Uma variavel para auxiliar no armazenamento da URL do aluno/professor
     val imagemUrl = remember { mutableStateOf<String?>(null) }
+
+
 
 
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
         override fun onSucess(rm:String, cpsID:String, nome:String) {
             println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")
-            UserData.setUserData(rm, cpsID, nome)
+            if (email != null) { // <- precisei colocar por conta do "?" do authentication do firebase
+                UserData.setUserData(rm, cpsID, nome, UIDref, email)
+            }
         }
         override fun onFailure(erro: String) {
             "Nenhum usuario encontrado."
