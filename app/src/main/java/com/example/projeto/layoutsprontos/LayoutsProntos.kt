@@ -5,8 +5,10 @@ import android.app.AlertDialog
 import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,27 +70,34 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
 
 
 //TESTE COIL:
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun loadCoil(imagensPost: List<String>, contentDescription:String){
 
-    LazyRow(
+
+
+    Box(
         modifier = Modifier.fillMaxSize()
-            .background(Color.Black),
-        // .border(2.dp,Color.Yellow),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        userScrollEnabled = true// Espaçamento entre as imagens
+            .background(Color.Black)
     ) {
-        items(imagensPost) { imageUrl ->
+        // HorizontalPager para exibir imagens individuais
+        val pagerState = rememberPagerState()
+        HorizontalPager(
+            state = pagerState,
+            pageCount = imagensPost.size,
+        ) { pageIndex ->
+            val imagemUrl = imagensPost[pageIndex]
+            // Carrega e exibe a imagem usando o Coil ou Glide aqui
             AsyncImage(
-                model = imageUrl, // Passa uma única URL de imagem
+                model = imagemUrl, // Passa uma única URL de imagem
                 contentDescription = contentDescription,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
                 //.border(2.dp,Color.Red)
             )
         }
     }
+
 }
 
 

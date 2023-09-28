@@ -18,6 +18,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
@@ -34,6 +35,8 @@ import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
+import com.example.projeto.layoutsprontos.loadImage
+import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
@@ -70,6 +73,8 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     //Iniciar o processo de publicação
     var publicacaoState by remember { mutableStateOf(false) }
 
+    //Máximo caracteres titulo
+    val maxCaracteresTitulo = 35
 
 
     BottomSheetScaffold(
@@ -79,6 +84,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .fillMaxWidth()
                 .height(240.dp))
             {
+                loadImage(path = "",
+                    contentDescription = "Plano de fundo do bottomsheet",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -151,7 +160,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     )
     {
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(243, 243, 243, 255))
+                .padding(horizontal = 4.dp)
         ) {
 
             //Começo constraint layout.
@@ -185,21 +197,38 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     .size(50.dp)
 
             ) {
+                //Parte do criar publicação e enviar com o Publicar
                 Row(
                     Modifier
-                        .fillMaxSize()
-                        .border(1.dp, Color.Green),
+                        .fillMaxSize(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Criar Publicação",
-                        fontSize = 18.sp,
+                        fontSize = 34.sp,
                         fontWeight = FontWeight.Bold,
+                        fontFamily = Dongle,
+                        modifier = Modifier.padding(top = 5.dp)
                     )
                     if (titulo.isEmpty() || texto.isEmpty()){
                         Button(
                             onClick = {
-                                Toast.makeText(context,"O título e o texo da publicação são obrigatórios!",Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context,"O título e o texto da publicação são obrigatórios!",Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFFE7E6E6)
+                            ),
+                            modifier = Modifier
+                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                        ) {
+                            Text(text = "Publicar",
+                                color = Color(0xFFBDBBBB))
+                        }
+                    }
+                    else if(titulo.length > maxCaracteresTitulo){
+                        Button(
+                            onClick = {
+                                Toast.makeText(context,"Título excedeu o tamanho limite de caracteres.",Toast.LENGTH_SHORT).show()
                             },
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = Color(0xFFE7E6E6)
@@ -217,13 +246,15 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 publicacaoState = true
                             },
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color(0xFFB4CEE7)
+                                Color(0xFFB8D2FF)
                             ),
                             modifier = Modifier
                                 .padding(26.dp, 5.dp, 20.dp, 5.dp)
                         ) {
                             Text(text = "Publicar",
-                                color = Color(0xFFBDBBBB))
+                                color = Color(0xFF005CFA),
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
 
@@ -237,12 +268,16 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 },
                 label = {
                     Text(text = "Título da publicação",
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(0xFFB4CEE7)
+                    backgroundColor = Color(0xFFB8D2FF),
+                    focusedLabelColor = Color(0xFF226EF0),
+                    unfocusedLabelColor = Color(0xFF6492E0),
+                    focusedBorderColor = Color(0xFF226EF0),
+                    unfocusedBorderColor = Color(0xFF6492E0)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -260,10 +295,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     texto = it
                 },
                 label = {
-                        Text(text = "Digite")
+                        Text(text = "Digite algo sobre a sua publicação aqui")
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(0xFFFAFAFA)
+                    backgroundColor = Color(0xFFFAFAFA),
+                    focusedLabelColor = Color(0xFF226EF0),
+                    focusedBorderColor = Color(0xFF226EF0)
+
                 ),
                 modifier = Modifier
                     .constrainAs(areaTexto) {
@@ -273,33 +311,61 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     .height(150.dp)
             )
 
-                LazyColumn(
-                    modifier = Modifier
-                        .constrainAs(boxImagem) {
-                            top.linkTo(areaTexto.bottom)
-                        }
-                        .fillMaxWidth()
-                        .height(220.dp)
-                        .border(2.dp, Color.Green)
-                ) {
-                    items(imagensColuna) { imagem ->
-                        println("executou $galeriaState")
-                        Image(
-                            bitmap = imagem.asImageBitmap(),
-                            contentDescription = "Imagem Selecionada",
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                //Esse modificador abaixo serviu para adequar a imagem totalmente à coluna.
-                                .aspectRatio(
-                                    ratio = imagem.width.toFloat() / imagem.height.toFloat(),
-                                    matchHeightConstraintsFirst = false
-                                )
 
-                        )
+            //Área que mostra as imagens
+            Card(
+                modifier = Modifier
+                    .constrainAs(boxImagem) {
+                        top.linkTo(areaTexto.bottom, margin = 15.dp)
                     }
-
+                    .fillMaxWidth()
+                    .height(220.dp),
+                elevation = 8.dp
+            )
+            {
+                if (imagensColuna.isEmpty()){
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        loadImage(
+                            path = "https://i.imgur.com/avyQZS0.jpg",
+                            contentDescription = "Corujinha",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier)
+                    }
                 }
+                else{
+                    LazyColumn(
+                        modifier = Modifier
+                            .constrainAs(boxImagem) {
+                                top.linkTo(areaTexto.bottom, margin = 15.dp)
+                            }
+                            .fillMaxWidth()
+                            .height(220.dp)
+                    ) {
+                        items(imagensColuna) { imagem ->
+                            println("executou $galeriaState")
+                            Image(
+                                bitmap = imagem.asImageBitmap(),
+                                contentDescription = "Imagem Selecionada",
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    //Esse modificador abaixo serviu para adequar a imagem totalmente à coluna.
+                                    .aspectRatio(
+                                        ratio = imagem.width.toFloat() / imagem.height.toFloat(),
+                                        matchHeightConstraintsFirst = false
+                                    )
+
+                            )
+                        }
+
+
+                    }
+                }
+            }
+
+
 
 
             //}
@@ -321,12 +387,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             if (publicacaoState){
                 println("Chamou a função de publicacao = $publicacaoState")
 
-                CriarPublicacao( // (essa função tá lá em baixo, to passando os parâmetros que ela espera)
-                   UserData.imagemUrl,
-                   UserData.nomeEncontrado,
-                   titulo,
-                   texto,
-                   imagensColuna
+                CriarPublicacao(
+                    foto =   UserData.imagemUrl,
+                    nome =  UserData.nomeEncontrado,
+                    titulo =  titulo,
+                    texto =  texto,
+                    imagensPublicacao = imagensColuna,
+                    navController = navController
                 )
             }
         }
@@ -380,7 +447,8 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
 //Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>){
+fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>, navController: NavController){
+
 
     // A instância do firebase firestore (vou usar para os dados normais, nome, titulo e texto):
     val firestore = Firebase.firestore
@@ -399,6 +467,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
     val dataHoraAtual = Calendar.getInstance(timeZone).time
     val formatoFinal = sdf.format(dataHoraAtual)
     //////////////////
+    val context = LocalContext.current
+    //
 
 
 
@@ -411,7 +481,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             val cpsPastaRef = storageRef.child("$cpsID/$formatoFinal")
             println(formatoFinal)
 
-            val referenciaHora = formatoFinal
+            val referenciaHora = formatoFinal //nao sei se vou usar mais
             coroutineScope {
                 if (imagensPublicacao != null) {
                     for ((index, imagem) in imagensPublicacao.withIndex()) {
@@ -485,6 +555,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                         .addOnSuccessListener {
                                             println("Dentro do on listener: $imagensUrls")
                                             println("Subiu para o Firestore com caminho de documento personalizado: Postagens/$titulo")
+                                            Toast.makeText(context,"Publicação enviada com sucesso!",Toast.LENGTH_SHORT).show()
+                                            navController.navigate("Index")
                                         }
                                         .addOnFailureListener { erro ->
                                             println("Erro ao adicionar documento: $erro")
@@ -502,3 +574,4 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
          }
         }
 }
+

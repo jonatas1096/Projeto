@@ -22,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -44,8 +45,9 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
     val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
 
-    val scroll = rememberScrollState()
-    val pagerState =  rememberPagerState()
+
+    val maxCaracteresNome = 25
+    val maxCaracteresTexto = 40
 
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
@@ -84,14 +86,32 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
 
 
         //Nome do usuário
+        if (nomeAutor.length > maxCaracteresNome){
+            Text(text = nomeAutor.substring(0, maxCaracteresNome) + "...",
+                color = Color(56, 56, 56, 255),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.constrainAs(nome){
+                    start.linkTo(foto.end, margin = 7.dp)
+                    top.linkTo(parent.top, margin = 5.dp)
+                })
+        }
+        else{
             Text(text = nomeAutor,
                 color = Color(56, 56, 56, 255),
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-            modifier = Modifier.constrainAs(nome){
-                start.linkTo(foto.end, margin = 7.dp)
-                top.linkTo(parent.top, margin = 5.dp)
-            })
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.constrainAs(nome){
+                    start.linkTo(foto.end, margin = 7.dp)
+                    top.linkTo(parent.top, margin = 5.dp)
+                })
+
+        }
+
+
 
         //Titulo da publicação
             Text(text = tituloAutor,
@@ -114,22 +134,39 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
                 .padding(start = 10.dp)
                 .padding(end = 20.dp)
         ) {
-            Text(text = textoPostagem,
-                fontSize = 16.sp,
-                color = Color(39, 39, 39, 255),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (textoPostagem.length > maxCaracteresTexto){
+                Text(text = textoPostagem.substring(0, maxCaracteresTexto) + "...",
+                    fontSize = 16.sp,
+                    color = Color(39, 39, 39, 255),
+                   // maxLines = 1,
+                    //overflow = TextOverflow.Ellipsis*/
+                )
+            }
+            else{
+                Text(text = textoPostagem,
+                    fontSize = 16.sp,
+                    color = Color(39, 39, 39, 255),
+                )
+            }
         }
 
 
+
         //Imagem da publicação
-        Row(
-            modifier = Modifier.fillMaxSize()
+        Box(
+            modifier = Modifier
+                .constrainAs(imagemPost) {
+                    start.linkTo(parent.start)
+                    top.linkTo(texto.bottom, margin = 5.dp)
+                }
+                .fillMaxWidth()
+                .size(220.dp)
+            // .verticalScroll(scroll)
+            // .border(2.dp, Color.Green)
         ) {
-            HorizontalPager(
+          /*  HorizontalPager(
                 state = pagerState,
-                pageCount = paginas
+                pageCount = paginas,
             ) { pageIndex ->
                 val imagemUrl = imagensPost.getOrNull(pageIndex) // Obtém a URL da imagem com base na página atual
                 imagemUrl?.let { url ->
@@ -139,7 +176,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
                         contentDescription = "Imagem da página $pageIndex"
                     )
                 }
-            }
+            }*/
+            loadCoil(imagensPost = imagensPost, contentDescription = "")
         }
 
 

@@ -3,16 +3,13 @@ package com.example.projeto.views
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -222,18 +219,20 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     }
 
                 }
+
             }//Fechamento do Constraint
 
 
             //Começando a lógica da área das postagens
-
-
             Column(
-                modifier = Modifier.border(2.dp, Color.Red))
+                modifier = Modifier.padding(bottom = 44.dp)
+            )
             {
-                ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
+                Column(/*modifier = Modifier.fillMaxSize()*/) {
+                    ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
+                }
             }
-
+            
 
 
 
@@ -308,19 +307,40 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 @Composable
 fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController) {
-    LazyColumn(){
-        items(postagens) { postagemData ->
-            println("Antes de criar a Postagem ${postagemData.imagensPost}")
-            Postagem(
-                fotoPerfil = postagemData.fotoPerfil,
-                nomeAutor = postagemData.nomeAutor,
-                textoPostagem = postagemData.textoPostagem,
-                imagensPost = postagemData.imagensPost,
-                tituloAutor = postagemData.tituloPost,
-                paginas = postagemData.imagensPost.size,
-                navController = navController
+    var expandir by remember { mutableStateOf(false) }
+
+
+    if (expandir != true){
+        LazyColumn(
+            modifier = Modifier.clickable(
+                onClick = {
+                    expandir = true
+                }
             )
-            println("Depois de criar a Postagem ${postagemData.imagensPost}")
+        ){
+            items(postagens) { postagemData ->
+                println("Antes de criar a Postagem ${postagemData.imagensPost}")
+                Postagem(
+                    fotoPerfil = postagemData.fotoPerfil,
+                    nomeAutor = postagemData.nomeAutor,
+                    textoPostagem = postagemData.textoPostagem,
+                    imagensPost = postagemData.imagensPost,
+                    tituloAutor = postagemData.tituloPost,
+                    paginas = postagemData.imagensPost.size,
+                    navController = navController
+                )
+                println("Depois de criar a Postagem ${postagemData.imagensPost}")
+            }
         }
     }
+    else{
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Magenta)
+        ) {
+
+        }
+    }
+
 }
