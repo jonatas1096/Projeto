@@ -43,10 +43,7 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
-import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.viewmodel.PublicacaoViewModel
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -119,8 +116,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         }
                 ) {
                     loadImage(
-                        path = "",
-                        contentDescription = "Background do Login",
+                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_profile.png",
+                        contentDescription = "Background do Profile",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )

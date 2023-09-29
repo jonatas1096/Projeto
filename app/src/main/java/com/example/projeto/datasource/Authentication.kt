@@ -62,10 +62,10 @@ class Authentication @Inject constructor() {
 
                 //Começo da validação para garantir que o aluno está matriculado na escola:
                 if (rmData != null) {
-                    for (item in rmData.values) {
-                        if (item == rmBox) {//Se o indice for igual ao rmBox (que é o rm que o usuário vai inserir, a condição vai para true).
+                    for (arrayCont in rmData.keys) {
+                        val array = rmData[arrayCont] as? List<String>
+                        if (array != null && array.isNotEmpty() && array.contains(rmBox)) {
                             condicaoRM = true
-                            // Uma vez que encontramos um valor verdadeiro, não precisamos continuar o loop.
                             break
                         }
                     }
