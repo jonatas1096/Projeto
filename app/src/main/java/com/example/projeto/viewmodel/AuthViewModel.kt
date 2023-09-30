@@ -15,9 +15,9 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(private val authRepositorio: AuthRepositorio): ViewModel() {
 
     //View model dos alunos
-    fun cadastro(nome:String, email: String, senha: String, rm:String, codigoturma:String, listenerAuth: ListenerAuth){
+    fun cadastro(/*nome:String,*/ email: String, senha: String, rm:String, codigoturma:String, listenerAuth: ListenerAuth){
         viewModelScope.launch {
-            authRepositorio.cadastro(nome, email, senha,rm, codigoturma, listenerAuth)
+            authRepositorio.cadastro(/*nome, */email, senha,rm, codigoturma, listenerAuth)
         }
     }
 

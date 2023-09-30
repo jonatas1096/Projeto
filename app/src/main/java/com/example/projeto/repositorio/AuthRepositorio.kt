@@ -11,9 +11,9 @@ import javax.inject.Inject
 class AuthRepositorio @Inject constructor(private val auth: Authentication) {
 
     //Repositório dos dados dos alunos
-    fun cadastro(nome:String, email: String, senha: String, rm:String, codigoturma:String, listenerAuth: ListenerAuth){
+    fun cadastro(/*nome:String, */email: String, senha: String, rm:String, codigoturma:String, listenerAuth: ListenerAuth){
 
-        auth.cadastroAluno(nome, email, senha,rm, codigoturma, listenerAuth)
+        auth.cadastroAluno(/*nome, */email, senha,rm, codigoturma, listenerAuth)
     }
 
     fun login(email: String, senha: String, listenerAuth: ListenerAuth){

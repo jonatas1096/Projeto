@@ -27,22 +27,30 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
+import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -102,7 +110,10 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ) {
-            val (card, arrow, areaFoto, nomeUsuario, email, backtohome, julio, ines) = createRefs()
+            val (card, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
+                iconApelido, tituloApelido, apelido, iconNome, rm,
+                julio, ines
+            ) = createRefs()
 
 
                 // Fundo laranja/aluno
@@ -232,33 +243,120 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             )
 
 
-            Card(
+            Button(
+                onClick = {
+                    navController.navigate("Index")
+                },
                 modifier = Modifier
                     .constrainAs(backtohome) {
                         start.linkTo(parent.start)
                         top.linkTo(card.bottom, margin = (-35).dp)
                         end.linkTo(parent.end)
                     }
-                    .width(220.dp),
-                elevation = 8.dp,
+                    .width(225.dp)
+                    .height(55.dp),
+                elevation = ButtonDefaults.elevation(8.dp),
                 shape = RoundedCornerShape(30.dp),
-                backgroundColor = Color(0xFFFCFCFC)
-            ) {
-                Column(
-                    //modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFFFCFCFC),
+
+                )
                 ) {
-                    Text(text = "Index",
-                        fontFamily = Dongle,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp,
-                        color = Color(0xFF838383),
-                    )
-                }
-
-
+                Text(text = "Index",
+                    fontFamily = Dongle,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 40.sp,
+                    color = Color(0xFF838383),
+                )
             }
+
+            arrowVoltar(
+                onClick = {
+                    navController.navigate("Index")
+                },
+                modifier = Modifier
+                    .constrainAs(arrow2) {
+                        end.linkTo(backtohome.start, margin = (-45).dp)
+                        top.linkTo(card.bottom, margin = (-20.dp))
+                    }
+                    .size(30.dp),
+                color = Color(0xFF838383) //nesse color tu pode escolher a cor da arrow, pode ser uma padrão tipo: Color.Black,
+                // ou hexadecimal/rgb como deixei aí, blz?
+            )
+
+            Text(text = "Sobre mim",
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp,
+                modifier = Modifier
+                    .constrainAs(sobreMim) {
+                        top.linkTo(card.bottom, margin = 50.dp)
+                    }
+                    .fillMaxWidth()
+            )
+
+            //Conjunto do apelido
+            Icon(
+                painterResource(id = R.drawable.ic_apelidoaluno),
+                contentDescription = "Ícone do Apelido do Aluno",
+                modifier = Modifier
+                    .constrainAs(iconApelido) {
+                        start.linkTo(parent.start, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 40.dp)
+                    }
+                    .size(40.dp)
+            )
+
+            Text(text = "Apelido",
+                fontSize = 40.sp,
+                fontFamily = Dongle,
+                modifier = Modifier.constrainAs(tituloApelido){
+                    start.linkTo(iconApelido.end, margin = 10.dp)
+                    top.linkTo(sobreMim.bottom, margin = 25.dp)
+                }
+            )
+            Text(text = "Apelido aqui",
+                fontSize = 30.sp,
+                fontFamily = Dongle,
+                color = Color(0xFF838383),
+                modifier = Modifier.constrainAs(apelido){
+                    start.linkTo(iconApelido.end, margin = 20.dp)
+                    top.linkTo(sobreMim.bottom, margin = 55.dp)
+                }
+            )
+            /////////////////////
+
+            //Conjunto do Nome
+            Icon(
+                painterResource(id = R.drawable.ic_nomealuno),
+                contentDescription = "Ícone do Apelido do Aluno",
+                modifier = Modifier
+                    .constrainAs(iconNome) {
+                        start.linkTo(parent.start, margin = 20.dp)
+                        top.linkTo(iconApelido.bottom, margin = 40.dp)
+                    }
+                    .size(40.dp)
+            )
+
+            Text(text = "Nome",
+                fontSize = 40.sp,
+                fontFamily = Dongle,
+                modifier = Modifier.constrainAs(tituloApelido){
+                    start.linkTo(iconNome.end, margin = 10.dp)
+                    top.linkTo(iconApelido.bottom, margin = 40.dp)
+                }
+            )
+            Text(text = "Apelido aqui",
+                fontSize = 30.sp,
+                fontFamily = Dongle,
+                color = Color(0xFF838383),
+                modifier = Modifier.constrainAs(apelido){
+                    start.linkTo(iconApelido.end, margin = 20.dp)
+                    top.linkTo(sobreMim.bottom, margin = 55.dp)
+                }
+            )
+            /////////////////////
+
+            //Conjunto do RM
 
 
            /* // Estudos Anahi
@@ -422,3 +520,4 @@ fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
         }
     }
 }
+

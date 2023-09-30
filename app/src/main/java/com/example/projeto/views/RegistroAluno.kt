@@ -3,6 +3,7 @@ package com.example.projeto.views
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
@@ -103,7 +104,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroAluno) {
-                    top.linkTo(parent.top, margin = 71.dp)
+                    top.linkTo(parent.top, margin = 80.dp)
                 }
 
 
@@ -112,12 +113,13 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .padding(top = 97.dp)
+                        .padding(top = 110.dp)
                         .padding(horizontal = 15.dp)
+
                 ) {
                     
 
-                    //Nome
+                   /* //Nome
                     OutlinedRegistro(
                         value = nome,
                         onValueChange = {nome = it},
@@ -132,7 +134,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                                 contentDescription = "Ícone de Aluno no registro",
                                 modifier = Modifier.size(28.dp))
                         }
-                    )
+                    )*/
                     //Email
                     OutlinedRegistro(
                         value = email,
@@ -235,7 +237,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         BotaoRegistrar(
                             onClick = {
                                 //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                                viewModel.cadastro(nome, email, senha,rm, codigoturma, object : ListenerAuth{
+                                viewModel.cadastro(/*nome,*/ email, senha,rm, codigoturma, object : ListenerAuth{
                                     override fun onSucess(mensagem: String) {
                                         Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
                                         navController.navigate("Login")

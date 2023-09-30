@@ -96,7 +96,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroCPS) {
-                    top.linkTo(parent.top, margin = 71.dp)
+                    top.linkTo(parent.top, margin = 80.dp)
                 }
 
 
@@ -105,12 +105,12 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 97.dp)
+                    .padding(top = 110.dp)
                     .padding(horizontal = 15.dp)
             ) {
 
 
-                //Nome
+                /*//Nome
                 OutlinedRegistro(
                     value = nome,
                     onValueChange = {nome = it},
@@ -125,7 +125,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             contentDescription = "Ícone de Professor e Administração no registro",
                             modifier = Modifier.size(28.dp))
                     }
-                )
+                )*/
                 //Email
                 OutlinedRegistro(
                     value = email,

@@ -29,7 +29,7 @@ class Authentication @Inject constructor() {
 
     //Primeiro os parâmetros para o cadastro do aluno:
     fun cadastroAluno(
-        nome: String,
+        //nome: String,
         email: String,
         senha: String,
         rm: String,
@@ -95,9 +95,9 @@ class Authentication @Inject constructor() {
                     }
 
                 //Agora a validação de todos os campos preenchidos:
-                if (nome.isEmpty()) {
+               /* if (nome.isEmpty()) {
                     listenerAuth.onFailure("Insira o seu nome para a identificação!")
-                } else if (email.isEmpty()) {
+                } else*/ if (email.isEmpty()) {
                     listenerAuth.onFailure("O email não pode estar vazio.")
                 } else if (senha.isEmpty()) {
                     listenerAuth.onFailure("Insira uma senha válida!")
@@ -118,7 +118,7 @@ class Authentication @Inject constructor() {
 
                                 //mapeando o que eu quero salvar com as variaveis nos parâmetros:
                                 val dadosUsuariosMap = hashMapOf(
-                                    "nome" to nome,
+                                    //"nome" to nome,
                                     "email" to email,
                                     "rm" to rm,
                                     "codigoturma" to codigoturma,

@@ -91,7 +91,7 @@ fun loadCoil(imagensPost: List<String>, contentDescription:String){
             AsyncImage(
                 model = imagemUrl, // Passa uma única URL de imagem
                 contentDescription = contentDescription,
-                contentScale = ContentScale.Fit,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
                 //.border(2.dp,Color.Red)
             )
