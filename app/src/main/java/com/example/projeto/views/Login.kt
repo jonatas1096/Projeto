@@ -213,7 +213,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                             //Esqueceu a senha
 
                                 Text(text = "Esqueceu a sua senha?",
-                                    fontSize = 30.sp,
+                                    fontSize = 34.sp,
                                     fontFamily = Jomhuria,
                                     color = LARANJA,
                                     modifier = Modifier
@@ -228,8 +228,8 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                         Surface(
                             modifier = Modifier
                                 .border(2.dp, Color(0xFF9C9C9C))
-                                .height(1.dp)
-                                .width(100.dp)
+                                .height(2.dp)
+                                .width(130.dp)
                                 .border(2.dp, Color.Black)
                                 .padding(start = 30.dp)
                         ) {
@@ -249,7 +249,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                         }
                         Text(text = textodiferente,
                             fontFamily = Jomhuria,
-                            fontSize = 30.sp,
+                            fontSize = 31.sp,
                             modifier = Modifier
                                 //.padding(start = 30.dp)
                                 .clickable {
@@ -285,12 +285,12 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                             shape = RoundedCornerShape(30.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 90.dp)
-                                .padding(top = 38.dp)
+                                .padding(horizontal = 80.dp)
+                                .padding(top = 26.dp)
                         ) {
                             Text(
                                 text = "Login",
-                                fontSize = 17.sp,
+                                fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                             )
                         }

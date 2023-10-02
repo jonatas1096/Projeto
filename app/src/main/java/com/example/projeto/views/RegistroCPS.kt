@@ -73,8 +73,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
 
         //Arrow voltar
         Box(modifier = Modifier.constrainAs(arrow){
-            top.linkTo(parent.top, margin = 8.dp)
-            start.linkTo(parent.start, margin = 18.dp)
+            top.linkTo(parent.top, margin = 20.dp)
+            start.linkTo(parent.start, margin = 20.dp)
         }
             .size(30.dp)
             .clickable(onClick = {
@@ -105,7 +105,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(top = 110.dp)
+                    .padding(top = 125.dp)
                     .padding(horizontal = 15.dp)
             ) {
 
@@ -230,7 +230,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     BotaoRegistrar(
                         onClick = {
                             //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.cpsCadastro(nome, email, senha,id, codigoEtec, object : ListenerAuth{
+                            viewModel.cpsCadastro(/*nome,*/ email, senha,id, codigoEtec, object : ListenerAuth{
                                 override fun onSucess(mensagem: String) {
                                     Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
                                     navController.navigate("Login")
@@ -312,7 +312,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
             modifier = Modifier.constrainAs(identificacao){
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                top.linkTo(parent.top, margin = 138.dp)
+                top.linkTo(parent.top, margin = 144.dp)
             }
 
         )

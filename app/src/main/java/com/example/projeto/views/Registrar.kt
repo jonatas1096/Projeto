@@ -196,7 +196,7 @@ fun Registrar(navController: NavController) {
 
 
 
-        /*Box da gambiarra de imagem para a Coruja-ruja
+        //Box da gambiarra de imagem para a Coruja-ruja
         Box(
             modifier = Modifier
                 .size(150.dp)
@@ -210,7 +210,7 @@ fun Registrar(navController: NavController) {
                 contentDescription = "Coruja",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier)
-        }*/
+        }
 
     }
 

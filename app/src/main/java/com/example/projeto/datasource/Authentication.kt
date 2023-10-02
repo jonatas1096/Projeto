@@ -1,5 +1,6 @@
 package com.example.projeto.datasource
 
+import androidx.compose.runtime.mutableStateOf
 import com.example.projeto.listener.ListenerAuth
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
@@ -59,7 +60,7 @@ class Authentication @Inject constructor() {
                 //Ou seja, eu fiz uma cópia do array original do firebase e armazenei em uma variavel aqui localmente.
 
 
-
+                println("Aqui o RM do rmBox: $rmBox")
                 //Começo da validação para garantir que o aluno está matriculado na escola:
                 if (rmData != null) {
                     for (arrayCont in rmData.keys) {
@@ -75,7 +76,8 @@ class Authentication @Inject constructor() {
                 //Começo da validação para garantir que o rm já não está cadastrado por algum aluno e acabe sobreescrevendo os dados:
                 val alunoColecao = firestore.collection("Alunos")
                 //Uma condição para garantir nos If abaixo:
-                var cadastroRM = false //Ela começa como false, e se o rm nao for achado na coleção dos alunos irá mudar para true.
+                var cadastroRM = mutableStateOf(false) //Ela começa como false, e se o rm nao for achado na coleção dos alunos irá mudar para true.
+
 
                 alunoColecao.get()
                     .addOnSuccessListener { querySnapshot ->
@@ -84,78 +86,84 @@ class Authentication @Inject constructor() {
                             val rmAluno = alunoData?.get("rm") as? String
 
                             if (rmAluno == rm) {
-                                cadastroRM = true
+                                cadastroRM.value = true
+                                println("Situação do cadastro: $cadastroRM")
                                 break // Não é necessário continuar o loop se já encontramos um rm matriculado.
                             }
+                        }
 
+
+                        //
+                        println("Situação do cadastro fora 3: $cadastroRM")
+                        //Agora a validação de todos os campos preenchidos:
+                        if (email.isEmpty()) {
+                            listenerAuth.onFailure("O email não pode estar vazio.")
+                        } else if (senha.isEmpty()) {
+                            listenerAuth.onFailure("Insira uma senha válida!")
+                        } else if (rm.isEmpty()) {
+                            listenerAuth.onFailure("O RM é necessário para a validação!")
+                        }
+                        else if (codigoturma.isEmpty()) {
+                            listenerAuth.onFailure("Forneça o seu código de turma!")
+                        }
+                        else if(condicaoRM == true && cadastroRM.value == false){
+                            println("Situação do cadastro dentro do if: $cadastroRM")
+                            //testando a validação:
+                            auth.createUserWithEmailAndPassword(email, senha)
+                                .addOnCompleteListener { cadastro ->
+                                    if (cadastro.isSuccessful) { //Depois que o cadastro for um "sucesso", a gente vai salvar os seguintes dados no firebase:
+
+                                        //Pegando o ID do usuário que acabou de se cadastrar usando o "auth", ou seja, o usuário atual.
+                                        var usuarioID = FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+                                        //mapeando o que eu quero salvar com as variaveis nos parâmetros:
+                                        val dadosUsuariosMap = hashMapOf(
+                                            //"nome" to nome,
+                                            "email" to email,
+                                            "rm" to rm,
+                                            "codigoturma" to codigoturma,
+                                            "usuarioID" to usuarioID
+                                        )
+
+                                        //Iniciando o comando para setar um caminho para uma coleção e gravando os dados nela
+                                        //O document(rm) significa que o identificador de cada aluno vai se dar pelo RM. Caso deixe o nome vai acabar sobreescrevendo os dados
+                                        firestore.collection("Alunos").document(rm).set(dadosUsuariosMap)
+                                            .addOnCompleteListener {
+                                                listenerAuth.onSucess("Usuário cadastrado com sucesso!")
+                                            }.addOnFailureListener {
+                                                listenerAuth.onFailure("Ocorreu um erro ao salvar os dados.")
+                                            }
+
+                                    }
+                                }//Fechamento do cadastrado com sucesso. Agora, vamos tratar alguns possíveis erros que evite o cadastro:
+
+
+                                //Comando pra iniciar o tratamento de "erro" no cadastramento:
+                                .addOnFailureListener { exception ->
+
+                                    //"quando" o erro for igual a determinada coisa, faça tal coisa:
+                                    val erro = when (exception) {
+                                        is FirebaseAuthUserCollisionException -> "Outra conta já cadastrada com estes dados."
+                                        is FirebaseAuthWeakPasswordException -> "A senha deve ter no mínimo 6 caracteres."
+                                        is FirebaseNetworkException -> "Sem conexão."
+
+                                        else -> "Email inválido."
+                                    }
+                                    listenerAuth.onFailure(erro)
+                                }
+                        }
+                        else if (cadastroRM.value == true){
+                            listenerAuth.onFailure("RM já cadastrado por outro usuário.")
+                        }
+                        else {
+                            listenerAuth.onFailure("RM não encontrado no banco de dados.")
                         }
                     }
                     .addOnFailureListener { exception ->
-                        listenerAuth.onFailure("RM já cadastrado por outro usuário!")
+                        listenerAuth.onFailure("Erro: $exception")
                     }
 
-                //Agora a validação de todos os campos preenchidos:
-               /* if (nome.isEmpty()) {
-                    listenerAuth.onFailure("Insira o seu nome para a identificação!")
-                } else*/ if (email.isEmpty()) {
-                    listenerAuth.onFailure("O email não pode estar vazio.")
-                } else if (senha.isEmpty()) {
-                    listenerAuth.onFailure("Insira uma senha válida!")
-                } else if (rm.isEmpty()) {
-                    listenerAuth.onFailure("O RM é necessário para a validação!")
-                }
-                else if (codigoturma.isEmpty()) {
-                    listenerAuth.onFailure("Forneça o seu código de turma!")
-                }
-                else if(condicaoRM == true && cadastroRM == false){
-                    //testando a validação:
-                    auth.createUserWithEmailAndPassword(email, senha)
-                        .addOnCompleteListener { cadastro ->
-                            if (cadastro.isSuccessful) { //Depois que o cadastro for um "sucesso", a gente vai salvar os seguintes dados no firebase:
 
-                                //Pegando o ID do usuário que acabou de se cadastrar usando o "auth", ou seja, o usuário atual.
-                                var usuarioID = FirebaseAuth.getInstance().currentUser?.uid.toString()
-
-                                //mapeando o que eu quero salvar com as variaveis nos parâmetros:
-                                val dadosUsuariosMap = hashMapOf(
-                                    //"nome" to nome,
-                                    "email" to email,
-                                    "rm" to rm,
-                                    "codigoturma" to codigoturma,
-                                    "usuarioID" to usuarioID
-                                )
-
-                                //Iniciando o comando para setar um caminho para uma coleção e gravando os dados nela
-                                //O document(rm) significa que o identificador de cada aluno vai se dar pelo RM. Caso deixe o nome vai acabar sobreescrevendo os dados
-                                firestore.collection("Alunos").document(rm).set(dadosUsuariosMap)
-                                    .addOnCompleteListener {
-                                        listenerAuth.onSucess("Usuário cadastrado com sucesso!")
-                                    }.addOnFailureListener {
-                                        listenerAuth.onFailure("Ocorreu um erro ao salvar os dados.")
-                                    }
-
-                            }
-                        }//Fechamento do cadastrado com sucesso. Agora, vamos tratar alguns possíveis erros que evite o cadastro:
-
-
-                        //Comando pra iniciar o tratamento de "erro" no cadastramento:
-                        .addOnFailureListener { exception ->
-
-                            //"quando" o erro for igual a determinada coisa, faça tal coisa:
-                            val erro = when (exception) {
-                                is FirebaseAuthUserCollisionException -> "Outra conta já cadastrada com estes dados."
-                                is FirebaseAuthWeakPasswordException -> "A senha deve ter no mínimo 6 caracteres."
-                                is FirebaseNetworkException -> "Sem conexão."
-
-                                else -> "Email inválido."
-                            }
-                            listenerAuth.onFailure(erro)
-                        }
-                }
-
-                else {
-                    listenerAuth.onFailure("RM não encontrado no banco de dados.")
-                }
 
             }
       }

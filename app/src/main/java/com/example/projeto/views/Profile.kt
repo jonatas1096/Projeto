@@ -85,13 +85,11 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
     val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
 
-    println("Email: ${UserData.emailEncontrado}")
     /////////
 
     ///
     val nomeMaxCaracteres = 20
     val emailMaxCaracteres = 29
-    println("O uid guardado é ${UserData.UID}")
 
     // Fundo
     Box(
@@ -111,8 +109,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             modifier = Modifier.fillMaxSize()
         ) {
             val (card, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
-                iconApelido, tituloApelido, apelido, iconNome, rm,
-                julio, ines
+                iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, rm,
             ) = createRefs()
 
 
@@ -144,7 +141,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         start.linkTo(card.start, margin = 15.dp)
                         top.linkTo(card.top, margin = 15.dp)
                     }
-                    .size(30.dp),
+                    .size(34.dp),
                 color = Color(0xFFFFFFFF) //nesse color tu pode escolher a cor da arrow, pode ser uma padrão tipo: Color.Black,
                 // ou hexadecimal/rgb como deixei aí, blz?
             )
@@ -328,7 +325,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             //Conjunto do Nome
             Icon(
                 painterResource(id = R.drawable.ic_nomealuno),
-                contentDescription = "Ícone do Apelido do Aluno",
+                contentDescription = "Ícone do Nome do Aluno",
                 modifier = Modifier
                     .constrainAs(iconNome) {
                         start.linkTo(parent.start, margin = 20.dp)
@@ -340,18 +337,18 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             Text(text = "Nome",
                 fontSize = 40.sp,
                 fontFamily = Dongle,
-                modifier = Modifier.constrainAs(tituloApelido){
+                modifier = Modifier.constrainAs(tituloNome){
                     start.linkTo(iconNome.end, margin = 10.dp)
                     top.linkTo(iconApelido.bottom, margin = 40.dp)
                 }
             )
-            Text(text = "Apelido aqui",
+            Text(text = "${UserData.nomeEncontrado}",
                 fontSize = 30.sp,
                 fontFamily = Dongle,
                 color = Color(0xFF838383),
-                modifier = Modifier.constrainAs(apelido){
-                    start.linkTo(iconApelido.end, margin = 20.dp)
-                    top.linkTo(sobreMim.bottom, margin = 55.dp)
+                modifier = Modifier.constrainAs(nome){
+                    start.linkTo(iconNome.end, margin = 20.dp)
+                    top.linkTo(sobreMim.bottom, margin = 145.dp)
                 }
             )
             /////////////////////

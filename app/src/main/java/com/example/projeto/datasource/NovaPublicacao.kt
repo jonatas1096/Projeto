@@ -42,18 +42,39 @@ class NovaPublicacao  @Inject constructor() {
                             listenerPublicacao.onSucess(rm,cpsID,nome)
                         }
 
-                        //Pegando o nome
+                        /*Pegando o nome
                         val nomeEncontrado = documents.documents[0].getString("nome")
                         if (nomeEncontrado != null) {
                             nome = nomeEncontrado
                             listenerPublicacao.onSucess(rm,cpsID,nome)
-                        }
+                        }*/
 
+                        //Pegando o nome
+                        val usuarioData = firestore.collection("Data")
+                        val rmDocument = usuarioData.document("RM")
+                        var nomeEncontrado = ""
+                            rmDocument.get()
+                            .addOnSuccessListener {document ->
+                                if (document.exists() && document != null){
+
+                                    val arrayRM = document.get("$rm") as? List<String>
+
+                                    if (arrayRM != null && arrayRM.size > 1){
+                                        nomeEncontrado = arrayRM[1]
+                                    }
+                                    listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                                }
+                                else{
+                                    println("O array nao existe ou está vazio.")
+                                }
+                            }
+                            .addOnFailureListener {
+                                println("Não encontrou o documento")
+                            }
                     } else {
                         // Nenhum documento com esse UID encontrado
                        listenerPublicacao.onFailure("Nenhum rm foi encontrado.")
                     }
-
                 }
                 .addOnFailureListener { exception ->
                     // Qualquer falha
@@ -78,15 +99,37 @@ class NovaPublicacao  @Inject constructor() {
                             listenerPublicacao.onSucess(rm,cpsID,nome)
                         }
 
-                        //Pegando o nome
+                        /*/Pegando o nome
                         val nomeEncontrado = documents.documents[0].getString("nome")
                         if (nomeEncontrado != null) {
                             nome = nomeEncontrado
                             println("Nome: $nome")
                             listenerPublicacao.onSucess(rm,cpsID,nome)
-                        }
+                        }*/
 
-                    } else {
+                        //Pegando o nome
+                        val usuarioData = firestore.collection("Data")
+                        val cpsDocument = usuarioData.document("ID")
+                        var nomeEncontrado = ""
+                        cpsDocument.get()
+                            .addOnSuccessListener {document ->
+                                if (document.exists() && document != null){
+                                    val arrayID = document.get("$cpsID") as? List<String>
+
+                                    if (arrayID != null && arrayID.size > 1){
+                                        nomeEncontrado = arrayID[1]
+                                    }
+                                    listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                                }
+                                else{
+                                    println("O array nao existe ou está vazio.")
+                                }
+                            }
+                            .addOnFailureListener {
+                                println("Não encontrou o documento")
+                            }
+                    }
+                    else {
                         // Nenhum documento com esse UID encontrado
                         listenerPublicacao.onFailure("Nenhum cps ID foi encontrado.")
                     }
