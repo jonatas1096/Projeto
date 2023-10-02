@@ -1,5 +1,6 @@
 package com.example.projeto.datasource
 
+import android.annotation.SuppressLint
 import android.media.Image
 import androidx.compose.runtime.Composable
 import com.example.projeto.listener.ListenerAuth
@@ -14,6 +15,7 @@ class NovaPublicacao  @Inject constructor() {
     //Essa classe separada vem com o objetivo de montar a lógica de uma nova publicação, mas, antes de tudo precisei implementar um
     //método para obter dados do usuários logado e saber quem está usando o app.
     //Então, primeiro separei uma função para reconhecer quem está logado:
+  //  @SuppressLint("SuspiciousIndentation")
     fun reconhecerUsuario(listenerPublicacao:ListenerPublicacao){
         //Iniciando o banco de dados
         val firestore = FirebaseFirestore.getInstance()
@@ -23,11 +25,11 @@ class NovaPublicacao  @Inject constructor() {
 
         var rm = "" //vamo armazenar aqui o rm depois
         var cpsID = "" //aqui armazenaremos o ID do professor
-        var nome = "" //e aqui o nome
+        var nomeEncontrado = "" //e aqui o nome
 
 
         //Começando procurando nos alunos
-        if (usuarioUID != null) {
+        if (rm != null) {
             val usuarioColecao = firestore.collection("Alunos")
 
             usuarioColecao.whereEqualTo("usuarioID", usuarioUID)
@@ -39,19 +41,12 @@ class NovaPublicacao  @Inject constructor() {
                         val rmEncontrado = documents.documents[0].getString("rm")
                         if (rmEncontrado != null) {
                             rm = rmEncontrado
-                            listenerPublicacao.onSucess(rm,cpsID,nome)
+                            listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
                         }
 
-                        /*Pegando o nome
-                        val nomeEncontrado = documents.documents[0].getString("nome")
-                        if (nomeEncontrado != null) {
-                            nome = nomeEncontrado
-                            listenerPublicacao.onSucess(rm,cpsID,nome)
-                        }*/
-
                         //Pegando o nome
-                        val usuarioData = firestore.collection("Data")
-                        val rmDocument = usuarioData.document("RM")
+                        val rmData = firestore.collection("Data")
+                        val rmDocument = rmData.document("RM")
                         var nomeEncontrado = ""
                             rmDocument.get()
                             .addOnSuccessListener {document ->
@@ -61,6 +56,7 @@ class NovaPublicacao  @Inject constructor() {
 
                                     if (arrayRM != null && arrayRM.size > 1){
                                         nomeEncontrado = arrayRM[1]
+                                        println("O nome: $nomeEncontrado")
                                     }
                                     listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
                                 }
@@ -81,9 +77,8 @@ class NovaPublicacao  @Inject constructor() {
                     println("Erro aleatório: $exception")
                 }
         }
-
         //Agora procurando nos professores
-        if (usuarioUID != null) {
+        if(cpsID != null){
             val usuarioColecao = firestore.collection("Cps")
             usuarioColecao.whereEqualTo("cpsID", usuarioUID)
                 .get()
@@ -96,20 +91,13 @@ class NovaPublicacao  @Inject constructor() {
                         if (cpsidEncontrado != null) {
                             cpsID = cpsidEncontrado
                             println("cpsID: $cpsID")
-                            listenerPublicacao.onSucess(rm,cpsID,nome)
+                            listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
                         }
 
-                        /*/Pegando o nome
-                        val nomeEncontrado = documents.documents[0].getString("nome")
-                        if (nomeEncontrado != null) {
-                            nome = nomeEncontrado
-                            println("Nome: $nome")
-                            listenerPublicacao.onSucess(rm,cpsID,nome)
-                        }*/
 
                         //Pegando o nome
-                        val usuarioData = firestore.collection("Data")
-                        val cpsDocument = usuarioData.document("ID")
+                        val cpsData = firestore.collection("Data")
+                        val cpsDocument = cpsData.document("ID")
                         var nomeEncontrado = ""
                         cpsDocument.get()
                             .addOnSuccessListener {document ->

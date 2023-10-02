@@ -83,14 +83,19 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     val cpsID = UserData.cpsIDEncontrado
     val context = LocalContext.current
 
-    val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
+    // As variáveis para usar no perfil:
 
+    val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
+    val nomeEncontrado by remember { mutableStateOf(UserData.nomeEncontrado)}
+    val emailEncontrado by remember{ mutableStateOf(UserData.emailEncontrado) }
+    //
     /////////
 
     ///
     val nomeMaxCaracteres = 20
     val emailMaxCaracteres = 29
 
+    println("Aqui: \n ${UserData.nomeEncontrado}\n ${UserData.emailEncontrado}. ${UserData.rmEncontrado}\n ${UserData.cpsIDEncontrado}\n ${UserData.UID}\n ${UserData.imagemUrl}\n")
     // Fundo
     Box(
         modifier = Modifier
@@ -342,7 +347,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     top.linkTo(iconApelido.bottom, margin = 40.dp)
                 }
             )
-            Text(text = "${UserData.nomeEncontrado}",
+            Text(text = "$nomeEncontrado",
                 fontSize = 30.sp,
                 fontFamily = Dongle,
                 color = Color(0xFF838383),

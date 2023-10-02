@@ -105,7 +105,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     }
 
 
-    //println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}, imagem: ${UserData.imagemUrl}")
 
     LaunchedEffect(Unit){
         println("Entrou no LaunchedEffect e vai coletar os dados do firebase.")
