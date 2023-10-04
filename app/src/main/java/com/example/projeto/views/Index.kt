@@ -62,7 +62,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 
 
-
+    LaunchedEffect(Unit){
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
         override fun onSucess(rm:String, cpsID:String, nome:String) {
@@ -77,36 +77,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
     })
 
-    // Agora uma lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
-    if (!alunoRM.isNullOrEmpty()) {
-        val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
-        alunoRef.downloadUrl
-            .addOnSuccessListener { uri ->
-                val url = uri.toString()
-                println("URL obtida: $url")
-                imagemUrl.value = url
-                UserData.updateUrl(url)
-            }
-            .addOnFailureListener { exception ->
-                println("A URL não pôde ser obtida. Erro: $exception")
-            }
-    } else if (!cpsID.isNullOrEmpty()) {
-        val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
-        cpsRef.downloadUrl
-            .addOnSuccessListener { uri ->
-                val url = uri.toString()
-                println("URL obtida: $url")
-                imagemUrl.value = url
-                UserData.updateUrl(url)
-            }
-            .addOnFailureListener { exception ->
-                println("A URL não pôde ser obtida. Erro: $exception")
-            }
-    }
 
 
-
-    LaunchedEffect(Unit){
         println("Entrou no LaunchedEffect e vai coletar os dados do firebase.")
         val postagensRef = firestore.collection("Postagens")
 
@@ -151,9 +123,39 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 println("Não foi possivel coletar os dados $erro")
             }
 
+
+
+
+
+        /*// Agora uma lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
+        if (!alunoRM.isNullOrEmpty()) {
+            val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
+            alunoRef.downloadUrl
+                .addOnSuccessListener { uri ->
+                    val url = uri.toString()
+                    println("URL obtida: $url")
+                    imagemUrl.value = url
+                    UserData.updateUrl(url)
+                }
+                .addOnFailureListener { exception ->
+                    println("A URL não pôde ser obtida. Erro: $exception")
+                }
+        } else if (!cpsID.isNullOrEmpty()) {
+            val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
+            cpsRef.downloadUrl
+                .addOnSuccessListener { uri ->
+                    val url = uri.toString()
+                    println("URL obtida: $url")
+                    imagemUrl.value = url
+                    UserData.updateUrl(url)
+                }
+                .addOnFailureListener { exception ->
+                    println("A URL não pôde ser obtida. Erro: $exception")
+                }
+        }*/
     }
-    
-    
+
+
     Scaffold(
         scaffoldState = scaffoldState,
 

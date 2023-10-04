@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import android.annotation.SuppressLint
@@ -27,12 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonElevation
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -51,12 +45,15 @@ import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
+import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
@@ -67,7 +64,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
     // Unica forma que eu consegui pra abrir a galeria sendo uma função composable
     // aqui é só a lógica da galeria
-
     var galeriaState by remember { mutableStateOf(false) }
     var exibirImagemPadrao by remember { mutableStateOf(true) }
 
@@ -83,19 +79,63 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     val cpsID = UserData.cpsIDEncontrado
     val context = LocalContext.current
 
-    // As variáveis para usar no perfil:
 
-    val imagemUrl = remember { mutableStateOf<String?>(UserData.imagemUrl) }
-    val nomeEncontrado by remember { mutableStateOf(UserData.nomeEncontrado)}
-    val emailEncontrado by remember{ mutableStateOf(UserData.emailEncontrado) }
+    //Coroutine
+    val coroutineScope = rememberCoroutineScope()
+
+    // As variáveis para usar no perfil:
+    var imagemUrl by remember { mutableStateOf<String?>("") }
+    var urlBaixada by remember{ mutableStateOf(false) }
+   //var apelidoUsuario by remember { mutableStateOf<String?>(null) }
+    var apelidoUsuario by remember { mutableStateOf("") }
+    var apelidoState by remember{ mutableStateOf(false) }
+    var outlinedApelido by remember{ mutableStateOf("") }
+
+    // Aqui é uma lógica para tentar puxar a imagem do perfil do firebase do usuário.
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            if (!alunoRM.isNullOrEmpty()) {
+                val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
+                alunoRef.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        val url = uri.toString()
+                        println("URL obtida: $url")
+                        imagemUrl = url
+                        UserData.updateUrl(url)
+                    }
+                    .addOnFailureListener { exception ->
+                        println("A URL não pôde ser obtida. Erro: $exception")
+                    }
+            } else if (!cpsID.isNullOrEmpty()) {
+                val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
+                cpsRef.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        val url = uri.toString()
+                        println("URL obtida: $url")
+                        imagemUrl = url
+                        UserData.updateUrl(url)
+                    }
+                    .addOnFailureListener { exception ->
+                        println("A URL não pôde ser obtida. Erro: $exception")
+                    }
+            }
+            delay(2000)
+            urlBaixada = true
+            println("Delay passou")
+
+        }
+    }
     //
     /////////
 
-    ///
+
+
+
+    // Para "quebrar" textos muito grandes.
     val nomeMaxCaracteres = 20
     val emailMaxCaracteres = 29
 
-    println("Aqui: \n ${UserData.nomeEncontrado}\n ${UserData.emailEncontrado}. ${UserData.rmEncontrado}\n ${UserData.cpsIDEncontrado}\n ${UserData.UID}\n ${UserData.imagemUrl}\n")
+
     // Fundo
     Box(
         modifier = Modifier
@@ -104,19 +144,34 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     ) {
     }
 
+
     // Box da tela
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 15.dp)
+        .padding(bottom = 20.dp)
     ) {
         // Constraint do quadrado e do conteúdo de dentro
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            val (card, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
+            val (card, cardCinza, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
                 iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, rm,
             ) = createRefs()
 
+
+            Surface(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(30.dp),
+                color = Color(248, 248, 248, 255),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .constrainAs(cardCinza) {
+                        top.linkTo(parent.top)
+                    }
+
+            ){}
 
                 // Fundo laranja/aluno
                 Card(
@@ -136,7 +191,10 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     )
                 }
 
-            // Arrow voltar (seta que volta)
+
+
+
+            // Arrow voltar superior (seta que volta)
             arrowVoltar(
                 onClick = {
                     navController.navigate("Index")
@@ -151,42 +209,80 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 // ou hexadecimal/rgb como deixei aí, blz?
             )
 
-            // Area de mudar a foto
-            Surface(
-                shape = CircleShape,
-                modifier = Modifier
-                    .constrainAs(areaFoto) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top, margin = 35.dp)
-                        end.linkTo(parent.end)
-                    }
-                    .size(135.dp)
-                    .clickable(onClick = {
-                        galeriaState = true
-                        exibirImagemPadrao = false
-                    })
-            ) {
-                // Aqui é uma lógica para a foto de perfil.
-                // Primeiro, antes de qualquer outra coisa eu já carrego a imagem padrão do github.
-                // Depois, uma imagem será carregada no lugar caso a imagemURL não for "null".
-                // Ou seja, caso algo de errado com a do usuário a padrão vai continuar por lá
-                loadImage(
-                    path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
-                    contentDescription = "Imagem default do usuário",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                )
-                imagemUrl.value?.let { url ->
-                    if (imagemUrl.value != null) {
+
+
+            // Area de mudar a foto + lógica do progressCircular
+            if (urlBaixada){ //Se a url ja foi totalmente baixada eu vou tentar exibir ela ou uma padrão.
+                Surface(
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .constrainAs(areaFoto) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top, margin = 35.dp)
+                            end.linkTo(parent.end)
+                        }
+                        .size(135.dp)
+                        .clickable(onClick = {
+                            galeriaState = true
+                            exibirImagemPadrao = false
+                        })
+                ) {
+                    // Aqui é uma lógica para a foto de perfil.
+                    // Primeiro, eu tento exibir a imagem que em teoria está no firebase do usuario
+                    // Caso não exista imagem, eu exibo uma padrão do github.
+                    imagemUrl?.let {
                         loadImage(
-                            path = url,
+                            path = imagemUrl!!,
                             contentDescription = "Imagem default do usuário",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+                    if (UserData.imagemUrl.isNullOrEmpty()){
+                        loadImage(
+                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                            contentDescription = "Imagem default do usuário",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
                 }
             }
+            else{ //Senão, eu exibo um circulo de progresso indicando que ainda está baixando
+                Surface(
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .constrainAs(areaFoto) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top, margin = 35.dp)
+                            end.linkTo(parent.end)
+                        }
+                        .size(135.dp)
+                        .clickable(onClick = {
+                            galeriaState = true
+                            exibirImagemPadrao = false
+                        })
+                ){
+                    if (UserData.cpsIDEncontrado.isNullOrEmpty()){ //exibiremos a do aluno se nao tiver cpsID
+                        CircularProgressIndicator(
+                            color = Color(230, 17, 77, 255),
+                            strokeWidth = 5.dp
+                        )
+                    }
+                    else{ //Se não estiver vazio, o do professor.
+                        CircularProgressIndicator(
+                            color = Color(33, 156, 238, 255),
+                            strokeWidth = 5.dp
+                        )
+                    }
+
+                }
+            }
+
+
+
+
 
 
             if (UserData.nomeEncontrado.length > nomeMaxCaracteres){
@@ -205,7 +301,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             }
             else{
                 Text(
-                    text = "${UserData.nomeEncontrado}",
+                    text = UserData.nomeEncontrado,
                     fontSize = 46.sp,
                     color = Color.White,
                     fontFamily = Dongle,
@@ -221,7 +317,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
             if (UserData.emailEncontrado.length > emailMaxCaracteres){
                 Text(
-                    text = "${UserData.emailEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
+                    text = "${UserData.emailEncontrado.substring(0,emailMaxCaracteres) + "..."}",
                     fontSize = 34.sp,
                     color = Color.White,
                     fontFamily = Dongle,
@@ -316,15 +412,35 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     top.linkTo(sobreMim.bottom, margin = 25.dp)
                 }
             )
-            Text(text = "Apelido aqui",
-                fontSize = 30.sp,
-                fontFamily = Dongle,
-                color = Color(0xFF838383),
-                modifier = Modifier.constrainAs(apelido){
-                    start.linkTo(iconApelido.end, margin = 20.dp)
-                    top.linkTo(sobreMim.bottom, margin = 55.dp)
-                }
-            )
+            if (UserData.apelidoUsuario.isNotEmpty()){
+                Text(text = UserData.apelidoUsuario,
+                    fontSize = 31.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(apelido){
+                        start.linkTo(iconApelido.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 55.dp)
+                    }
+                )
+            }
+            else{
+                Text(text = "<Inserir>",
+                    fontSize = 34.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF1370FD),
+                    modifier = Modifier
+                        .constrainAs(apelido) {
+                            start.linkTo(iconApelido.end, margin = 20.dp)
+                            top.linkTo(sobreMim.bottom, margin = 55.dp)
+                        }
+                        .clickable(
+                            onClick = {
+                                apelidoState = true
+                            }
+                        )
+                )
+            }
+
             /////////////////////
 
             //Conjunto do Nome
@@ -347,7 +463,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     top.linkTo(iconApelido.bottom, margin = 40.dp)
                 }
             )
-            Text(text = "$nomeEncontrado",
+            Text(text = UserData.nomeEncontrado,
                 fontSize = 30.sp,
                 fontFamily = Dongle,
                 color = Color(0xFF838383),
@@ -361,47 +477,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             //Conjunto do RM
 
 
-           /* // Estudos Anahi
-            loadImage(
-                path = imagemUrl.value ?: "https://static.wikia.nocookie.net/cocorico/images/e/e3/Julio-careca.jpg/revision/latest?cb=20211011002720&path-prefix=pt-br",
-                contentDescription = "julio careca",
-                contentScale = ContentScale.None,
-                modifier = Modifier
-                    .size(120.dp)
-                    .constrainAs(julio) {
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                    }
-                    .width(360.dp)
-                    .height(765.dp)
-            )
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "AAAAAAAAAAA")
-                    Box(
-                        modifier = Modifier
-                            .background(Color.Black, shape = RoundedCornerShape(20.dp))
-                            .width(100.dp)
-                            .height(100.dp)
-                            .padding(horizontal = (70.dp))
-                    )
-                }
 
-            loadImage(
-                path = "https://rd1.com.br/wp-content/uploads/2016/06/In%C3%AAs-Brasil-32-810x442.jpg",
-                contentDescription = "ines",
-                contentScale = ContentScale.None,
-                modifier = Modifier
-                    .size(120.dp)
-                    .constrainAs(ines) {
-                        start.linkTo(julio.end) // Primeiro membro: Ines // Segundo membro: a referência dela
-                        // Em outras palavras, o start da Ines (a esquerda) vai começar à direita do Julio.
-                        bottom.linkTo(parent.bottom, margin = 10.dp)
-                    }
-            )*/
         }
     }
 
@@ -483,7 +559,9 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     }
 
 
-
+    if(apelidoState){
+        inserirApelido(apelidoUsuario,outlinedApelido)
+    }
 }
 
 
@@ -521,5 +599,109 @@ fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
             // Serve para executar alguma coisa como limpeza quando a execução acaba, nao sei como usar
         }
     }
+}
+
+
+@Composable
+fun inserirApelido(apelidoUsuario:String, outlinedApelido:String){
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val firestore = Firebase.firestore
+    val alunoRM = UserData.rmEncontrado
+    val cpsID = UserData.cpsIDEncontrado
+
+    val context = LocalContext.current
+
+    var outlinedTexto by remember { mutableStateOf(outlinedApelido) }
+
+
+
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (cardApelido) = createRefs()
+
+        Card(
+            modifier = Modifier
+                .constrainAs(cardApelido) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+                .size(220.dp),
+            shape = RoundedCornerShape(30.dp),
+            elevation = 8.dp
+        ){
+            Column(modifier = Modifier.fillMaxSize()) {
+                OutlinedTextField(
+                    value = outlinedApelido,
+                    onValueChange = {
+                        outlinedTexto = it
+                    })
+
+                Button(onClick = {
+
+                        coroutineScope.launch {
+                            if (cpsID.isNullOrEmpty()){ //entendemos que é um aluno
+                                val usuarioColecao = firestore.collection("Alunos")
+                                val alunoDocument = usuarioColecao.document("$alunoRM")
+
+                                alunoDocument.get()
+                                    .addOnSuccessListener {Document->
+                                        val atualizarApelido = hashMapOf(
+                                            "apelido" to apelidoUsuario
+                                        )
+
+                                        //Mesclando os dados para nao excluir o que já está lá
+                                        alunoDocument.set(atualizarApelido, SetOptions.merge())
+                                            .addOnSuccessListener {
+                                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            .addOnFailureListener {exception ->
+                                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                                println(exception)
+                                            }
+                                    }
+                                    .addOnFailureListener{
+                                        println("O documento nao existe.")
+                                    }
+                            }
+                            else{ //entendemos que é um cps
+                                val usuarioColecao = firestore.collection("Cps")
+                                val alunoDocument = usuarioColecao.document("$cpsID")
+
+                                alunoDocument.get()
+                                    .addOnSuccessListener {Document->
+                                        val atualizarApelido = hashMapOf(
+                                            "apelido" to apelidoUsuario
+                                        )
+
+                                        //Mesclando os dados para nao excluir o que já está lá
+                                        alunoDocument.set(atualizarApelido, SetOptions.merge())
+                                            .addOnSuccessListener {
+                                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                                            }
+                                            .addOnFailureListener {exception ->
+                                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                                println(exception)
+                                            }
+                                    }
+                                    .addOnFailureListener{
+                                        println("O documento nao existe.")
+                                    }
+                            }
+                        }
+
+                }) {
+
+                }
+            }
+
+        }
+    }
+
+
 }
 

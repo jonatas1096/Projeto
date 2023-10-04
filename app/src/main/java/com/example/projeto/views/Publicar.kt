@@ -58,7 +58,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     ////////////////////////////////
 
     //toda a palhaçada do jetpack só pra abrir o bottomshet
-    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Expanded)
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
     //

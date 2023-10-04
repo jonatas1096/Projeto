@@ -7,7 +7,7 @@ object UserData {
     var imagemUrl: String = ""
     var UID: String = ""
     var emailEncontrado: String = ""
-
+    var apelidoUsuario: String = ""
 
 
     //Atualizar os dados padrões:
@@ -24,6 +24,10 @@ object UserData {
         imagemUrl = UrlObtida
     }
 
+    //Atualizar apelido do usuário:
+    fun setApelido(apelido:String){
+        apelidoUsuario = apelido
+    }
 }
 
 
