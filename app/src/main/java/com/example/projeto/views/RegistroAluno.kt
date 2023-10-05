@@ -269,21 +269,6 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 }
 
         }
-        /*Pandinha
-        Box(
-            modifier = Modifier
-                .constrainAs(pandasapeca) {
-                    top.linkTo(identificacao.bottom, margin = 395.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .size(116.dp)
-        ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/pandinha.png",
-                contentDescription = "panda sapeca",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier)
-        }*/
 
         //Elipse do aluno
         Box(

@@ -22,20 +22,30 @@ import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -56,6 +66,7 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import kotlin.math.max
 
 
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
@@ -86,10 +97,14 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     // As variáveis para usar no perfil:
     var imagemUrl by remember { mutableStateOf<String?>("") }
     var urlBaixada by remember{ mutableStateOf(false) }
-   //var apelidoUsuario by remember { mutableStateOf<String?>(null) }
-    var apelidoUsuario by remember { mutableStateOf("") }
     var apelidoState by remember{ mutableStateOf(false) }
+    var inserirApelido by remember{ mutableStateOf(false) }
     var outlinedApelido by remember{ mutableStateOf("") }
+    val maxCaracteres = 25
+    var atualCaracteres = maxCaracteres - outlinedApelido.length
+    //
+
+    println("Só testando: ${UserData.apelidoUsuario}")
 
     // Aqui é uma lógica para tentar puxar a imagem do perfil do firebase do usuário.
     LaunchedEffect(Unit) {
@@ -119,10 +134,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         println("A URL não pôde ser obtida. Erro: $exception")
                     }
             }
-            delay(2000)
+            delay(1000)
             urlBaixada = true
-            println("Delay passou")
-
         }
     }
     //
@@ -140,8 +153,13 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color(0xFFF7F7F7))
     ) {
+        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundoficial.png",
+            contentDescription = "Background Profile - Aluno",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 
 
@@ -150,6 +168,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
         .fillMaxSize()
         .padding(horizontal = 15.dp)
         .padding(bottom = 20.dp)
+        .padding(top = 20.dp)
     ) {
         // Constraint do quadrado e do conteúdo de dentro
         ConstraintLayout(
@@ -157,9 +176,11 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 .fillMaxSize()
         ) {
             val (card, cardCinza, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
-                iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, rm,
+                iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, gambiarratextfield,
             ) = createRefs()
 
+            val (fecharTextField, confirmarTextField, maxCaracteresConstraint, editarApelido,
+                iconRMCPS,rmoucpsTitulo, rmoucps) = createRefs()
 
             Surface(
                 elevation = 8.dp,
@@ -282,26 +303,40 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
 
 
+            if (UserData.apelidoUsuario.isNullOrEmpty()){ //Se não existir apelido, exibiremos o nome do firebase.
+                if (UserData.nomeEncontrado.length > nomeMaxCaracteres){
+                    Text(
+                        text = "${UserData.nomeEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
+                        fontSize = 46.sp,
+                        color = Color.White,
+                        fontFamily = Dongle,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.constrainAs(nomeUsuario){
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(areaFoto.bottom, margin = 0.dp)
+                        }
+                    )
+                }
+                else{
+                    Text(
+                        text = UserData.nomeEncontrado,
+                        fontSize = 46.sp,
+                        color = Color.White,
+                        fontFamily = Dongle,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.constrainAs(nomeUsuario){
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(areaFoto.bottom, margin = 0.dp)
+                        }
+                    )
 
-
-
-            if (UserData.nomeEncontrado.length > nomeMaxCaracteres){
-                Text(
-                    text = "${UserData.nomeEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
-                    fontSize = 46.sp,
-                    color = Color.White,
-                    fontFamily = Dongle,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.constrainAs(nomeUsuario){
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        top.linkTo(areaFoto.bottom, margin = 0.dp)
-                    }
-                )
+                }
             }
             else{
                 Text(
-                    text = UserData.nomeEncontrado,
+                    text = "${UserData.apelidoUsuario}",
                     fontSize = 46.sp,
                     color = Color.White,
                     fontFamily = Dongle,
@@ -312,8 +347,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         top.linkTo(areaFoto.bottom, margin = 0.dp)
                     }
                 )
-
             }
+
 
             if (UserData.emailEncontrado.length > emailMaxCaracteres){
                 Text(
@@ -387,6 +422,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 fontSize = 30.sp,
                 modifier = Modifier
                     .constrainAs(sobreMim) {
+                        start.linkTo(parent.start, margin = 20.dp)
                         top.linkTo(card.bottom, margin = 50.dp)
                     }
                     .fillMaxWidth()
@@ -403,7 +439,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     }
                     .size(40.dp)
             )
-
             Text(text = "Apelido",
                 fontSize = 40.sp,
                 fontFamily = Dongle,
@@ -412,33 +447,150 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     top.linkTo(sobreMim.bottom, margin = 25.dp)
                 }
             )
-            if (UserData.apelidoUsuario.isNotEmpty()){
-                Text(text = UserData.apelidoUsuario,
-                    fontSize = 31.sp,
+            if(apelidoState){
+              //  val dialogo = remember { mutableStateOf(false) } //para abrir a caixa de dialogo, se necessário.
+
+                //MaxCaracteres para inserir o apelido:
+                Text(text = "Max.Caracteres: $atualCaracteres",
+                    fontSize = 25.sp,
                     fontFamily = Dongle,
                     color = Color(0xFF838383),
-                    modifier = Modifier.constrainAs(apelido){
-                        start.linkTo(iconApelido.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 55.dp)
+                    modifier = Modifier.constrainAs(maxCaracteresConstraint){
+                        start.linkTo(tituloApelido.end, margin = 5.dp)
+                        top.linkTo(sobreMim.bottom, margin = 34.dp)
                     }
                 )
+                //Text field para inserir o apelido
+                if (outlinedApelido.length <= maxCaracteres){
+                    BasicTextField(
+                        value = outlinedApelido,
+                        onValueChange = {
+                            if (it.length <= maxCaracteres){
+                                outlinedApelido = it
+                            }
+                        },
+                        textStyle = TextStyle(
+                            color = Color(0xFF1370FD),
+                            fontSize = 32.sp,
+                            fontFamily = Dongle,
+                            textDecoration = TextDecoration.None
+                        ),
+                        maxLines = 1,
+                        modifier = Modifier
+                            .constrainAs(apelido) {
+                                start.linkTo(iconApelido.end, margin = 20.dp)
+                                top.linkTo(sobreMim.bottom, margin = 55.dp)
+                            }
+                            .width(170.dp)
+                    )
+                }
+
+
+                //Gambiara para marcar a area do textfield
+                Surface(
+                    modifier = Modifier
+                        .constrainAs(gambiarratextfield) {
+                            top.linkTo(apelido.bottom, margin = (-7).dp)
+                            start.linkTo(iconApelido.end, margin = 10.dp)
+                        }
+                        .height(1.dp)
+                        .width(170.dp),
+                        color = Color(0xFF838383)
+                ) {}
+                //Botões para cancelar ou confirmar:
+                //Cancelar:
+                IconButton(
+                    onClick = {
+                        apelidoState = false
+                    },
+                    modifier = Modifier
+                        .constrainAs(fecharTextField) {
+                            start.linkTo(gambiarratextfield.end, margin = 10.dp)
+                            top.linkTo(tituloApelido.bottom, margin = (-8).dp)
+                        }
+                        .size(22.dp)
+                ){
+                    Image(
+                        ImageVector.vectorResource(id = R.drawable.ic_fechar2),
+                        contentDescription = "Ícone para cancelar a atualização do apelido",
+                        colorFilter = ColorFilter.tint(Color.Red)
+                    )
+                }
+                //Confirmar:
+                IconButton(
+                    onClick = {
+                       // dialogo.value = true
+                       inserirApelido = true
+                    },
+                    modifier = Modifier
+                        .constrainAs(confirmarTextField) {
+                            start.linkTo(fecharTextField.end, margin = 25.dp)
+                            top.linkTo(tituloApelido.bottom, margin = (-12).dp)
+                        }
+                        .size(30.dp)
+                ){
+                    Image(
+                        ImageVector.vectorResource(id = R.drawable.ic_confirmar),
+                        contentDescription = "Ícone para confirmar a atualização do apelido",
+                        colorFilter = ColorFilter.tint(Color.Green)
+                    )
+                }
+
+                /*//Se o usuario clicar no confirmar, vamos abrir a caixa de dialogo:
+                if (dialogo.value){
+
+                    inserirApelido(apelidoUsuario = outlinedApelido, dialogo = dialogo, onDismissRequest = { dialogo.value = false })
+                }*/
             }
             else{
-                Text(text = "<Inserir>",
-                    fontSize = 34.sp,
-                    fontFamily = Dongle,
-                    color = Color(0xFF1370FD),
-                    modifier = Modifier
-                        .constrainAs(apelido) {
+                if (UserData.apelidoUsuario.isNotEmpty()){
+                    Text(text = UserData.apelidoUsuario,
+                        fontSize = 31.sp,
+                        fontFamily = Dongle,
+                        color = Color(0xFF838383),
+                        modifier = Modifier.constrainAs(apelido){
                             start.linkTo(iconApelido.end, margin = 20.dp)
                             top.linkTo(sobreMim.bottom, margin = 55.dp)
                         }
-                        .clickable(
-                            onClick = {
-                                apelidoState = true
+                    )
+
+                    //Editar apelido existente:
+                    IconButton(
+                        onClick = {
+                            apelidoState = true
+                        },
+                        modifier = Modifier
+                            .constrainAs(editarApelido) {
+                                start.linkTo(tituloApelido.end, margin = 10.dp)
+                                bottom.linkTo(apelido.top)
                             }
+                            .size(25.dp)
+                    ){
+                        Image(
+                            ImageVector.vectorResource(id = R.drawable.ic_lapis),
+                            contentDescription = "Ícone para editar o apelido",
+                            //colorFilter = ColorFilter.tint(Color.Green)
                         )
-                )
+                    }
+                }
+                else{
+                    Text(text = "<Inserir>",
+                        fontSize = 34.sp,
+                        fontFamily = Dongle,
+                        color = Color(0xFF1370FD),
+                        modifier = Modifier
+                            .constrainAs(apelido) {
+                                start.linkTo(iconApelido.end, margin = 20.dp)
+                                top.linkTo(sobreMim.bottom, margin = 55.dp)
+                            }
+                            .clickable(
+                                onClick = {
+                                    apelidoState = true
+                                }
+                            )
+                    )
+                }
+
             }
 
             /////////////////////
@@ -460,7 +612,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 fontFamily = Dongle,
                 modifier = Modifier.constrainAs(tituloNome){
                     start.linkTo(iconNome.end, margin = 10.dp)
-                    top.linkTo(iconApelido.bottom, margin = 40.dp)
+                    top.linkTo(iconApelido.bottom, margin = 35.dp)
                 }
             )
             Text(text = UserData.nomeEncontrado,
@@ -474,8 +626,36 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             )
             /////////////////////
 
-            //Conjunto do RM
-
+            //Conjunto do RM/CPSID
+            if (!alunoRM.isNullOrEmpty()){ //está na negativa "!", então não pode estar vazio ou nullo.
+                Icon(
+                    painterResource(id = R.drawable.ic_rm),
+                    contentDescription = "Ícone do RM do Aluno",
+                    modifier = Modifier
+                        .constrainAs(iconRMCPS) {
+                            start.linkTo(parent.start, margin = 20.dp)
+                            top.linkTo(iconNome.bottom, margin = 40.dp)
+                        }
+                        .size(38.dp)
+                )
+                Text(text = "RM",
+                    fontSize = 40.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier.constrainAs(rmoucpsTitulo){
+                        start.linkTo(iconRMCPS.end, margin = 10.dp)
+                        top.linkTo(iconNome.bottom, margin = 35.dp)
+                    }
+                )
+                Text(text = UserData.rmEncontrado,
+                    fontSize = 30.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(rmoucps){
+                        start.linkTo(iconRMCPS.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 225.dp)
+                    }
+                )
+            }
 
 
         }
@@ -559,8 +739,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     }
 
 
-    if(apelidoState){
-        inserirApelido(apelidoUsuario,outlinedApelido)
+    if (inserirApelido){
+        inserirApelido(outlinedApelido, navController)
     }
 }
 
@@ -603,7 +783,7 @@ fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
 
 
 @Composable
-fun inserirApelido(apelidoUsuario:String, outlinedApelido:String){
+fun inserirApelido(apelidoUsuario:String, navController: NavController /*dialogo: MutableState<Boolean>, onDismissRequest: () -> Unit,*/){
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -613,94 +793,131 @@ fun inserirApelido(apelidoUsuario:String, outlinedApelido:String){
 
     val context = LocalContext.current
 
-    var outlinedTexto by remember { mutableStateOf(outlinedApelido) }
+   /* var permitirApelido by remember { mutableStateOf(false) }
 
 
+    if (dialogo.value){
+        Dialog(
+            onDismissRequest = {onDismissRequest},
+            properties = DialogProperties(
+                dismissOnClickOutside = true,
+            ),
+            )
+        {
+            Card(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(15.dp),
+                backgroundColor = Color.White,
+                modifier = Modifier
+                    //.height(190.dp)
+                    .width(290.dp)
+                    .padding(8.dp)
+            ){
+                Column(
+                    modifier = Modifier//.fillMaxSize()
+                ) {
+                    Text(text = "Atualizar o apelido?",
+                        fontFamily = Dongle,
+                        fontSize = 30.sp
+                    )
+                    Row(Modifier.fillMaxWidth())
+                    {
+                        Text(text = "Não",
+                            color = Color(0xFF838383),
+                            fontSize = 22.sp,
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = { onDismissRequest() }
+                                )
+                            .padding(start = 50.dp)
+                        )
 
-    ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val (cardApelido) = createRefs()
-
-        Card(
-            modifier = Modifier
-                .constrainAs(cardApelido) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }
-                .size(220.dp),
-            shape = RoundedCornerShape(30.dp),
-            elevation = 8.dp
-        ){
-            Column(modifier = Modifier.fillMaxSize()) {
-                OutlinedTextField(
-                    value = outlinedApelido,
-                    onValueChange = {
-                        outlinedTexto = it
-                    })
-
-                Button(onClick = {
-
-                        coroutineScope.launch {
-                            if (cpsID.isNullOrEmpty()){ //entendemos que é um aluno
-                                val usuarioColecao = firestore.collection("Alunos")
-                                val alunoDocument = usuarioColecao.document("$alunoRM")
-
-                                alunoDocument.get()
-                                    .addOnSuccessListener {Document->
-                                        val atualizarApelido = hashMapOf(
-                                            "apelido" to apelidoUsuario
-                                        )
-
-                                        //Mesclando os dados para nao excluir o que já está lá
-                                        alunoDocument.set(atualizarApelido, SetOptions.merge())
-                                            .addOnSuccessListener {
-                                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                                            }
-                                            .addOnFailureListener {exception ->
-                                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
-                                                println(exception)
-                                            }
+                        Text(text = "Sim",
+                            color = Color(0xFF838383),
+                            fontSize = 22.sp,
+                            modifier = Modifier
+                                .clickable(
+                                    onClick = {
+                                        permitirApelido = true
                                     }
-                                    .addOnFailureListener{
-                                        println("O documento nao existe.")
-                                    }
-                            }
-                            else{ //entendemos que é um cps
-                                val usuarioColecao = firestore.collection("Cps")
-                                val alunoDocument = usuarioColecao.document("$cpsID")
-
-                                alunoDocument.get()
-                                    .addOnSuccessListener {Document->
-                                        val atualizarApelido = hashMapOf(
-                                            "apelido" to apelidoUsuario
-                                        )
-
-                                        //Mesclando os dados para nao excluir o que já está lá
-                                        alunoDocument.set(atualizarApelido, SetOptions.merge())
-                                            .addOnSuccessListener {
-                                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                                            }
-                                            .addOnFailureListener {exception ->
-                                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
-                                                println(exception)
-                                            }
-                                    }
-                                    .addOnFailureListener{
-                                        println("O documento nao existe.")
-                                    }
-                            }
-                        }
-
-                }) {
+                                )
+                            .padding(start = 100.dp)
+                        )
+                    }
 
                 }
             }
 
+
+
         }
-    }
+    }*/
+
+    //if (permitirApelido){
+
+        LaunchedEffect(Unit){
+            println("Entrou no launched")
+            coroutineScope.launch {
+                if (cpsID.isNullOrEmpty()){ //entendemos que é um aluno
+                    println("Achou um aluno")
+                    val usuarioColecao = firestore.collection("Alunos")
+                    val alunoDocument = usuarioColecao.document("$alunoRM")
+
+                    alunoDocument.get()
+                        .addOnSuccessListener {Document->
+                            val atualizarApelido = hashMapOf(
+                                "apelido" to apelidoUsuario
+                            )
+
+                            //Mesclando os dados para nao excluir o que já está lá
+                            alunoDocument.set(atualizarApelido, SetOptions.merge())
+                                .addOnSuccessListener {
+                                    Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                                    UserData.apelidoUsuario = apelidoUsuario
+                                }
+                                .addOnFailureListener {exception ->
+                                    Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                    println(exception)
+                                }
+                        }
+                        .addOnFailureListener{
+                            println("O documento nao existe.")
+                        }
+                }
+                else{ //entendemos que é um cps
+                    val usuarioColecao = firestore.collection("Cps")
+                    val alunoDocument = usuarioColecao.document("$cpsID")
+
+                    alunoDocument.get()
+                        .addOnSuccessListener {Document->
+                            val atualizarApelido = hashMapOf(
+                                "apelido" to apelidoUsuario
+                            )
+
+                            //Mesclando os dados para nao excluir o que já está lá
+                            alunoDocument.set(atualizarApelido, SetOptions.merge())
+                                .addOnSuccessListener {
+                                    UserData.apelidoUsuario = apelidoUsuario
+                                    Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                                }
+                                .addOnFailureListener {exception ->
+                                    Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                    println(exception)
+                                }
+                        }
+                        .addOnFailureListener{
+                            println("O documento nao existe.")
+                        }
+                }
+                delay(1000)
+                navController.navigate("Profile")
+            }
+
+        }
+
+
+  //  }
+
 
 
 }

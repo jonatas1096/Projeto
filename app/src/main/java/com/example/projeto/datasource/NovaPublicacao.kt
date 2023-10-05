@@ -16,6 +16,7 @@ class NovaPublicacao  @Inject constructor() {
     //método para obter dados do usuários logado e saber quem está usando o app.
     //Então, primeiro separei uma função para reconhecer quem está logado:
   //  @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation")
     fun reconhecerUsuario(listenerPublicacao:ListenerPublicacao){
         //Iniciando o banco de dados
         val firestore = FirebaseFirestore.getInstance()
@@ -25,6 +26,7 @@ class NovaPublicacao  @Inject constructor() {
 
         var rm = "" //vamo armazenar aqui o rm depois
         var cpsID = "" //aqui armazenaremos o ID do professor
+        var apelidoEncontrado = ""
         var nomeEncontrado = "" //e aqui o nome
 
 
@@ -41,13 +43,20 @@ class NovaPublicacao  @Inject constructor() {
                         val rmEncontrado = documents.documents[0].getString("rm")
                         if (rmEncontrado != null) {
                             rm = rmEncontrado
-                            listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                        }
+
+                        //Pegando o apelido
+                        val apelidoUsuario = documents.documents[0].getString("apelido")
+                        if (apelidoUsuario != null){
+                            apelidoEncontrado = apelidoUsuario
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
                         }
 
                         //Pegando o nome
                         val rmData = firestore.collection("Data")
                         val rmDocument = rmData.document("RM")
-                        var nomeEncontrado = ""
+                        //var nomeEncontrado = ""
                             rmDocument.get()
                             .addOnSuccessListener {document ->
                                 if (document.exists() && document != null){
@@ -58,7 +67,7 @@ class NovaPublicacao  @Inject constructor() {
                                         nomeEncontrado = arrayRM[1]
                                         println("O nome: $nomeEncontrado")
                                     }
-                                    listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
                                 }
                                 else{
                                     println("O array nao existe ou está vazio.")
@@ -91,9 +100,15 @@ class NovaPublicacao  @Inject constructor() {
                         if (cpsidEncontrado != null) {
                             cpsID = cpsidEncontrado
                             println("cpsID: $cpsID")
-                            listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
                         }
 
+                        //Pegando o apelido
+                        val apelidoUsuario = documents.documents[0].getString("apelido")
+                        if (apelidoUsuario != null){
+                            apelidoEncontrado = apelidoUsuario
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                        }
 
                         //Pegando o nome
                         val cpsData = firestore.collection("Data")
@@ -107,7 +122,7 @@ class NovaPublicacao  @Inject constructor() {
                                     if (arrayID != null && arrayID.size > 1){
                                         nomeEncontrado = arrayID[1]
                                     }
-                                    listenerPublicacao.onSucess(rm,cpsID,nomeEncontrado)
+                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
                                 }
                                 else{
                                     println("O array nao existe ou está vazio.")

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
@@ -60,15 +62,24 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     //Uma variavel para auxiliar no armazenamento da URL do aluno/professor
     val imagemUrl = remember { mutableStateOf<String?>(null) }
 
+    //Lógica do carregamento
+    var indexState by remember{ mutableStateOf(true) }
+    println("Index state valor inicial: $indexState")
+
+
+
 
 
     LaunchedEffect(Unit){
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
-        override fun onSucess(rm:String, cpsID:String, nome:String) {
-            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID e o nome: $nome")
+        override fun onSucess(rm:String, cpsID:String, apelido:String, nome:String) {
+            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID , o apelido $apelido, e o nome: $nome")
             if (email != null) { // <- precisei colocar por conta do "?" do authentication do firebase
                 UserData.setUserData(rm, cpsID, nome, UIDref, email)
+            }
+            if (!apelido.isNullOrEmpty()){//na negativa "!", nao está vazio ou nullo.
+                UserData.setApelido(apelido)
             }
         }
         override fun onFailure(erro: String) {
@@ -123,36 +134,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 println("Não foi possivel coletar os dados $erro")
             }
 
-
-
-
-
-        /*// Agora uma lógica para pegar a URL da imagem que o usuário vai subir pro Firebase (eu renderizo na index para conseguir usar em qualquer lugar do app)
-        if (!alunoRM.isNullOrEmpty()) {
-            val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(alunoRM)
-            alunoRef.downloadUrl
-                .addOnSuccessListener { uri ->
-                    val url = uri.toString()
-                    println("URL obtida: $url")
-                    imagemUrl.value = url
-                    UserData.updateUrl(url)
-                }
-                .addOnFailureListener { exception ->
-                    println("A URL não pôde ser obtida. Erro: $exception")
-                }
-        } else if (!cpsID.isNullOrEmpty()) {
-            val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(cpsID)
-            cpsRef.downloadUrl
-                .addOnSuccessListener { uri ->
-                    val url = uri.toString()
-                    println("URL obtida: $url")
-                    imagemUrl.value = url
-                    UserData.updateUrl(url)
-                }
-                .addOnFailureListener { exception ->
-                    println("A URL não pôde ser obtida. Erro: $exception")
-                }
-        }*/
     }
 
 
@@ -224,11 +205,13 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 modifier = Modifier.padding(bottom = 44.dp)
             )
             {
-                Column(/*modifier = Modifier.fillMaxSize()*/) {
+                Column() {
                     ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
                 }
+                indexState = false
+                println("Index state após as postagens: $indexState")
             }
-            
+
 
 
 
