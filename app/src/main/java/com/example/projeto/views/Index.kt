@@ -73,10 +73,10 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     LaunchedEffect(Unit){
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     viewModel.usuarioEncontrado(object : ListenerPublicacao{
-        override fun onSucess(rm:String, cpsID:String, apelido:String, nome:String) {
-            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID , o apelido $apelido, e o nome: $nome")
+        override fun onSucess(rm:String, cpsID:String, apelido:String, nome:String, turma:String) {
+            println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID , o apelido $apelido, o nome: $nome e a turma: $turma")
             if (email != null) { // <- precisei colocar por conta do "?" do authentication do firebase
-                UserData.setUserData(rm, cpsID, nome, UIDref, email)
+                UserData.setUserData(rm, cpsID, nome, turma, UIDref, email)
             }
             if (!apelido.isNullOrEmpty()){//na negativa "!", nao está vazio ou nullo.
                 UserData.setApelido(apelido)

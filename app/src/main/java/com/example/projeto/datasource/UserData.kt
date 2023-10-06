@@ -4,6 +4,7 @@ object UserData {
     var rmEncontrado: String = ""
     var cpsIDEncontrado: String = ""
     var nomeEncontrado: String = ""
+    var turmaEncontrada: String = ""
     var imagemUrl: String = ""
     var UID: String = ""
     var emailEncontrado: String = ""
@@ -11,10 +12,11 @@ object UserData {
 
 
     //Atualizar os dados padrões:
-    fun setUserData(rm:String, cpsID:String, nome: String, uid: String, email: String) {
+    fun setUserData(rm:String, cpsID:String, nome: String, turma:String, uid: String, email: String) {
         rmEncontrado = rm
         cpsIDEncontrado = cpsID
         nomeEncontrado = nome
+        turmaEncontrada = turma
         UID = uid
         emailEncontrado = email
     }

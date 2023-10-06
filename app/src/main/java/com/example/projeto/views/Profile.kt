@@ -2,9 +2,7 @@ package com.example.projeto.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
@@ -23,15 +20,12 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -44,8 +38,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -54,19 +46,15 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.ui.theme.Dongle
-import com.example.projeto.ui.theme.Jomhuria
-import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.auth.User
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
-import kotlin.math.max
 
 
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
@@ -180,7 +168,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             ) = createRefs()
 
             val (fecharTextField, confirmarTextField, maxCaracteresConstraint, editarApelido,
-                iconRMCPS,rmoucpsTitulo, rmoucps) = createRefs()
+                iconRMCPS,rmoucpsTitulo, rmoucps, iconTurma, turmaTitulo, turma) = createRefs()
 
             Surface(
                 elevation = 8.dp,
@@ -423,7 +411,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 modifier = Modifier
                     .constrainAs(sobreMim) {
                         start.linkTo(parent.start, margin = 20.dp)
-                        top.linkTo(card.bottom, margin = 50.dp)
+                        top.linkTo(card.bottom, margin = 30.dp)
                     }
                     .fillMaxWidth()
             )
@@ -629,7 +617,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             //Conjunto do RM/CPSID
             if (!alunoRM.isNullOrEmpty()){ //está na negativa "!", então não pode estar vazio ou nullo.
                 Icon(
-                    painterResource(id = R.drawable.ic_rm),
+                    painterResource(id = R.drawable.ic_rmoucps),
                     contentDescription = "Ícone do RM do Aluno",
                     modifier = Modifier
                         .constrainAs(iconRMCPS) {
@@ -656,7 +644,66 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     }
                 )
             }
+            else{
+                Icon(
+                    painterResource(id = R.drawable.ic_rmoucps),
+                    contentDescription = "Ícone do id CPS",
+                    modifier = Modifier
+                        .constrainAs(iconRMCPS) {
+                            start.linkTo(parent.start, margin = 20.dp)
+                            top.linkTo(iconNome.bottom, margin = 40.dp)
+                        }
+                        .size(38.dp)
+                )
+                Text(text = "cpsID",
+                    fontSize = 40.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier.constrainAs(rmoucpsTitulo){
+                        start.linkTo(iconRMCPS.end, margin = 10.dp)
+                        top.linkTo(iconNome.bottom, margin = 35.dp)
+                    }
+                )
+                Text(text = UserData.cpsIDEncontrado,
+                    fontSize = 30.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(rmoucps){
+                        start.linkTo(iconRMCPS.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 225.dp)
+                    }
+                )
+            }
 
+            //Conjunto da turma "separei do de cima para ficar mais organizado
+            if (!alunoRM.isNullOrEmpty()){
+                Icon(
+                    painterResource(id = R.drawable.ic_turma),
+                    contentDescription = "Ícone da turma do Aluno",
+                    modifier = Modifier
+                        .constrainAs(iconTurma) {
+                            start.linkTo(parent.start, margin = 20.dp)
+                            top.linkTo(iconRMCPS.bottom, margin = 40.dp)
+                        }
+                        .size(38.dp)
+                )
+                Text(text = "Turma",
+                    fontSize = 40.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier.constrainAs(turmaTitulo){
+                        start.linkTo(iconTurma.end, margin = 10.dp)
+                        top.linkTo(iconRMCPS.bottom, margin = 35.dp)
+                    }
+                )
+                Text(text = UserData.turmaEncontrada,
+                    fontSize = 30.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(turma){
+                        start.linkTo(iconTurma.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 305.dp)
+                    }
+                )
+            }
 
         }
     }

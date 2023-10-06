@@ -3,7 +3,6 @@ package com.example.projeto.views
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 
 import androidx.compose.foundation.layout.*
@@ -101,10 +100,12 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .height(643.dp)
+               // .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroAluno) {
-                    top.linkTo(parent.top, margin = 80.dp)
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top, margin = 140.dp)
+                    end.linkTo(parent.end)
                 }
 
 
@@ -178,12 +179,12 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         visualTransformation = VisualTransformation.None,
                         leadingIcon = {
                             Icon(
-                                painterResource(id = R.drawable.ic_rm),
+                                painterResource(id = R.drawable.ic_rmoucps),
                                 contentDescription = "Ícone de RM no registro",
                                 modifier = Modifier.size(28.dp))
                         }
                     )
-                    //Código turma
+                    /*//Código turma
                     OutlinedRegistro(
                         value = codigoturma,
                         onValueChange = {codigoturma = it},
@@ -198,7 +199,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                                 contentDescription = "Ícone de Codigo de Turma no registro",
                                 modifier = Modifier.size(28.dp))
                         }
-                    )
+                    )*/
                     //Termos e Condições
                     Row {
                         CheckBoxPersonalizada{isChecked ->
@@ -276,7 +277,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 .constrainAs(elipseAluno) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(parent.top, margin = (-14).dp)
+                    top.linkTo(parent.top, margin = 30.dp)
                 }
                 .size(170.dp)
         ) {
@@ -294,7 +295,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                 .constrainAs(icAluno) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end, margin = 5.dp)
-                    top.linkTo(parent.top, margin = 25.dp)
+                    bottom.linkTo(boxRegistroAluno.top, margin = (-20).dp)
                 }
                 .size(90.dp))//
         
@@ -307,7 +308,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             modifier = Modifier.constrainAs(identificacao){
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                top.linkTo(parent.top, margin = 144.dp)
+                top.linkTo(elipseAluno.bottom)
             }
 
         )

@@ -169,7 +169,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     visualTransformation = VisualTransformation.None,
                     leadingIcon = {
                         Icon(
-                            painterResource(id = R.drawable.ic_rm),
+                            painterResource(id = R.drawable.ic_rmoucps),
                             contentDescription = "Ícone de ID no registro",
                             modifier = Modifier.size(28.dp))
                     }

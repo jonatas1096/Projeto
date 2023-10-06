@@ -27,7 +27,9 @@ class NovaPublicacao  @Inject constructor() {
         var rm = "" //vamo armazenar aqui o rm depois
         var cpsID = "" //aqui armazenaremos o ID do professor
         var apelidoEncontrado = ""
-        var nomeEncontrado = "" //e aqui o nome
+        var nomeEncontrado = "" //aqui o nome pré-definido
+        var turmaEncontrada = "" //e aqui a turma do aluno
+
 
 
         //Começando procurando nos alunos
@@ -43,14 +45,14 @@ class NovaPublicacao  @Inject constructor() {
                         val rmEncontrado = documents.documents[0].getString("rm")
                         if (rmEncontrado != null) {
                             rm = rmEncontrado
-                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                         }
 
                         //Pegando o apelido
                         val apelidoUsuario = documents.documents[0].getString("apelido")
                         if (apelidoUsuario != null){
                             apelidoEncontrado = apelidoUsuario
-                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                         }
 
                         //Pegando o nome
@@ -65,9 +67,11 @@ class NovaPublicacao  @Inject constructor() {
 
                                     if (arrayRM != null && arrayRM.size > 1){
                                         nomeEncontrado = arrayRM[1]
+                                        turmaEncontrada = arrayRM[2]
                                         println("O nome: $nomeEncontrado")
+                                        println("O nome: $turmaEncontrada")
                                     }
-                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                                 }
                                 else{
                                     println("O array nao existe ou está vazio.")
@@ -100,14 +104,14 @@ class NovaPublicacao  @Inject constructor() {
                         if (cpsidEncontrado != null) {
                             cpsID = cpsidEncontrado
                             println("cpsID: $cpsID")
-                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                         }
 
                         //Pegando o apelido
                         val apelidoUsuario = documents.documents[0].getString("apelido")
                         if (apelidoUsuario != null){
                             apelidoEncontrado = apelidoUsuario
-                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                            listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                         }
 
                         //Pegando o nome
@@ -122,7 +126,7 @@ class NovaPublicacao  @Inject constructor() {
                                     if (arrayID != null && arrayID.size > 1){
                                         nomeEncontrado = arrayID[1]
                                     }
-                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado)
+                                    listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                                 }
                                 else{
                                     println("O array nao existe ou está vazio.")
