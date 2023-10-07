@@ -96,7 +96,9 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroCPS) {
-                    top.linkTo(parent.top, margin = 80.dp)
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top, margin = 140.dp)
+                    end.linkTo(parent.end)
                 }
 
 
@@ -281,7 +283,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 .constrainAs(elipseAluno) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(parent.top, margin = (-14).dp)
+                    top.linkTo(parent.top, margin = 30.dp)
                 }
                 .size(170.dp)
         ) {
@@ -299,7 +301,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                 .constrainAs(icAluno) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end, margin = 5.dp)
-                    top.linkTo(parent.top, margin = 25.dp)
+                    bottom.linkTo(boxRegistroCPS.top, margin = (-20).dp)
                 }
                 .size(90.dp))//
 
@@ -312,7 +314,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
             modifier = Modifier.constrainAs(identificacao){
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                top.linkTo(parent.top, margin = 144.dp)
+                top.linkTo(elipseAluno.bottom)
             }
 
         )

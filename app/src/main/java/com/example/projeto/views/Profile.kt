@@ -20,9 +20,12 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -92,7 +95,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     var atualCaracteres = maxCaracteres - outlinedApelido.length
     //
 
-    println("Só testando: ${UserData.apelidoUsuario}")
+    val scroll = rememberScrollState()
 
     // Aqui é uma lógica para tentar puxar a imagem do perfil do firebase do usuário.
     LaunchedEffect(Unit) {
@@ -158,10 +161,29 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
         .padding(bottom = 20.dp)
         .padding(top = 20.dp)
     ) {
+        //Aqui tem 2 constrain layout porque é uma gambiarra que eu estou com preguiça de explicar
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val (cardCinza) = createRefs()
+            Surface(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(30.dp),
+                color = Color(241, 241, 241, 255),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .constrainAs(cardCinza) {
+                        top.linkTo(parent.top)
+                    }
+
+            ){}
+        }
         // Constraint do quadrado e do conteúdo de dentro
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scroll)
         ) {
             val (card, cardCinza, arrow, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
                 iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, gambiarratextfield,
@@ -170,17 +192,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
             val (fecharTextField, confirmarTextField, maxCaracteresConstraint, editarApelido,
                 iconRMCPS,rmoucpsTitulo, rmoucps, iconTurma, turmaTitulo, turma) = createRefs()
 
-            Surface(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(30.dp),
-                color = Color(248, 248, 248, 255),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .constrainAs(cardCinza) {
-                        top.linkTo(parent.top)
-                    }
-
-            ){}
 
                 // Fundo laranja/aluno
                 Card(
@@ -210,8 +221,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 },
                 modifier = Modifier
                     .constrainAs(arrow) {
-                        start.linkTo(card.start, margin = 15.dp)
-                        top.linkTo(card.top, margin = 15.dp)
+                        start.linkTo(parent.start, margin = 15.dp)
+                        top.linkTo(parent.top, margin = 15.dp)
                     }
                     .size(34.dp),
                 color = Color(0xFFFFFFFF) //nesse color tu pode escolher a cor da arrow, pode ser uma padrão tipo: Color.Black,
@@ -523,12 +534,6 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         colorFilter = ColorFilter.tint(Color.Green)
                     )
                 }
-
-                /*//Se o usuario clicar no confirmar, vamos abrir a caixa de dialogo:
-                if (dialogo.value){
-
-                    inserirApelido(apelidoUsuario = outlinedApelido, dialogo = dialogo, onDismissRequest = { dialogo.value = false })
-                }*/
             }
             else{
                 if (UserData.apelidoUsuario.isNotEmpty()){
@@ -674,7 +679,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 )
             }
 
-            //Conjunto da turma "separei do de cima para ficar mais organizado
+            //Conjunto da turma. Separei do de cima e fiz o "if" novamente para ficar mais organizado
             if (!alunoRM.isNullOrEmpty()){
                 Icon(
                     painterResource(id = R.drawable.ic_turma),
@@ -708,6 +713,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
         }
     }
 
+    ////
     // Lógica para abrir a galeria/subir a imagem para o Firebase
     if (galeriaState) {
         println("Chamou a função $galeriaState")
@@ -830,7 +836,7 @@ fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
 
 
 @Composable
-fun inserirApelido(apelidoUsuario:String, navController: NavController /*dialogo: MutableState<Boolean>, onDismissRequest: () -> Unit,*/){
+fun inserirApelido(apelidoUsuario:String, navController: NavController){
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -840,67 +846,6 @@ fun inserirApelido(apelidoUsuario:String, navController: NavController /*dialogo
 
     val context = LocalContext.current
 
-   /* var permitirApelido by remember { mutableStateOf(false) }
-
-
-    if (dialogo.value){
-        Dialog(
-            onDismissRequest = {onDismissRequest},
-            properties = DialogProperties(
-                dismissOnClickOutside = true,
-            ),
-            )
-        {
-            Card(
-                elevation = 8.dp,
-                shape = RoundedCornerShape(15.dp),
-                backgroundColor = Color.White,
-                modifier = Modifier
-                    //.height(190.dp)
-                    .width(290.dp)
-                    .padding(8.dp)
-            ){
-                Column(
-                    modifier = Modifier//.fillMaxSize()
-                ) {
-                    Text(text = "Atualizar o apelido?",
-                        fontFamily = Dongle,
-                        fontSize = 30.sp
-                    )
-                    Row(Modifier.fillMaxWidth())
-                    {
-                        Text(text = "Não",
-                            color = Color(0xFF838383),
-                            fontSize = 22.sp,
-                            modifier = Modifier
-                                .clickable(
-                                    onClick = { onDismissRequest() }
-                                )
-                            .padding(start = 50.dp)
-                        )
-
-                        Text(text = "Sim",
-                            color = Color(0xFF838383),
-                            fontSize = 22.sp,
-                            modifier = Modifier
-                                .clickable(
-                                    onClick = {
-                                        permitirApelido = true
-                                    }
-                                )
-                            .padding(start = 100.dp)
-                        )
-                    }
-
-                }
-            }
-
-
-
-        }
-    }*/
-
-    //if (permitirApelido){
 
         LaunchedEffect(Unit){
             println("Entrou no launched")
@@ -961,11 +906,5 @@ fun inserirApelido(apelidoUsuario:String, navController: NavController /*dialogo
             }
 
         }
-
-
-  //  }
-
-
-
 }
 

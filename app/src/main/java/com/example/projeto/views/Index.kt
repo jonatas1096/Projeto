@@ -8,10 +8,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -25,6 +27,8 @@ import com.example.projeto.datasource.PostagemData
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
+import com.example.projeto.ui.theme.Dongle
+import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
@@ -169,7 +173,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     .zIndex(2F)
             ) {
 
-                val (publicar) = createRefs()
+                val (paravoce, postagens, publicar) = createRefs()
 
 
                 //Gambiarra para colocar sombra no Button de publicar
@@ -197,20 +201,59 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
                 }
 
+                //Começando a lógica da área das postagens
+
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(paravoce) {
+                                top.linkTo(parent.top)
+                            }
+                            .border(2.dp, Color.Red)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                            .fillMaxWidth()
+                                .padding(top = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ){
+                            Text(text = "Para você",
+                                fontSize = 36.sp,
+                                fontFamily = Dongle,
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
+                            Text(text = "Minhas postagens",
+                                fontSize = 34.sp,
+                                fontFamily = Dongle,
+                                color = Color.Black
+                            )
+                        }
+
+                    }
+
+
+                Column(
+                    modifier = Modifier
+                        .constrainAs(postagens) {
+                            top.linkTo(paravoce.bottom)
+                        }
+                        .padding(bottom = 44.dp)
+                        .border(2.dp, Color.Black)
+                )
+                {
+                    Column() {
+                        ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
+                    }
+                    indexState = false
+                    println("Index state após as postagens: $indexState")
+                }
+
             }//Fechamento do Constraint
 
 
-            //Começando a lógica da área das postagens
-            Column(
-                modifier = Modifier.padding(bottom = 44.dp)
-            )
-            {
-                Column() {
-                    ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
-                }
-                indexState = false
-                println("Index state após as postagens: $indexState")
-            }
 
 
 
