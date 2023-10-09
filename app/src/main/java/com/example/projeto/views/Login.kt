@@ -23,6 +23,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
@@ -31,9 +33,11 @@ import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
+import com.example.projeto.ui.theme.JomhuriaRegular
 import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
+import com.google.firebase.auth.FirebaseAuth
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -49,17 +53,17 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
         }
     }
 
-    var email by remember {
-        mutableStateOf("")
-    }
-
-    var senha by remember {
-        mutableStateOf("")
-    }
+    var email by remember { mutableStateOf("") }
+    var emailRedefinir by remember { mutableStateOf("") }
+    var confirmarEmail by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
+
+    var redefinirState by remember{ mutableStateOf(false) }
+    var mensagemRedefinir = remember{ mutableStateOf(false) }
 
     //Background ocupando toda a tela
     Box(
@@ -219,7 +223,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                                     modifier = Modifier
                                         .padding(bottom = 0.dp)
                                         .clickable {
-
+                                            redefinirState = true
                                         }
 
                                 )
@@ -296,11 +300,6 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                         }
 
 
-
-
-
-
-
                     }
 
                 }
@@ -308,9 +307,234 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
         }
 
+    if (redefinirState){
+        redefinirSenha(onDismissRequest = {
+            redefinirState = false},
+            emailRedefinir, confirmarEmail, mensagemRedefinir)
+    }
 
+    if (mensagemRedefinir.value){
+        mensagemAposRedefinir()
+    }
+}
 
+@Composable
+fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirmarEmail:String, mensagemRedefinir: MutableState<Boolean>){
 
+    val auth = FirebaseAuth.getInstance()
+
+    var email by remember { mutableStateOf(emailRedefinir) }
+    var confirmarEmail by remember { mutableStateOf(confirmarEmail) }
+
+    var camposDiferentes by remember{ mutableStateOf(false) }
+    println("inicio $camposDiferentes")
+
+    val context = LocalContext.current
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp)
+    ) {
+        val (box) = createRefs()
+
+        Box( modifier = Modifier.constrainAs(box){
+            start.linkTo(parent.start, margin = 30.dp)
+            top.linkTo(parent.top)
+            end.linkTo(parent.end, margin = 30.dp)
+            bottom.linkTo(parent.bottom)
+        }
+        ) {
+
+            Dialog(
+                onDismissRequest = {
+                        onDismissRequest()
+                },
+                properties = DialogProperties(
+                    dismissOnClickOutside = true,
+                ),
+            )
+            {
+                //Esse card serve para nao bugar e ficar sem fundo
+                Card(
+                    elevation = 5.dp,
+                    shape = RoundedCornerShape(10.dp),
+                    backgroundColor = Color.White,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    //Esse é o conteúdo em si
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                            .padding(vertical = 10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "Redifina a senha da sua conta",
+                            fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = Jomhuria
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 5.dp)
+                        ) {
+                            Text(text = "Insira e confirme o seu email para que procuremos a sua conta.",
+                                fontSize = 17.sp,
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 15.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = email,
+                                onValueChange = {
+                                    email = it
+                                },
+                                label = {
+                                    Text(text = "Email",
+                                        fontSize = 18.sp
+                                    )
+                                },
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    unfocusedBorderColor = Color(0xFFE7E6E6),
+                                    focusedBorderColor = LARANJA,
+                                    focusedLabelColor = LARANJA,
+                                    cursorColor = LARANJA,
+                            ),
+                                maxLines = 1,
+
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 5.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            OutlinedTextField(
+                                value = confirmarEmail,
+                                onValueChange = {
+                                   confirmarEmail = it
+                                },
+                                label = {
+                                    Text(text = "Confirme o Email",
+                                        fontSize = 18.sp
+                                    )
+                                },
+                                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        unfocusedBorderColor = Color(0xFFE7E6E6),
+                                focusedBorderColor = LARANJA,
+                                focusedLabelColor = LARANJA,
+                                cursorColor = LARANJA,
+                            ),
+                                maxLines = 1
+                            )
+                        }
+                        if (camposDiferentes){
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 5.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ){
+                                Text(
+                                    text = "*Os campos não coincidem!",
+                                    fontSize = 14.sp,
+                                    color = Color.Red,
+                                )
+                            }
+                        }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = if(camposDiferentes) 1.dp else 25.dp),
+                                horizontalArrangement = Arrangement.End
+                            ) {
+                                Button(
+                                    onClick = {
+                                        onDismissRequest()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = Color(0xFFE7E6E6),
+
+                                        ),
+                                    modifier = Modifier.padding(end = 15.dp)
+                                ) {
+                                    Text(text = "Cancelar",
+                                        fontSize = 16.sp,
+                                        color = Color(0xFF979797),
+                                    )
+                                }
+                                Button(
+                                    onClick = {
+                                        if (email != confirmarEmail){
+                                            camposDiferentes = true
+
+                                        }
+                                        else if(email.isNullOrEmpty() || confirmarEmail.isNullOrEmpty()){
+                                            Toast.makeText(context, "Insira o email nos dois campos!",Toast.LENGTH_SHORT).show()
+                                        }
+                                        else{
+                                            camposDiferentes = false
+                                            auth.sendPasswordResetEmail(email)
+                                                .addOnSuccessListener {
+                                                    println("email: $email, confirmar email : $confirmarEmail")
+                                                    Toast.makeText(context, "Email enviado com sucesso!",Toast.LENGTH_SHORT).show()
+                                                    onDismissRequest()
+                                                    mensagemRedefinir.value = true
+                                                }
+                                                .addOnFailureListener{e ->
+                                                    Toast.makeText(context, "Email não cadastrado no banco de dados!",Toast.LENGTH_SHORT).show()
+                                                    println("Erro. $e")
+                                                }
+
+                                        }
+
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = LARANJA,
+                                    ),
+                                ) {
+                                    Text(text = "Pesquisar",
+                                        fontSize = 16.sp,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+
+                    }
+                }
+
+            }
+        }
+
+    }
+}
+
+@Composable
+fun mensagemAposRedefinir(){
+
+    val context = LocalContext.current
+    val alertDialog = android.app.AlertDialog.Builder(context)
+    alertDialog.setTitle("Nós te enviamos um email!")
+    alertDialog.setMessage("A sua solicitação de redefinição de senha foi atendida e um link foi enviado ao seu email. \nNão se esqueça de checar também o lixo eletrônico/spam, certo?")
+    alertDialog.setPositiveButton("Entendido!"){_,_ ->
+        FirebaseAuth.getInstance().signOut()
+    }
+        .show()
 }
 
 

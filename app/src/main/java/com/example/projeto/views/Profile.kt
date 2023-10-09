@@ -434,7 +434,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 modifier = Modifier
                     .constrainAs(iconApelido) {
                         start.linkTo(parent.start, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 40.dp)
+                        top.linkTo(sobreMim.bottom, margin = 30.dp)
                     }
                     .size(40.dp)
             )
@@ -443,7 +443,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 fontFamily = Dongle,
                 modifier = Modifier.constrainAs(tituloApelido){
                     start.linkTo(iconApelido.end, margin = 10.dp)
-                    top.linkTo(sobreMim.bottom, margin = 25.dp)
+                    top.linkTo(sobreMim.bottom, margin = 20.dp)
                 }
             )
             if(apelidoState){
@@ -456,7 +456,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(maxCaracteresConstraint){
                         start.linkTo(tituloApelido.end, margin = 5.dp)
-                        top.linkTo(sobreMim.bottom, margin = 34.dp)
+                        top.linkTo(sobreMim.bottom, margin = 29.dp)
                     }
                 )
                 //Text field para inserir o apelido
@@ -478,7 +478,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         modifier = Modifier
                             .constrainAs(apelido) {
                                 start.linkTo(iconApelido.end, margin = 20.dp)
-                                top.linkTo(sobreMim.bottom, margin = 55.dp)
+                                top.linkTo(sobreMim.bottom, margin = 50.dp)
                             }
                             .width(170.dp)
                     )
@@ -543,7 +543,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         color = Color(0xFF838383),
                         modifier = Modifier.constrainAs(apelido){
                             start.linkTo(iconApelido.end, margin = 20.dp)
-                            top.linkTo(sobreMim.bottom, margin = 55.dp)
+                            top.linkTo(sobreMim.bottom, margin = 50.dp)
                         }
                     )
 
@@ -574,7 +574,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         modifier = Modifier
                             .constrainAs(apelido) {
                                 start.linkTo(iconApelido.end, margin = 20.dp)
-                                top.linkTo(sobreMim.bottom, margin = 55.dp)
+                                top.linkTo(sobreMim.bottom, margin = 50.dp)
                             }
                             .clickable(
                                 onClick = {
@@ -595,7 +595,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 modifier = Modifier
                     .constrainAs(iconNome) {
                         start.linkTo(parent.start, margin = 20.dp)
-                        top.linkTo(iconApelido.bottom, margin = 40.dp)
+                        top.linkTo(iconApelido.bottom, margin = 35.dp)
                     }
                     .size(40.dp)
             )
@@ -614,7 +614,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 color = Color(0xFF838383),
                 modifier = Modifier.constrainAs(nome){
                     start.linkTo(iconNome.end, margin = 20.dp)
-                    top.linkTo(sobreMim.bottom, margin = 145.dp)
+                    top.linkTo(sobreMim.bottom, margin = 135.dp)
                 }
             )
             /////////////////////
@@ -645,7 +645,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(rmoucps){
                         start.linkTo(iconRMCPS.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 225.dp)
+                        top.linkTo(sobreMim.bottom, margin = 210.dp)
                     }
                 )
             }
@@ -674,7 +674,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(rmoucps){
                         start.linkTo(iconRMCPS.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 225.dp)
+                        top.linkTo(sobreMim.bottom, margin = 215.dp)
                     }
                 )
             }
@@ -705,7 +705,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(turma){
                         start.linkTo(iconTurma.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 305.dp)
+                        top.linkTo(sobreMim.bottom, margin = 290.dp)
                     }
                 )
             }

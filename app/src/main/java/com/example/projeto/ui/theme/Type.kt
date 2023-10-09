@@ -15,6 +15,11 @@ val Jomhuria = FontFamily(
     Font(R.font.jomhuria_regular, FontWeight.Bold)
 )
 
+val JomhuriaRegular = FontFamily(
+    Font(R.font.jomhuria_regular),
+    Font(R.font.jomhuria_regular)
+)
+
 val Dongle = FontFamily(
     Font(R.font.dongle_regular),
     Font(R.font.dongle_bold, FontWeight.Bold),

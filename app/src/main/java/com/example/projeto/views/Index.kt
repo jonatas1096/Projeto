@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -57,14 +59,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     val auth = FirebaseAuth.getInstance()
 
     // A instância do firebase storage e as variáveis que vou precisar:
-    val storage = Firebase.storage
-    val storageRef = storage.reference
-    val alunoRM = UserData.rmEncontrado
-    val cpsID = UserData.cpsIDEncontrado
     val UIDref = FirebaseAuth.getInstance().currentUser?.uid.toString()
     val email = auth.currentUser?.email
-    //Uma variavel para auxiliar no armazenamento da URL do aluno/professor
-    val imagemUrl = remember { mutableStateOf<String?>(null) }
 
     //Lógica do carregamento
     var indexState by remember{ mutableStateOf(true) }
@@ -170,7 +166,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxSize()
-                    .zIndex(2F)
+                    .zIndex(1f)
             ) {
 
                 val (paravoce, postagens, publicar) = createRefs()
@@ -202,37 +198,30 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
 
                 //Começando a lógica da área das postagens
-
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .constrainAs(paravoce) {
-                                top.linkTo(parent.top)
-                            }
-                            .border(2.dp, Color.Red)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                            .fillMaxWidth()
-                                .padding(top = 5.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ){
-                            Text(text = "Para você",
-                                fontSize = 36.sp,
-                                fontFamily = Dongle,
-                                color = Color.Black
-                            )
-                            Spacer(modifier = Modifier.width(20.dp))
-                            Text(text = "Minhas postagens",
-                                fontSize = 34.sp,
-                                fontFamily = Dongle,
-                                color = Color.Black
-                            )
+                Row(
+                    modifier = Modifier
+                        .constrainAs(paravoce) {
+                            top.linkTo(parent.top)
                         }
+                        .fillMaxWidth()
+                        .padding(top = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Text(text = "Para você",
+                        fontSize = 36.sp,
+                        fontFamily = Dongle,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(20.dp))
+                    Text(text = "Minhas postagens",
+                        fontSize = 34.sp,
+                        fontFamily = Dongle,
+                        color = Color.Black
+                    )
+                }
 
-                    }
+
 
 
                 Column(
@@ -241,7 +230,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                             top.linkTo(paravoce.bottom)
                         }
                         .padding(bottom = 44.dp)
-                        .border(2.dp, Color.Black)
                 )
                 {
                     Column() {
@@ -254,10 +242,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             }//Fechamento do Constraint
 
 
-
-
-
-
         },
 
        bottomBar = {
@@ -266,10 +250,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                elevation = 6.dp,
                //shape = RoundedCornerShape(35.dp),
                modifier = Modifier
-                   /*.padding(horizontal = 30.dp)
-                   .padding(bottom = 15.dp)*/
                    .height(55.dp)
-
            ) {
                BottomNavigationBar(
                    items = listOf(
@@ -321,8 +302,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         //propriedades do Scaffold
         backgroundColor = Color.White
     )
-
-    println("Fora: Usuario rm ${UserData.rmEncontrado}, cpsID ${UserData.cpsIDEncontrado}  nome: ${UserData.nomeEncontrado}")
 
 }
 

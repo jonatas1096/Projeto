@@ -30,11 +30,9 @@ class Authentication @Inject constructor() {
 
     //Primeiro os parâmetros para o cadastro do aluno:
     fun cadastroAluno(
-        //nome: String,
         email: String,
         senha: String,
         rm: String,
-        codigoturma: String,
         listenerAuth: ListenerAuth
     ) {
 
@@ -60,7 +58,6 @@ class Authentication @Inject constructor() {
                 //Ou seja, eu fiz uma cópia do array original do firebase e armazenei em uma variavel aqui localmente.
 
 
-                println("Aqui o RM do rmBox: $rmBox")
                 //Começo da validação para garantir que o aluno está matriculado na escola:
                 if (rmData != null) {
                     for (arrayCont in rmData.keys) {
@@ -87,14 +84,12 @@ class Authentication @Inject constructor() {
 
                             if (rmAluno == rm) {
                                 cadastroRM.value = true
-                                println("Situação do cadastro: $cadastroRM")
                                 break // Não é necessário continuar o loop se já encontramos um rm matriculado.
                             }
                         }
 
 
                         //
-                        println("Situação do cadastro fora 3: $cadastroRM")
                         //Agora a validação de todos os campos preenchidos:
                         if (email.isEmpty()) {
                             listenerAuth.onFailure("O email não pode estar vazio.")
@@ -102,9 +97,6 @@ class Authentication @Inject constructor() {
                             listenerAuth.onFailure("Insira uma senha válida!")
                         } else if (rm.isEmpty()) {
                             listenerAuth.onFailure("O RM é necessário para a validação!")
-                        }
-                        else if (codigoturma.isEmpty()) {
-                            listenerAuth.onFailure("Forneça o seu código de turma!")
                         }
                         else if(condicaoRM == true && cadastroRM.value == false){
                             println("Situação do cadastro dentro do if: $cadastroRM")
@@ -118,10 +110,8 @@ class Authentication @Inject constructor() {
 
                                         //mapeando o que eu quero salvar com as variaveis nos parâmetros:
                                         val dadosUsuariosMap = hashMapOf(
-                                            //"nome" to nome,
                                             "email" to email,
                                             "rm" to rm,
-                                            "codigoturma" to codigoturma,
                                             "usuarioID" to usuarioID
                                         )
 

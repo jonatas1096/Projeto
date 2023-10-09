@@ -73,9 +73,6 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun loadCoil(imagensPost: List<String>, contentDescription:String){
-
-
-
     Box(
         modifier = Modifier.fillMaxSize()
             .background(Color.Black)

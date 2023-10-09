@@ -184,22 +184,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                                 modifier = Modifier.size(28.dp))
                         }
                     )
-                    /*//Código turma
-                    OutlinedRegistro(
-                        value = codigoturma,
-                        onValueChange = {codigoturma = it},
-                        label = "Código da Turma",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text
-                        ),
-                        visualTransformation = VisualTransformation.None,
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.ic_codigoturma),
-                                contentDescription = "Ícone de Codigo de Turma no registro",
-                                modifier = Modifier.size(28.dp))
-                        }
-                    )*/
+
                     //Termos e Condições
                     Row {
                         CheckBoxPersonalizada{isChecked ->
@@ -238,7 +223,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         BotaoRegistrar(
                             onClick = {
                                 //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                                viewModel.cadastro(/*nome,*/ email, senha,rm, codigoturma, object : ListenerAuth{
+                                viewModel.cadastro(email, senha,rm, object : ListenerAuth{
                                     override fun onSucess(mensagem: String) {
                                         Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
                                         navController.navigate("Login")

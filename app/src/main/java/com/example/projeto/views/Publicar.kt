@@ -85,10 +85,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .fillMaxWidth()
                 .height(240.dp))
             {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_publicar.png",
+                /*loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_publicar.png",
                     contentDescription = "Plano de fundo do bottomsheet",
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier)
+                    modifier = Modifier)*/
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -167,7 +167,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(243, 243, 243, 255))
+                .background(Color(241, 241, 241, 255))
                 .padding(horizontal = 4.dp)
         ) {
 
@@ -303,9 +303,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         Text(text = "Digite algo sobre a sua publicação aqui")
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(0xFFFAFAFA),
-                    focusedLabelColor = Color(0xFF226EF0),
-                    focusedBorderColor = Color(0xFF226EF0)
+                    backgroundColor = Color(241, 241, 241, 255),
+                    focusedLabelColor = Color(241, 241, 241, 255),
+                    focusedBorderColor = Color(241, 241, 241, 255),
+                    unfocusedBorderColor = Color(241, 241, 241, 255)
 
                 ),
                 modifier = Modifier

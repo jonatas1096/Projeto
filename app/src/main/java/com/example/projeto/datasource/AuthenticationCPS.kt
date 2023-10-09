@@ -150,6 +150,9 @@ class AuthenticationCPS @Inject constructor() {
                         else if (cadastroID.value == true){
                             listenerAuth.onFailure("ID já cadastrado por outro usuário.")
                         }
+                        else if(codigoEtec != "211"){
+                            listenerAuth.onFailure("Código ETEC inválido.")
+                        }
                         else {
                             listenerAuth.onFailure("ID não encontrado no banco de dados.")
                         }
