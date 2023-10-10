@@ -13,8 +13,11 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +40,7 @@ import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.arrowVoltar
 import com.example.projeto.layoutsprontos.loadImage
+import com.example.projeto.turmasItens.turmasItem
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
@@ -64,7 +68,8 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     //
     //
     val context = LocalContext.current
-
+    //
+    val scroll = rememberScrollState()
 
     //unica forma que eu consegui pra abrir a galeria sendo uma função composable
     var galeriaState by remember { mutableStateOf(false) }
@@ -77,6 +82,9 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     //Máximo caracteres titulo
     val maxCaracteresTitulo = 35
 
+    //Iniciar o processo de marcar turmas
+    var adicionarTurmaState by remember { mutableStateOf(false) }
+
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
@@ -85,10 +93,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .fillMaxWidth()
                 .height(240.dp))
             {
-                /*loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/background_publicar.png",
-                    contentDescription = "Plano de fundo do bottomsheet",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier)*/
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -112,12 +116,14 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                             contentDescription = "Subir o BottomSheet",
                             modifier = Modifier
                                 .size(80.dp),
-                            colorFilter = ColorFilter.tint(Color(0xFFFFFFFF))
+                            colorFilter = ColorFilter.tint(Color(0xFF585858))
                         )
                     }
 
 
                     //Midias
+
+                    //Imagens
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -154,6 +160,42 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                     }
 
+                    //Marcar turmas
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background((Color(243, 242, 242, 255)))
+                            .border(1.dp, Color.Black)
+                            .clickable(
+                                onClick = {
+                                    adicionarTurmaState = true
+                                })
+                    ) {
+                        //Espaçar
+                        Spacer(modifier = Modifier
+                            .width(10.dp))
+
+                        //Imagem da imagem
+                        Image(ImageVector.vectorResource(id = R.drawable.ic_marcarturma),
+                            contentDescription = "Marcar turma",
+                            modifier = Modifier
+                                .size(38.dp)
+                            /*colorFilter = ColorFilter.tint(Color(0xFFC5C4C4)
+                            )*/
+                        )
+
+                        //Só pra espaçar um pouco a imagem e o texto
+                        Spacer(modifier = Modifier
+                            .width(20.dp))
+
+                        //Texto da Imagem
+                        Text(text = "Marcar turmas",
+                            fontSize = 35.sp,
+                            color = Color(0xFF303030),
+                            fontFamily = Dongle,
+                        )
+
+                    }
                 }
 
 
@@ -169,6 +211,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .fillMaxSize()
                 .background(Color(241, 241, 241, 255))
                 .padding(horizontal = 4.dp)
+                .verticalScroll(scroll)
         ) {
 
             //Começo constraint layout.
@@ -191,7 +234,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         top.linkTo(parent.top, margin = 10.dp)
                     }
                     .size(35.dp),
-                color = Color(0xFF000000)
+                color = Color(0xFF3C3C3C)
             )
             Box(
                 modifier = Modifier
@@ -209,12 +252,47 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Criar Publicação",
+                   /* Text(text = "Criar Publicação",
                         fontSize = 34.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = Dongle,
                         modifier = Modifier.padding(top = 5.dp)
-                    )
+                    )*/
+                    if (!UserData.imagemUrl.isNullOrEmpty()){
+                        Text(text = "Criar Publicação",
+                            fontSize = 30.sp,
+                            fontFamily = Dongle,
+                            modifier = Modifier
+                                .padding(top = 5.dp)
+                                .padding(end = 10.dp)
+                        )
+
+                        Surface(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .padding(start = 0.dp),
+                            shape = RoundedCornerShape(30.dp)
+                        ) {
+                            loadImage(
+                                path = UserData.imagemUrl,
+                                contentDescription = "Mini imagem do perfil",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                            )
+                        }
+                    }
+                    else{
+                        Text(text = "Criar Publicação",
+                            fontSize = 26.sp,
+                            //fontWeight = FontWeight.Bold,
+                            fontFamily = Dongle,
+                            modifier = Modifier
+                                .padding(top = 5.dp)
+                                .padding(end = 10.dp)
+                        )
+
+                    }
+
                     if (titulo.isEmpty() || texto.isEmpty()){
                         Button(
                             onClick = {
@@ -224,7 +302,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 backgroundColor = Color(0xFFE7E6E6)
                             ),
                             modifier = Modifier
-                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                                .padding(16.dp, 5.dp, 20.dp, 5.dp)
                         ) {
                             Text(text = "Publicar",
                                 color = Color(0xFFBDBBBB))
@@ -273,16 +351,16 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 },
                 label = {
                     Text(text = "Título da publicação",
-                        fontSize = 18.sp,
+                        fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
+                        //color = Color(158, 158, 158, 255),
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(0xFFB8D2FF),
-                    focusedLabelColor = Color(0xFF226EF0),
-                    unfocusedLabelColor = Color(0xFF6492E0),
-                    focusedBorderColor = Color(0xFF226EF0),
-                    unfocusedBorderColor = Color(0xFF6492E0)
+                    focusedLabelColor = Color(39, 39, 39, 255),
+                    focusedBorderColor = Color(241, 241, 241, 255),
+                    unfocusedBorderColor = Color(241, 241, 241, 255),
+                    cursorColor = Color(85, 85, 85, 255),
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -300,18 +378,18 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     texto = it
                 },
                 label = {
-                        Text(text = "Digite algo sobre a sua publicação aqui")
+                        Text(text = "Diga algo interessante!")
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color(241, 241, 241, 255),
-                    focusedLabelColor = Color(241, 241, 241, 255),
-                    focusedBorderColor = Color(241, 241, 241, 255),
-                    unfocusedBorderColor = Color(241, 241, 241, 255)
-
+                    focusedLabelColor = Color(49, 49, 49, 255),
+                    focusedBorderColor = Color(184, 184, 184, 255),
+                    unfocusedBorderColor = Color(241, 241, 241, 255),
+                    cursorColor = Color(184, 184, 184, 255),
                 ),
                 modifier = Modifier
                     .constrainAs(areaTexto) {
-                        top.linkTo(areaTitulo.bottom)
+                        top.linkTo(areaTitulo.bottom, margin = 5.dp)
                     }
                     .fillMaxWidth()
                     .height(150.dp)
@@ -325,8 +403,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         top.linkTo(areaTexto.bottom, margin = 15.dp)
                     }
                     .fillMaxWidth()
-                    .height(220.dp),
-                elevation = 8.dp
+                    .border(2.dp, Color.Black)
+                    .height(if (imagensColuna.isEmpty()) 200.dp else 220.dp * imagensColuna.size + 90.dp),
+                elevation = 8.dp,
+                backgroundColor = Color(241, 241, 241, 255)
             )
             {
                 if (imagensColuna.isEmpty()){
@@ -402,8 +482,12 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     navController = navController
                 )
             }
-        }
 
+
+        }
+        if (adicionarTurmaState){
+            adicionarTurma()
+        }
 
     }
 
@@ -581,3 +665,56 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
         }
 }
 
+@Composable
+fun adicionarTurma(){
+    val turmas = listOf(
+        "1ADM", "2ADM", "3ADM",
+        "1CONT", "2CONT", "3CONT",
+        "1DS", "2DS", "3DS",
+        "1LOG", "2LOG", "3LOG",
+        "1JURI", "2JURI", "3JURI",
+    )
+
+    var items by remember {
+        mutableStateOf(
+            turmas.map { turma ->
+                turmasItem(
+                    title = turma,
+                    isSelected = false
+                )
+            }
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        items(items.size) { i ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .clickable {
+                        items = items.mapIndexed { j, item ->
+                            if (i == j) {
+                                item.copy(isSelected = !item.isSelected)
+                            } else item
+                        }
+                    },
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = items[i].title)
+                if (items[i].isSelected){
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "Selecionado",
+                        tint = Color.Green,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+            }
+        }
+    }
+}
