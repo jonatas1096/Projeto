@@ -818,15 +818,12 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                     }
 
                                 }
-                                println("saindo do laço")
                             }
-                            println("saindo do if")
                         }
                     }
                     .addOnFailureListener {exception ->
                         println("Erro ao acessar o documento: $exception")
                     }
-                println("saindo da coroutine")
             }
 
             println("Encerrando o processo de publicação")
