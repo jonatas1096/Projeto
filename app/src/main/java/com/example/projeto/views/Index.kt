@@ -109,18 +109,27 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     println("Coletou as seguintes imagens: $imagensPostagem")
                     val nome = posts.getString("nome") ?: ""
                     println("Coletou o nome: $nome")
+                    val rm = posts.getString("RM") ?: ""
+                    println("Coletou o rm: $rm")
+                    val apelido = posts.getString("apelido") ?: ""
+                    println("Coletou o apelido: $apelido")
                     val texto = posts.getString("texto") ?: ""
                     println("Coletou o texto: $texto")
                     val titulo = posts.getString("titulo") ?: ""
-
+                    println("Coletou o titulo: $titulo")
+                    val turmas = posts.get("turmasMarcadas") as? List<String> ?: emptyList()
+                    println("Coletou as turmas: $turmas")
 
                     println("Agora vai armazenar os dados na val postagemData.")
                     val postagemData = PostagemData(
                         fotoPerfil = fotoPerfil,
                         nomeAutor = nome,
+                        rm = rm,
+                        apelidoAutor = apelido,
                         textoPostagem = texto,
                         imagensPost = imagensPostagem,
-                        tituloPost = titulo
+                        tituloPost = titulo,
+                        turmasMarcadas = turmas,
                     )
 
                     postagensData.add(postagemData)
@@ -143,8 +152,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
        topBar = {
            TopAppBar(
                backgroundColor = Color(0xFFFAFAFA),
-
-
            ) {
 
            } //fechamento TopBar
@@ -166,36 +173,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             ConstraintLayout(
                 modifier = Modifier
                     .fillMaxSize()
-                    .zIndex(1f)
             ) {
 
-                val (paravoce, postagens, publicar) = createRefs()
-
-
-                //Gambiarra para colocar sombra no Button de publicar
-                Surface(
-                    shape = CircleShape,
-                    elevation = 10.dp,
-                    modifier = Modifier
-                        .size(55.dp)
-                        .constrainAs(publicar) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom, margin = 20.dp)
-                        }
-                ) {
-                    IconButton(
-                        onClick = {
-                            //cardState = true
-                           navController.navigate("Publicar")
-                        },
-
-                    ){
-                        Image(ImageVector.vectorResource(id = R.drawable.ic_publicar),
-                            contentDescription = "Ir para publicar nova postagem")
-                    }
-
-                }
+                val (paravoce, linhaestetica, postagens) = createRefs()
 
                 //Começando a lógica da área das postagens
                 Row(
@@ -221,25 +201,35 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     )
                 }
 
-
+                Row(
+                    modifier = Modifier
+                        .constrainAs(linhaestetica) {
+                            top.linkTo(paravoce.bottom)
+                        }
+                        .fillMaxWidth()
+                        .size(8.dp)
+                        .background(color = Color(209, 209, 209, 255))
+                ) {}
 
 
                 Column(
                     modifier = Modifier
                         .constrainAs(postagens) {
-                            top.linkTo(paravoce.bottom)
+                            top.linkTo(linhaestetica.bottom)
                         }
-                        .padding(bottom = 44.dp)
+                        .padding(bottom = 110.dp)
                 )
                 {
                     Column() {
                         ListaDePostagens(postagens = postagensOrdenadas, navController = navController)
+                        //Um spacer para separar a ultima postagem do menu de icones
                     }
                     indexState = false
                     println("Index state após as postagens: $indexState")
                 }
 
             }//Fechamento do Constraint
+
 
 
         },
@@ -303,6 +293,34 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         backgroundColor = Color.White
     )
 
+    //Gambiarra para colocar sombra no Button de publicar
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (publicar) = createRefs()
+        Surface(
+            shape = CircleShape,
+            elevation = 10.dp,
+            modifier = Modifier
+                .size(55.dp)
+                .constrainAs(publicar) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom, margin = 20.dp)
+                }
+        ) {
+            IconButton(
+                onClick = {
+                    navController.navigate("Publicar")
+                },
+            ){
+                Image(ImageVector.vectorResource(id = R.drawable.ic_publicar),
+                    contentDescription = "Ir para publicar nova postagem")
+            }
+
+        }
+    }
+
 }
 
 
@@ -324,11 +342,13 @@ fun ListaDePostagens(postagens: List<PostagemData>, navController: NavController
                 Postagem(
                     fotoPerfil = postagemData.fotoPerfil,
                     nomeAutor = postagemData.nomeAutor,
+                    rm = postagemData.rm,
+                    apelidoAutor = postagemData.apelidoAutor,
                     textoPostagem = postagemData.textoPostagem,
                     imagensPost = postagemData.imagensPost,
                     tituloAutor = postagemData.tituloPost,
+                    turmasMarcadas = postagemData.turmasMarcadas,
                     paginas = postagemData.imagensPost.size,
-                    navController = navController
                 )
                 println("Depois de criar a Postagem ${postagemData.imagensPost}")
             }

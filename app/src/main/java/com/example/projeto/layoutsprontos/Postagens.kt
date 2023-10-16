@@ -29,6 +29,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.datasource.UserData
+import com.example.projeto.ui.theme.Jomhuria
+import com.example.projeto.ui.theme.LARANJA
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -36,35 +38,35 @@ import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.tasks.await
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, paginas:Int, navController: NavController) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>, paginas:Int) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
     val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
 
 
-    val maxCaracteresNome = 25
+    val maxCaracteresNome = 18
+    val maxCaracteresApelido = 16
     val maxCaracteresTexto = 40
 
-
+//
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
     Box(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxWidth()
-            .size(410.dp)
+            .size( if(!imagensPost.isNullOrEmpty()) 470.dp else 240.dp)
             .padding(bottom = 15.dp)
     ) {
 
-    ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
-    ) {
+        ConstraintLayout(
+            modifier = Modifier.fillMaxSize()
+        ) {
 
-        val (foto, nome, titulo, texto, imagemPost, fotoReacao, comentarios, compartilhamentos,
-            linha, numeroReacoes, curtir, comentar, compartilhar, linhaestetica2) = createRefs()
+            val (foto, nome, apelido, titulo, tagTurmas, texto, imagemPost, fotoReacao, comentarios, compartilhamentos,
+                linha, numeroReacoes, curtir, comentar, compartilhar, linhaestetica2) = createRefs()
 
 
             //Essa é uma box para guardar a imagem do perfil do usuário.
@@ -76,186 +78,253 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
                     }
                     .size(50.dp)
                     .clip(CircleShape)
-            ){
-                loadImage(path = fotoPerfil,
+            ) {
+                loadImage(
+                    path = fotoPerfil,
+                    contentDescription = "Foto",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+                if (fotoPerfil.isNullOrEmpty()) {
+                    loadImage(
+                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                        contentDescription = "Foto",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+            }
+
+
+            //Nome do usuário
+            if (nomeAutor.length > maxCaracteresNome) {
+                Text(text = nomeAutor.substring(0, maxCaracteresNome) + "..",
+                    color = if (rm == "23627") {
+                        Color(0xFFe103fd)
+                    } else {
+                        Color(56, 56, 56, 255)
+                    },
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.constrainAs(nome) {
+                        start.linkTo(foto.end, margin = 7.dp)
+                        top.linkTo(parent.top, margin = 5.dp)
+                    })
+            } else {
+                Text(text = nomeAutor,
+                    color = if (rm == "23627") {
+                        Color(0xFFe103fd)
+                    } else {
+                        Color(56, 56, 56, 255)
+                    },
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.constrainAs(nome) {
+                        start.linkTo(foto.end, margin = 7.dp)
+                        top.linkTo(parent.top, margin = 5.dp)
+                    })
+
+            }
+
+
+            //Apelido (se houver)
+            if (!apelidoAutor.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
+                if (apelidoAutor.length > 16){
+                    Text(text = "($apelidoAutor)".substring(0, maxCaracteresApelido) + "..)",
+                        color = Color(148, 148, 148, 255),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.constrainAs(apelido) {
+                            start.linkTo(nome.end, margin = 7.dp)
+                            top.linkTo(parent.top, margin = 5.dp)
+                        })
+                }
+               else{
+                    Text(text = "($apelidoAutor)",
+                        color = Color(148, 148, 148, 255),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.constrainAs(apelido) {
+                            start.linkTo(nome.end, margin = 7.dp)
+                            top.linkTo(parent.top, margin = 5.dp)
+                        })
+                }
+            }
+
+
+            //Titulo da publicação
+            Text(text = tituloAutor,
+                color = Color(221, 114, 0, 255),
+                fontWeight = FontWeight.Bold,
+                fontSize = 17.sp,
+                modifier = Modifier.constrainAs(titulo) {
+                    start.linkTo(foto.end, margin = 7.dp)
+                    top.linkTo(parent.top, margin = 30.dp)
+                })
+
+
+            //Texto da publicação
+            Row(
+                modifier = Modifier
+                    .constrainAs(texto) {
+                        start.linkTo(parent.start)
+                        top.linkTo(foto.bottom, margin = 10.dp)
+                    }
+                    .padding(start = 10.dp)
+                    .padding(end = 20.dp)
+            ) {
+                if (textoPostagem.length > maxCaracteresTexto) {
+                    Text(
+                        text = textoPostagem.substring(0, maxCaracteresTexto) + "...",
+                        fontSize = 18.sp,
+                        color = Color(39, 39, 39, 255),
+                    )
+                } else {
+                    Text(
+                        text = textoPostagem,
+                        fontSize = 18.sp,
+                        color = Color(39, 39, 39, 255),
+                    )
+                }
+            }
+
+
+            //Turmas que foram marcadas
+            // if (!turmasMarcadas.isNullOrEmpty()){ // " ! " para negação. Ou seja, existem turmas que foram marcadas e vamos exibir isso:
+            Text(text = if (turmasMarcadas.isNullOrEmpty()) "[Geral]" else "$turmasMarcadas",
+                fontSize = 26.sp,
+                fontFamily = Jomhuria,
+                color = LARANJA,
+                lineHeight = (15).sp,
+                modifier = Modifier
+                    .constrainAs(tagTurmas) {
+                        top.linkTo(texto.bottom, margin = (-0).dp)
+                    }
+                    .padding(horizontal = 3.dp)
+            )
+            // }
+
+            //Imagem da publicação (se houver)
+            if (!imagensPost.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio
+                Box(
+                    modifier = Modifier
+                        .constrainAs(imagemPost) {
+                            start.linkTo(parent.start)
+                            top.linkTo(tagTurmas.bottom, margin = (-10).dp)
+                        }
+                        .fillMaxWidth()
+                        .size(220.dp)
+                ) {
+                    loadCoil(imagensPost = imagensPost, contentDescription = "")
+                }
+            }
+
+
+            //Fotinha
+            Box(
+                modifier = Modifier
+                    .constrainAs(fotoReacao) {
+                        start.linkTo(parent.start, margin = 8.dp)
+
+                        if (!imagensPost.isNullOrEmpty()) {
+                          top.linkTo(imagemPost.bottom, margin = 5.dp)
+                        } else {
+                            top.linkTo(tagTurmas.bottom, margin = 5.dp)
+                        }
+
+
+                    }
+                    .size(28.dp)
+                    .clip(CircleShape)
+            ) {
+                loadImage(
+                    path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
                     contentDescription = "Foto",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                 )
             }
 
+            //Linha só para estética
+            Row(
+                modifier = Modifier
+                    .constrainAs(linha) {
+                        top.linkTo(fotoReacao.bottom, margin = 6.dp)
+                    }
+                    .fillMaxWidth()
+                    .size(1.dp)
+                    .background(color = Color(209, 209, 209, 255))
+            ) {}
 
-        //Nome do usuário
-        if (nomeAutor.length > maxCaracteresNome){
-            Text(text = nomeAutor.substring(0, maxCaracteresNome) + "...",
-                color = Color(56, 56, 56, 255),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(nome){
-                    start.linkTo(foto.end, margin = 7.dp)
-                    top.linkTo(parent.top, margin = 5.dp)
-                })
-        }
-        else{
-            Text(text = nomeAutor,
-                color = Color(56, 56, 56, 255),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.constrainAs(nome){
-                    start.linkTo(foto.end, margin = 7.dp)
-                    top.linkTo(parent.top, margin = 5.dp)
-                })
+            //Numero de reações
+            Text(text = "Luffy + 847", //11
+                fontSize = 12.sp,
+                color = Color(82, 81, 81, 255),
+                modifier = Modifier.constrainAs(numeroReacoes) {
+                    start.linkTo(fotoReacao.end, margin = 5.dp)
 
-        }
+                    if (!imagensPost.isNullOrEmpty()) {
+                        top.linkTo(imagemPost.bottom, margin = 12.dp)
+                    } else {
+                        top.linkTo(tagTurmas.bottom, margin = 12.dp)
+                    }
 
-
-
-        //Titulo da publicação
-            Text(text = tituloAutor,
-            color = Color(221, 114, 0, 255),
-            fontWeight = FontWeight.Bold,
-            fontSize = 17.sp,
-            modifier = Modifier.constrainAs(titulo){
-                start.linkTo(foto.end, margin = 7.dp)
-                top.linkTo(parent.top, margin = 30.dp)
-            })
-
-
-        //Texto da publicação
-        Row(
-            modifier = Modifier
-                .constrainAs(texto) {
-                    start.linkTo(parent.start)
-                    top.linkTo(foto.bottom, margin = 5.dp)
                 }
-                .padding(start = 10.dp)
-                .padding(end = 20.dp)
-        ) {
-            if (textoPostagem.length > maxCaracteresTexto){
-                Text(text = textoPostagem.substring(0, maxCaracteresTexto) + "...",
-                    fontSize = 16.sp,
-                    color = Color(39, 39, 39, 255),
-                   // maxLines = 1,
-                    //overflow = TextOverflow.Ellipsis*/
-                )
-            }
-            else{
-                Text(text = textoPostagem,
-                    fontSize = 16.sp,
-                    color = Color(39, 39, 39, 255),
-                )
-            }
-        }
+            )
 
+            //Comentarios
+            Text(text = "211 Comentários", //15
+                fontSize = 12.sp,
+                color = Color(82, 81, 81, 255),
 
-
-        //Imagem da publicação
-        Box(
-            modifier = Modifier
-                .constrainAs(imagemPost) {
-                    start.linkTo(parent.start)
-                    top.linkTo(texto.bottom, margin = 5.dp)
+                modifier = Modifier.constrainAs(comentarios) {
+                    end.linkTo(parent.end, margin = 162.dp)
+                    if (!imagensPost.isNullOrEmpty()) {
+                        top.linkTo(imagemPost.bottom, margin = 12.dp)
+                    } else {
+                        top.linkTo(tagTurmas.bottom, margin = 12.dp)
+                    }
                 }
-                .fillMaxWidth()
-                .size(220.dp)
-            // .verticalScroll(scroll)
-            // .border(2.dp, Color.Green)
-        ) {
-          /*  HorizontalPager(
-                state = pagerState,
-                pageCount = paginas,
-            ) { pageIndex ->
-                val imagemUrl = imagensPost.getOrNull(pageIndex) // Obtém a URL da imagem com base na página atual
-                imagemUrl?.let { url ->
-                    // Carrega e exibe a imagem usando o Coil ou Glide aqui
-                    loadCoil(
-                        imagensPost  = imagensPost,
-                        contentDescription = "Imagem da página $pageIndex"
-                    )
+            )
+
+            //Compartilhamentos
+            Text(text = "48 Compartilhamentos", //20
+                fontSize = 12.sp,
+                color = Color(82, 81, 81, 255),
+
+                modifier = Modifier.constrainAs(compartilhamentos) {
+                    end.linkTo(parent.end, margin = 10.dp)
+
+                    if (!imagensPost.isNullOrEmpty()) {
+                        top.linkTo(imagemPost.bottom, margin = 12.dp)
+                    } else {
+                        top.linkTo(tagTurmas.bottom, margin = 12.dp)
+                    }
                 }
-            }*/
-            loadCoil(imagensPost = imagensPost, contentDescription = "")
-        }
+            )
 
 
-        //Fotinha
-        Box(
-            modifier = Modifier
-                .constrainAs(fotoReacao) {
-                    start.linkTo(parent.start, margin = 8.dp)
-                    top.linkTo(imagemPost.bottom, margin = 5.dp)
-                }
-                .size(28.dp)
-                .clip(CircleShape)
-        ) {
-            loadImage(path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
-                contentDescription = "Foto",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier)
-        }
-
-        //Numero de reações
-        Text(text = "Luffy + 847", //11
-            fontSize = 12.sp,
-            color = Color(82, 81, 81, 255),
-            modifier = Modifier.constrainAs(numeroReacoes){
-                start.linkTo(fotoReacao.end, margin = 5.dp)
-                top.linkTo(imagemPost.bottom, margin = 12.dp)
-            }
-        )
-
-        //Comentarios
-        Text(text = "211 Comentários", //15
-            fontSize = 12.sp,
-            color = Color(82, 81, 81, 255),
-
-            modifier = Modifier.constrainAs(comentarios){
-                end.linkTo(parent.end, margin = 142.dp)
-                top.linkTo(imagemPost.bottom, margin = 12.dp)
-            }
-        )
-
-        //Compartilhamentos
-        Text(text = "48 Compartilhamentos", //20
-            fontSize = 12.sp,
-            color = Color(82, 81, 81, 255),
-
-            modifier = Modifier.constrainAs(compartilhamentos){
-                end.linkTo(parent.end, margin = 10.dp)
-                top.linkTo(imagemPost.bottom, margin = 12.dp)
-            }
-        )
 
 
-        //Linha só para estética
-        Row(
-            modifier = Modifier
-                .constrainAs(linha) {
-                    top.linkTo(fotoReacao.bottom, margin = 6.dp)
-                }
-                .fillMaxWidth()
-                .size(1.dp)
-                .background(color = Color(209, 209, 209, 255))
-        ) {
+            //Botão de like
+            IconButton(onClick = {
 
-        }
+            },
+                modifier = Modifier
+                    .constrainAs(curtir) {
+                        start.linkTo(parent.start, margin = 20.dp)
+                        top.linkTo(linha.bottom)
+                        bottom.linkTo(parent.bottom, margin = 3.dp)
+                    }
 
-
-        //Botão de like
-        IconButton(onClick = {
-
-        },
-        modifier = Modifier
-            .constrainAs(curtir) {
-                start.linkTo(parent.start, margin = 20.dp)
-                top.linkTo(linha.bottom)
-                bottom.linkTo(parent.bottom, margin = 3.dp)
-            }
-
-        ) {
+            ) {
                 Row() {
                     Icon(
                         painter = iconecurtir,
@@ -265,90 +334,91 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, textoPostagem:String, imagensP
                             .padding(end = 5.dp)
                     )
 
-                    Text(text = "Curtir",
+                    Text(
+                        text = "Curtir",
                         fontSize = 15.sp,
                         color = Color(68, 68, 68, 255),
 
-                    )
+                        )
                 }
 
-        }
-        //
-
-
-        //Botão de Comentários
-        IconButton(onClick = {
-
-        },
-            modifier = Modifier
-                .constrainAs(comentar) {
-                    start.linkTo(parent.start, margin = 123.dp)
-                    top.linkTo(linha.bottom)
-                    bottom.linkTo(parent.bottom, margin = 3.dp)
-                }
-
-        ) {
-            Row() {
-                Icon(
-                    painter = iconecomentarios,
-                    contentDescription = "Icone para os comentários",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(end = 5.dp)
-                )
-
-                Text(text = "Comentar",
-                    fontSize = 15.sp,
-                    color = Color(68, 68, 68, 255),
-
-                    )
             }
+            //
 
-        }
-        //
 
-        //Botão de Compartilhar
-        IconButton(onClick = {
+            //Botão de Comentários
+            IconButton(onClick = {
 
-        },
-            modifier = Modifier
-                .constrainAs(compartilhar) {
-                    start.linkTo(parent.start, margin = 250.dp)
-                    top.linkTo(linha.bottom)
-                    bottom.linkTo(parent.bottom, margin = 3.dp)
-                }
+            },
+                modifier = Modifier
+                    .constrainAs(comentar) {
+                        start.linkTo(parent.start, margin = 123.dp)
+                        top.linkTo(linha.bottom)
+                        bottom.linkTo(parent.bottom, margin = 3.dp)
+                    }
 
-        ) {
-            Row() {
-                Icon(
-                    painter = iconecompartilhar,
-                    contentDescription = "Icone para Compartilhar",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(end = 5.dp)
-                )
-
-                Text(text = "Compartilhar",
-                    fontSize = 15.sp,
-                    color = Color(68, 68, 68, 255),
-
+            ) {
+                Row() {
+                    Icon(
+                        painter = iconecomentarios,
+                        contentDescription = "Icone para os comentários",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 5.dp)
                     )
-            }
 
-        }
-        //
+                    Text(
+                        text = "Comentar",
+                        fontSize = 15.sp,
+                        color = Color(68, 68, 68, 255),
 
-        Row(
-            modifier = Modifier
-                .constrainAs(linhaestetica2) {
-                    top.linkTo(compartilhar.bottom)
+                        )
                 }
-                .fillMaxWidth()
-                .size(8.dp)
-                .background(color = Color(209, 209, 209, 255))
-        ) {
 
-        }
+            }
+            //
+
+            //Botão de Compartilhar
+            IconButton(onClick = {
+
+            },
+                modifier = Modifier
+                    .constrainAs(compartilhar) {
+                        start.linkTo(parent.start, margin = 250.dp)
+                        top.linkTo(linha.bottom)
+                        bottom.linkTo(parent.bottom, margin = 3.dp)
+                    }
+
+            ) {
+                Row() {
+                    Icon(
+                        painter = iconecompartilhar,
+                        contentDescription = "Icone para Compartilhar",
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 5.dp)
+                    )
+
+                    Text(
+                        text = "Compartilhar",
+                        fontSize = 15.sp,
+                        color = Color(68, 68, 68, 255),
+
+                        )
+                }
+
+            }
+            //
+
+            Row(
+                modifier = Modifier
+                    .constrainAs(linhaestetica2) {
+                        top.linkTo(compartilhar.bottom)
+                    }
+                    .fillMaxWidth()
+                    .size(10.dp)
+                    .background(color = Color(209, 209, 209, 255))
+            ) {}
         }
 
     }

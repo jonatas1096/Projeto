@@ -608,15 +608,29 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     top.linkTo(iconApelido.bottom, margin = 35.dp)
                 }
             )
-            Text(text = UserData.nomeEncontrado,
-                fontSize = 30.sp,
-                fontFamily = Dongle,
-                color = Color(0xFF838383),
-                modifier = Modifier.constrainAs(nome){
-                    start.linkTo(iconNome.end, margin = 20.dp)
-                    top.linkTo(sobreMim.bottom, margin = 135.dp)
-                }
-            )
+            if (UserData.nomeEncontrado.length > 20){ //JulioCarecaJulioCarecaJulioCareca
+                Text(text = "${UserData.nomeEncontrado.substring(0,nomeMaxCaracteres) + "..."}",
+                    fontSize = 30.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(nome){
+                        start.linkTo(iconNome.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 135.dp)
+                    }
+                )
+            }
+            else{
+                Text(text = "${UserData.nomeEncontrado}",
+                    fontSize = 30.sp,
+                    fontFamily = Dongle,
+                    color = Color(0xFF838383),
+                    modifier = Modifier.constrainAs(nome){
+                        start.linkTo(iconNome.end, margin = 20.dp)
+                        top.linkTo(sobreMim.bottom, margin = 135.dp)
+                    }
+                )
+            }
+
             /////////////////////
 
             //Conjunto do RM/CPSID
@@ -846,65 +860,65 @@ fun inserirApelido(apelidoUsuario:String, navController: NavController){
 
     val context = LocalContext.current
 
+    LaunchedEffect(Unit){
+        println("Entrou no launched")
+        coroutineScope.launch {
+            if (cpsID.isNullOrEmpty()){ //entendemos que é um aluno
+                println("Achou um aluno")
+                val usuarioColecao = firestore.collection("Alunos")
+                val alunoDocument = usuarioColecao.document("$alunoRM")
 
-        LaunchedEffect(Unit){
-            println("Entrou no launched")
-            coroutineScope.launch {
-                if (cpsID.isNullOrEmpty()){ //entendemos que é um aluno
-                    println("Achou um aluno")
-                    val usuarioColecao = firestore.collection("Alunos")
-                    val alunoDocument = usuarioColecao.document("$alunoRM")
+                alunoDocument.get()
+                    .addOnSuccessListener {Document->
+                        val atualizarApelido = hashMapOf(
+                            "apelido" to apelidoUsuario
+                        )
 
-                    alunoDocument.get()
-                        .addOnSuccessListener {Document->
-                            val atualizarApelido = hashMapOf(
-                                "apelido" to apelidoUsuario
-                            )
-
-                            //Mesclando os dados para nao excluir o que já está lá
-                            alunoDocument.set(atualizarApelido, SetOptions.merge())
-                                .addOnSuccessListener {
-                                    Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                                    UserData.apelidoUsuario = apelidoUsuario
-                                }
-                                .addOnFailureListener {exception ->
-                                    Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
-                                    println(exception)
-                                }
-                        }
-                        .addOnFailureListener{
-                            println("O documento nao existe.")
-                        }
-                }
-                else{ //entendemos que é um cps
-                    val usuarioColecao = firestore.collection("Cps")
-                    val alunoDocument = usuarioColecao.document("$cpsID")
-
-                    alunoDocument.get()
-                        .addOnSuccessListener {Document->
-                            val atualizarApelido = hashMapOf(
-                                "apelido" to apelidoUsuario
-                            )
-
-                            //Mesclando os dados para nao excluir o que já está lá
-                            alunoDocument.set(atualizarApelido, SetOptions.merge())
-                                .addOnSuccessListener {
-                                    UserData.apelidoUsuario = apelidoUsuario
-                                    Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener {exception ->
-                                    Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
-                                    println(exception)
-                                }
-                        }
-                        .addOnFailureListener{
-                            println("O documento nao existe.")
-                        }
-                }
-                delay(1000)
-                navController.navigate("Profile")
+                        //Mesclando os dados para nao excluir o que já está lá
+                        alunoDocument.set(atualizarApelido, SetOptions.merge())
+                            .addOnSuccessListener {
+                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                                UserData.apelidoUsuario = apelidoUsuario
+                            }
+                            .addOnFailureListener {exception ->
+                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                println(exception)
+                            }
+                    }
+                    .addOnFailureListener{
+                        println("O documento nao existe.")
+                    }
             }
+            else{ //entendemos que é um cps
+                val usuarioColecao = firestore.collection("Cps")
+                val alunoDocument = usuarioColecao.document("$cpsID")
 
+                alunoDocument.get()
+                    .addOnSuccessListener {Document->
+                        val atualizarApelido = hashMapOf(
+                            "apelido" to apelidoUsuario
+                        )
+
+                        //Mesclando os dados para nao excluir o que já está lá
+                        alunoDocument.set(atualizarApelido, SetOptions.merge())
+                            .addOnSuccessListener {
+                                UserData.apelidoUsuario = apelidoUsuario
+                                Toast.makeText(context,"Apelido atualizado com sucesso!", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {exception ->
+                                Toast.makeText(context,"Erro ao atualizar o apelido.", Toast.LENGTH_SHORT).show()
+                                println(exception)
+                            }
+                    }
+                    .addOnFailureListener{
+                        println("O documento nao existe.")
+                    }
+            }
+            delay(1000)
+            navController.navigate("Profile")
         }
+
+    }
+
 }
 

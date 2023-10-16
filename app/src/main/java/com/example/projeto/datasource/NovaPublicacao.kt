@@ -58,7 +58,6 @@ class NovaPublicacao  @Inject constructor() {
                         //Pegando o nome
                         val rmData = firestore.collection("Data")
                         val rmDocument = rmData.document("RM")
-                        //var nomeEncontrado = ""
                             rmDocument.get()
                             .addOnSuccessListener {document ->
                                 if (document.exists() && document != null){
