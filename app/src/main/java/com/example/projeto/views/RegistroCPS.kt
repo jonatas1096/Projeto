@@ -38,13 +38,12 @@ import com.example.projeto.viewmodel.AuthViewModelCPS
 fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hiltViewModel()) {
 
     //iniciando as variaveis para o cadastro:
-    var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var id by remember { mutableStateOf("") }
     var codigoEtec by remember { mutableStateOf("") }
 
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     var checkboxmarcada by remember { mutableStateOf(false) }
 
@@ -69,7 +68,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
         modifier = Modifier.fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        val (boxRegistroCPS, pandasapeca, elipseAluno, icAluno, identificacao, arrow) = createRefs()
+        val (boxRegistroCPS,elipseAluno, icAluno, identificacao, arrow) = createRefs()
 
         //Arrow voltar
         Box(modifier = Modifier.constrainAs(arrow){
@@ -93,7 +92,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-                .height(643.dp)
+                .height(540.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroCPS) {
                     start.linkTo(parent.start)
@@ -111,23 +110,6 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     .padding(horizontal = 15.dp)
             ) {
 
-
-                /*//Nome
-                OutlinedRegistro(
-                    value = nome,
-                    onValueChange = {nome = it},
-                    label = "Nome / Apelido",
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text
-                    ),
-                    visualTransformation = VisualTransformation.None,
-                    leadingIcon = {
-                        Icon(
-                            painterResource(id = R.drawable.ic_professor),
-                            contentDescription = "Ícone de Professor e Administração no registro",
-                            modifier = Modifier.size(28.dp))
-                    }
-                )*/
                 //Email
                 OutlinedRegistro(
                     value = email,
@@ -261,21 +243,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
             }
 
         }
-        /*Detetive Mel
-        Box(
-            modifier = Modifier
-                .constrainAs(pandasapeca) {
-                    top.linkTo(identificacao.bottom, margin = 367.dp)
-                    start.linkTo(parent.start)
 
-                }
-                .size(166.dp)
-        ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/detetive_mel.png",
-                contentDescription = "panda sapeca",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier)
-        }*/
 
         //Elipse do Professor
         Box(

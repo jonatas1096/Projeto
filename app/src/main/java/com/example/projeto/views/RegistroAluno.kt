@@ -40,13 +40,11 @@ import com.example.projeto.viewmodel.AuthViewModel
 fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltViewModel()) {
 
     //iniciando as variaveis para o cadastro:
-    var nome by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var rm by remember { mutableStateOf("") }
-    var codigoturma by remember { mutableStateOf("") }
 
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     var checkboxmarcada by remember { mutableStateOf(false) }
 
@@ -72,7 +70,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        val (boxRegistroAluno, pandasapeca, elipseAluno, icAluno, identificacao, arrow) = createRefs()
+        val (boxRegistroAluno, elipseAluno, icAluno, identificacao, arrow) = createRefs()
 
         //Arrow voltar
         Box(modifier = Modifier
@@ -118,24 +116,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                         .padding(horizontal = 15.dp)
 
                 ) {
-                    
 
-                   /* //Nome
-                    OutlinedRegistro(
-                        value = nome,
-                        onValueChange = {nome = it},
-                        label = "Nome / Apelido",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text
-                        ),
-                        visualTransformation = VisualTransformation.None,
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.ic_aluno),
-                                contentDescription = "Ícone de Aluno no registro",
-                                modifier = Modifier.size(28.dp))
-                        }
-                    )*/
                     //Email
                     OutlinedRegistro(
                         value = email,

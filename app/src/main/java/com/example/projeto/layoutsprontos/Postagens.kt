@@ -14,12 +14,15 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
@@ -49,7 +52,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
 
     val maxCaracteresNome = 18
     val maxCaracteresApelido = 16
-    val maxCaracteresTexto = 40
+
 
 //
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
@@ -57,7 +60,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxWidth()
-            .size( if(!imagensPost.isNullOrEmpty()) 470.dp else 240.dp)
+            // .size( if(!imagensPost.isNullOrEmpty()) 470.dp else 240.dp)
             .padding(bottom = 15.dp)
     ) {
 
@@ -99,8 +102,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             //Nome do usuário
             if (nomeAutor.length > maxCaracteresNome) {
                 Text(text = nomeAutor.substring(0, maxCaracteresNome) + "..",
-                    color = if (rm == "23627") {
-                        Color(0xFFe103fd)
+                    color = if (rm in setOf("23627", "12345")) {
+                        Color(0xFF9B26BB)
                     } else {
                         Color(56, 56, 56, 255)
                     },
@@ -113,8 +116,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     })
             } else {
                 Text(text = nomeAutor,
-                    color = if (rm == "23627") {
-                        Color(0xFFe103fd)
+                    color = if (rm in setOf("23627", "12345")) {
+                        Color(0xFF9B26BB)
                     } else {
                         Color(56, 56, 56, 255)
                     },
@@ -180,12 +183,28 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     .padding(start = 10.dp)
                     .padding(end = 20.dp)
             ) {
-                if (textoPostagem.length > maxCaracteresTexto) {
-                    Text(
-                        text = textoPostagem.substring(0, maxCaracteresTexto) + "...",
-                        fontSize = 18.sp,
-                        color = Color(39, 39, 39, 255),
-                    )
+                var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
+                if (textoPostagem.length > maxCaracteresTexto.value) {
+                    println("valor antes: $maxCaracteresTexto")
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = textoPostagem.substring(0, maxCaracteresTexto.value) + "... ",
+                            fontSize = 18.sp,
+                            color = Color(39, 39, 39, 255),
+                        )
+                        if (maxCaracteresTexto.value < textoPostagem.length){
+                            Text(
+                                text = "<Ver mais>",
+                                fontSize = 18.sp,
+                                color = LARANJA,
+                                modifier = Modifier.clickable {
+                                    maxCaracteresTexto.value = textoPostagem.length
+                                    println("clicou $maxCaracteresTexto")
+                                }
+                            )
+                        }
+                    }
+
                 } else {
                     Text(
                         text = textoPostagem,
@@ -234,7 +253,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         start.linkTo(parent.start, margin = 8.dp)
 
                         if (!imagensPost.isNullOrEmpty()) {
-                          top.linkTo(imagemPost.bottom, margin = 5.dp)
+                            top.linkTo(imagemPost.bottom, margin = 5.dp)
                         } else {
                             top.linkTo(tagTurmas.bottom, margin = 5.dp)
                         }

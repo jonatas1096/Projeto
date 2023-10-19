@@ -3,6 +3,7 @@ package com.example.projeto.layoutsprontos
 
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,9 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -74,7 +77,8 @@ fun loadImage(path:String, contentDescription:String, contentScale: ContentScale
 @Composable
 fun loadCoil(imagensPost: List<String>, contentDescription:String){
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.Black)
     ) {
         // HorizontalPager para exibir imagens individuais
@@ -88,7 +92,7 @@ fun loadCoil(imagensPost: List<String>, contentDescription:String){
             AsyncImage(
                 model = imagemUrl, // Passa uma única URL de imagem
                 contentDescription = contentDescription,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
                 //.border(2.dp,Color.Red)
             )
@@ -98,9 +102,9 @@ fun loadCoil(imagensPost: List<String>, contentDescription:String){
 }
 
 
-
+//O outlined do email
 @Composable
-fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, visualTransformation: VisualTransformation, leadingIcon: @Composable (() -> Unit)? = null){
+fun OutlinedEmail(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, visualTransformation: VisualTransformation, leadingIcon: @Composable (() -> Unit)? = null){
 
     OutlinedTextField(
         value = value,
@@ -124,6 +128,71 @@ fun OutlinedLogin(value:String, onValueChange: (String) -> Unit, label:String, k
         shape = RoundedCornerShape(50.dp),
         visualTransformation = visualTransformation,
         leadingIcon = leadingIcon,
+        modifier = Modifier
+            .padding(horizontal = 40.dp)
+            .padding(bottom = 7.dp)
+    )
+
+}
+
+@Composable
+fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, leadingIcon: @Composable (() -> Unit)? = null){
+
+    var senhaVisibilidade by remember { mutableStateOf(false) }
+    println("aqui começou $senhaVisibilidade")
+
+
+    OutlinedTextField(
+        value = value,
+        onValueChange,
+        label = {
+            Text(text = label,
+                fontFamily = Dongle,
+                fontSize = 27.sp,
+            )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            unfocusedBorderColor = Color.White,
+            focusedBorderColor = LARANJA,
+            focusedLabelColor = LARANJA,
+            backgroundColor = Color(0xFFF2f2f2),
+            cursorColor = LARANJA,
+        ),
+        keyboardOptions = keyboardOptions,
+        maxLines = 1,
+        singleLine = true,
+        shape = RoundedCornerShape(50.dp),
+        visualTransformation =
+            if (senhaVisibilidade){
+                VisualTransformation.None
+            }else
+                PasswordVisualTransformation()
+        ,
+        leadingIcon = leadingIcon,
+        trailingIcon = {
+            if (senhaVisibilidade){
+                IconButton(onClick = {
+                    senhaVisibilidade = !senhaVisibilidade
+                    println(senhaVisibilidade)
+                }) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_visibility),
+                        contentDescription = "Ícone para mostrar ou ocultar a senha",
+                        modifier = Modifier.size(22.dp))
+                }
+            }
+            else{
+                IconButton(onClick = {
+                    senhaVisibilidade = !senhaVisibilidade
+                    println(senhaVisibilidade)
+                }) {
+                    Icon(
+                        painterResource(id = R.drawable.ic_visibilityoff),
+                        contentDescription = "Ícone para mostrar ou ocultar a senha",
+                        modifier = Modifier.size(22.dp))
+                }
+            }
+        },
         modifier = Modifier
             .padding(horizontal = 40.dp)
             .padding(bottom = 7.dp)
@@ -426,9 +495,7 @@ fun BottomNavigationBar(items: List<BottomNavItem>, navController: NavController
                                         color = AZULCLARO,
                                         shape = CircleShape,
                                         modifier = Modifier
-                                           // .border(2.dp, Color.Black)
                                             .size(20.dp)
-                                            //.clip(CircleShape)
                                     ) {
                                         Column(
                                             verticalArrangement = Arrangement.Center,

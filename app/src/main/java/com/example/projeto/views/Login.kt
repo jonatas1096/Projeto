@@ -18,7 +18,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -28,12 +27,12 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
-import com.example.projeto.layoutsprontos.OutlinedLogin
+import com.example.projeto.layoutsprontos.OutlinedEmail
+import com.example.projeto.layoutsprontos.OutlinedSenha
 import com.example.projeto.layoutsprontos.loadImage
 import com.example.projeto.listener.ListenerAuth
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
-import com.example.projeto.ui.theme.JomhuriaRegular
 import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.AuthViewModel
 import com.example.projeto.viewmodel.AuthViewModelCPS
@@ -84,35 +83,24 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            val (capeloBox, areaLogin,areaLoginSOMBRA, titulo, pauloroberto) = createRefs()
+            val (logo, areaLogin,areaLoginSOMBRA) = createRefs()
 
             //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
             Box(
                 modifier = Modifier
-                    .constrainAs(capeloBox) {
-                        top.linkTo(parent.top, margin = 30.dp)
-                        start.linkTo(parent.start, margin = 100.dp)
-                        end.linkTo(parent.end, margin = 100.dp)
+                    .constrainAs(logo) {
+                        top.linkTo(parent.top, margin = 0.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
                     }
-                    .size(150.dp)
+                    .size(260.dp)
             ) {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/capelo.png",
-                    contentDescription = "Capelo de aluno",
+                loadImage(path = "https://i.imgur.com/PqBJMau.png",
+                    contentDescription = "Logo do app",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
                 )
             }
-
-            Text(text = "ConnectSTUDENT",
-                modifier = Modifier.constrainAs(titulo){
-                    top.linkTo(parent.top, margin = 90.dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-                fontSize = 78.sp,
-                color = Color.White,
-                fontFamily = Jomhuria,
-                )
 
 
         //Essa surface é uma gambiarra do carai só pra colocar uma sombra na Box abaixo, infelizmente o elevation padrão fica bugado:
@@ -121,7 +109,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                 elevation = 15.dp,
                 modifier = Modifier
                     .constrainAs(areaLoginSOMBRA) {
-                        top.linkTo(titulo.bottom)
+                        top.linkTo(logo.bottom, margin = (20).dp)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
@@ -131,23 +119,19 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
 
             //Box que vai guardar email e senha:
-
                 Box(
                     modifier = Modifier
                         .constrainAs(areaLogin) {
-                            top.linkTo(titulo.bottom)
+                            top.linkTo(logo.bottom, margin = (20).dp)
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
 
                         }
                         .width(310.dp)
-                        //.height(430.dp)
                         .background(
                             Color.White,
                             shape = RoundedCornerShape(30.dp)
                         )
-
-
                 ) {
                     Column(
                         modifier = Modifier
@@ -180,7 +164,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
 
                         //Email
-                        OutlinedLogin(value = email,
+                        OutlinedEmail(value = email,
                             onValueChange = {email = it},
                             label = "Email",
                             keyboardOptions = KeyboardOptions(
@@ -191,18 +175,17 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                                 Icon(painterResource(id = R.drawable.ic_email),
                                     contentDescription = "Ícone de email",
                                     modifier = Modifier.size(22.dp))
-                            }
+                            },
                         )
 
 
                         //Senha
-                        OutlinedLogin(value = senha,
+                        OutlinedSenha(value = senha,
                             onValueChange = {senha = it},
                             label = "Senha",
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Password
                             ),
-                            visualTransformation = PasswordVisualTransformation(),
                             leadingIcon = {
                                 Icon(
                                     painterResource(id = R.drawable.ic_senha),
@@ -324,7 +307,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
     val auth = FirebaseAuth.getInstance()
 
     var email by remember { mutableStateOf(emailRedefinir) }
-    var confirmarEmail by remember { mutableStateOf(confirmarEmail) }
+    var confirmEmail by remember { mutableStateOf(confirmarEmail) }
 
     var camposDiferentes by remember{ mutableStateOf(false) }
     println("inicio $camposDiferentes")
@@ -425,7 +408,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             OutlinedTextField(
                                 value = confirmarEmail,
                                 onValueChange = {
-                                   confirmarEmail = it
+                                   confirmEmail = it
                                 },
                                 label = {
                                     Text(text = "Confirme o Email",
@@ -460,7 +443,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = if(camposDiferentes) 1.dp else 25.dp),
+                                    .padding(top = if (camposDiferentes) 1.dp else 25.dp),
                                 horizontalArrangement = Arrangement.End
                             ) {
                                 Button(

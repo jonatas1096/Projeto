@@ -70,7 +70,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     ////////////////////////////////
 
     //toda a palhaçada do jetpack só pra abrir o bottomshet
-    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Expanded)
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
     val scaffoldState = rememberBottomSheetScaffoldState(bottomSheetState = sheetState)
     val scope = rememberCoroutineScope()
     //
@@ -87,8 +87,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     //Iniciar o processo de publicação
     var publicacaoState by remember { mutableStateOf(false) }
 
-    //Máximo caracteres titulo
-    val maxCaracteresTitulo = 35
 
     //Iniciar o processo de marcar turmas
     var adicionarTurmaState by remember { mutableStateOf(false) }
@@ -100,13 +98,12 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         sheetContent = { //essa parte do sheetContent é a parte de baixo (kkkkkk vai entender)
             Box(modifier = Modifier
                 .fillMaxWidth()
-                .height(190.dp))
+                .height(166.dp))
             {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(start = 10.dp)
-                        .padding(end = 10.dp),
+                        .padding(horizontal = 10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     //botão para subir o bottomsheet
@@ -124,7 +121,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                         Image(ImageVector.vectorResource(id = R.drawable.ic_minus),
                             contentDescription = "Subir o BottomSheet",
                             modifier = Modifier
-                                .size(80.dp),
+                                .size(70.dp),
                             colorFilter = ColorFilter.tint(Color(0xFFBDBBBB))
                         )
                     }
@@ -132,16 +129,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                     //Midias do bottomsheet
                     //Imagens
-                    Card(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable(
                                 onClick = {
                                     galeriaState = true
                                 }),
-                        backgroundColor = Color(243, 243, 243, 255),
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = 8.dp
                     ) {
                         Row(
                             modifier = Modifier
@@ -153,12 +147,12 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                             //Imagem da imagem
                             Image(ImageVector.vectorResource(id = R.drawable.ic_imagem),
-                                contentDescription = "Adicionar foto ou video",
+                                contentDescription = "Adicionar foto",
                                 modifier = Modifier
-                                    .size(38.dp)
-                                /*colorFilter = ColorFilter.tint(Color(0xFFC5C4C4)
-                                )*/
-                            )
+                                    .size(29.dp),
+                                colorFilter = ColorFilter.tint(Color(0xFFBB26D5)),
+                                )
+
 
                             //Só pra espaçar um pouco a imagem e o texto
                             Spacer(modifier = Modifier
@@ -166,7 +160,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                             //Texto da Imagem
                             Text(text = "Adicionar mídia",
-                                fontSize = 35.sp,
+                                fontSize = 34.sp,
                                 color = Color(0xFF303030),
                                 fontFamily = Dongle,
                             )
@@ -182,21 +176,17 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                     //Marcar turmas (apenas para CPS)
                     if (!UserData.cpsIDEncontrado.isNullOrEmpty()){ //" ! " de negação, ou seja, o cpsID não está vazio e vai habilitar o marcar turmas.
-                        Card(
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(
                                     onClick = {
                                         galeriaState = true
                                     }),
-                            backgroundColor = Color(233, 233, 233, 255),
-                            shape = RoundedCornerShape(8.dp),
-                            elevation = 8.dp
                         ){
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .background((Color(243, 242, 242, 255)))
                                     .clickable(
                                         onClick = {
                                             adicionarTurmaState = true
@@ -210,9 +200,9 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 Image(ImageVector.vectorResource(id = R.drawable.ic_marcarturma),
                                     contentDescription = "Marcar turma",
                                     modifier = Modifier
-                                        .size(38.dp)
-                                    /*colorFilter = ColorFilter.tint(Color(0xFFC5C4C4)
-                                    )*/
+                                        .size(29.dp),
+                                    colorFilter = ColorFilter.tint(Color(0xFFE97014)
+                                    )
                                 )
 
                                 //Só pra espaçar um pouco a imagem e o texto
@@ -221,7 +211,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                                 //Texto da Imagem
                                 Text(text = "Marcar turmas",
-                                    fontSize = 35.sp,
+                                    fontSize = 34.sp,
                                     color = Color(0xFF303030),
                                     fontFamily = Dongle,
                                 )
@@ -236,7 +226,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
             }
         },
-        sheetBackgroundColor = Color(0xFFFFFFFF),
+        sheetBackgroundColor = Color(247, 246, 246, 255),
         sheetShape = RoundedCornerShape(25.dp, 25.dp,0.dp, 0.dp),
         sheetElevation = 8.dp,
     )
@@ -244,41 +234,32 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(241, 241, 241, 255))
-                .padding(horizontal = 4.dp)
+                .background(Color(0xFFFFFFFF))
                 .verticalScroll(scroll)
         ) {
 
             //Começo constraint layout.
             //Eu vou começar por ele pra que as coisas que eu posicionar aqui tenham um menor hierarquia nas camadas em geral.
             //Tô optando por ele porque a forma padrão tava bugando dms
-            val (arrow, areaPublicar, areaTexto,areaTitulo, tagTurmas, boxImagem) = createRefs()
+            val (areaPublicar, arrow, fotoPerfil, nomeUsuario, areaTexto, areaTitulo, maxTituloText, tagTurmas, boxImagem) = createRefs()
 
             var titulo by remember { mutableStateOf("") }
             var texto by remember { mutableStateOf("") }
 
+            //Máximo caracteres titulo
+            val maxCaracteresTitulo = 35
+            var maxTitulo = maxCaracteresTitulo - titulo.length
 
-            // Arrow voltar (seta que volta)
-            arrowVoltar(
-                onClick = {
-                    navController.popBackStack()
-                },
-                modifier = Modifier
-                    .constrainAs(arrow) {
-                        start.linkTo(parent.start, margin = 5.dp)
-                        top.linkTo(parent.top, margin = 10.dp)
-                    }
-                    .size(35.dp),
-                color = Color(0xFF3C3C3C)
-            )
-            Box(
+
+            Card(
                 modifier = Modifier
                     .constrainAs(areaPublicar) {
                         top.linkTo(parent.top)
                     }
                     .fillMaxWidth()
-                    .size(50.dp)
-
+                    .size(50.dp),
+                elevation = 8.dp,
+                backgroundColor = Color(240, 239, 239, 255),
             ) {
                 //Parte do criar publicação e enviar com o Publicar
                 Row(
@@ -287,40 +268,15 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (!UserData.imagemUrl.isNullOrEmpty()){
-                        Text(text = "Criar Publicação",
-                            fontSize = 30.sp,
-                            fontFamily = Dongle,
-                            modifier = Modifier
-                                .padding(top = 5.dp)
-                                .padding(end = 10.dp)
-                        )
 
-                        Surface(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(start = 0.dp),
-                            shape = RoundedCornerShape(30.dp)
-                        ) {
-                            loadImage(
-                                path = UserData.imagemUrl,
-                                contentDescription = "Mini imagem do perfil",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                            )
-                        }
-                    }
-                    else{
-                        Text(text = "Criar Publicação",
-                            fontSize = 26.sp,
-                            //fontWeight = FontWeight.Bold,
-                            fontFamily = Dongle,
-                            modifier = Modifier
-                                .padding(top = 5.dp)
-                                .padding(end = 10.dp)
-                        )
-
-                    }
+                    Text(text = "Criar Publicação",
+                        fontSize = 30.sp,
+                        //fontWeight = FontWeight.Bold,
+                        fontFamily = Dongle,
+                        modifier = Modifier
+                            .padding(top = 5.dp)
+                            .padding(end = 10.dp)
+                    )
 
                     if (titulo.isEmpty() || texto.isEmpty()){
                         Button(
@@ -337,7 +293,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 color = Color(0xFFBDBBBB))
                         }
                     }
-                    else if(titulo.length > maxCaracteresTitulo){
+                    /*else if(titulo.length > maxCaracteresTitulo){
                         Button(
                             onClick = {
                                 Toast.makeText(context,"Título excedeu o tamanho limite de caracteres.",Toast.LENGTH_SHORT).show()
@@ -346,12 +302,14 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 backgroundColor = Color(0xFFE7E6E6)
                             ),
                             modifier = Modifier
-                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                                .padding(16.dp, 5.dp, 20.dp, 5.dp)
                         ) {
                             Text(text = "Publicar",
-                                color = Color(0xFFBDBBBB))
+                                color = Color(0xFFBDBBBB),
+                                fontWeight = FontWeight.Bold
+                            )
                         }
-                    }
+                    }*/
                     else{
                         Button(
                             onClick = {
@@ -361,7 +319,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 Color(0xFFB8D2FF)
                             ),
                             modifier = Modifier
-                                .padding(26.dp, 5.dp, 20.dp, 5.dp)
+                                .padding(16.dp, 5.dp, 20.dp, 5.dp)
                         ) {
                             Text(text = "Publicar",
                                 color = Color(0xFF005CFA),
@@ -372,33 +330,119 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                 }
             }
+
+            // Arrow voltar (seta que volta)
+            arrowVoltar(
+                onClick = {
+                    navController.popBackStack()
+                },
+                modifier = Modifier
+                    .constrainAs(arrow) {
+                        start.linkTo(parent.start, margin = 8.dp)
+                        top.linkTo(parent.top, margin = 10.dp)
+                    }
+                    .size(35.dp),
+                color = Color(0xFF3C3C3C)
+            )
+
+            //Mini foto de perfil
+            if (!UserData.imagemUrl.isNullOrEmpty()){ // " ! " de negação, ou seja, não está vazio.
+                Surface(
+                    modifier = Modifier
+                        .constrainAs(fotoPerfil) {
+                            start.linkTo(parent.start, margin = 8.dp)
+                            top.linkTo(areaPublicar.bottom, margin = 10.dp)
+                        }
+                        .size(55.dp)
+                        .padding(start = 0.dp),
+                    shape = RoundedCornerShape(30.dp)
+                ) {
+                    loadImage(
+                        path = UserData.imagemUrl,
+                        contentDescription = "Mini imagem do perfil",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+            }
+            else{
+                Surface(
+                    modifier = Modifier
+                        .constrainAs(fotoPerfil) {
+                            start.linkTo(parent.start, margin = 8.dp)
+                            top.linkTo(areaPublicar.bottom, margin = 10.dp)
+                        }
+                        .size(55.dp)
+                        .padding(start = 0.dp),
+                    shape = RoundedCornerShape(30.dp)
+                ) {
+                    loadImage(
+                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                        contentDescription = "Mini imagem do perfil",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+            }
+
+            //Área do nome do usuario
+            Text(
+                text = if
+                        (!UserData.apelidoUsuario.isNullOrEmpty()) "${UserData.nomeEncontrado} (${UserData.apelidoUsuario})"
+                else
+                    UserData.nomeEncontrado,
+                fontSize = 30.sp,
+                fontFamily = Dongle,
+                modifier = Modifier
+                    .constrainAs(nomeUsuario) {
+                        start.linkTo(fotoPerfil.end, margin = 5.dp)
+                        top.linkTo(areaPublicar.bottom, margin = 10.dp)
+                    }
+            )
             //Area do título
             OutlinedTextField(
                 value = titulo,
                 onValueChange = {
-                    titulo = it
+                    if (titulo.length < maxCaracteresTitulo){
+                        titulo = it
+                    }
+
                 },
                 label = {
                     Text(text = "Título da publicação",
-                        fontSize = 26.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        //color = Color(158, 158, 158, 255),
+                        color = Color(148, 148, 148, 255),
                     )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    focusedLabelColor = Color(39, 39, 39, 255),
-                    focusedBorderColor = Color(241, 241, 241, 255),
-                    unfocusedBorderColor = Color(241, 241, 241, 255),
+                    focusedBorderColor = Color(85, 85, 85, 255),
+                    unfocusedBorderColor = Color(170, 169, 169, 255),
                     cursorColor = Color(85, 85, 85, 255),
+                    backgroundColor = Color(250, 250, 250, 255),
+                ),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .constrainAs(areaTitulo) {
-                        top.linkTo(parent.top, margin = 50.dp)
+                        top.linkTo(fotoPerfil.bottom, margin = 0.dp)
                     }
                     .height(60.dp)
             )
 
+            Text(
+                text ="Max.Caracteres: $maxTitulo",
+                color = Color(148, 148, 148, 255),
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                modifier = Modifier.constrainAs(maxTituloText){
+                    end.linkTo(areaTitulo.end, margin = 8.dp)
+                    bottom.linkTo(areaTitulo.top, margin = (-8.dp))
+                }
+            )
 
             //Area para escrever o texto da publicação
             OutlinedTextField(
@@ -407,26 +451,29 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     texto = it
                 },
                 label = {
-                        Text(text = "Diga algo interessante abaixo!",
-                            fontSize = 18.sp
+                        Text(text =
+                        if (imagensColuna.isNullOrEmpty())"O que você deseja contar?" else "Diga algo sobre essa foto!",
+                            fontSize = 18.sp,
+                            color = Color(148, 148, 148, 255),
                         )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    backgroundColor = Color(241, 241, 241, 255),
-                    focusedLabelColor = Color(49, 49, 49, 255),
-                    focusedBorderColor = Color(184, 184, 184, 255),
-                    unfocusedBorderColor = Color(241, 241, 241, 255),
+                    backgroundColor = Color(250, 250, 250, 255),
+                    focusedBorderColor = Color(85, 85, 85, 255),
+                    unfocusedBorderColor = Color(170, 169, 169, 255),
                     cursorColor = Color(184, 184, 184, 255),
+
                 ),
                 textStyle = TextStyle(
                     fontSize = 16.sp,
                 ),
                 modifier = Modifier
                     .constrainAs(areaTexto) {
-                        top.linkTo(areaTitulo.bottom, margin = 5.dp)
+                        top.linkTo(areaTitulo.bottom, margin = 0.dp)
                     }
                     .fillMaxWidth()
                     .height(150.dp)
+                    .padding(horizontal = 8.dp)
             )
 
             //Área para mostrar as turmas que serão marcadas
@@ -439,6 +486,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     modifier = Modifier.constrainAs(tagTurmas){
                         top.linkTo(areaTexto.bottom, margin = 3.dp)
                     }
+                        .padding(horizontal = 8.dp)
                     )
             }
 
@@ -446,21 +494,29 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             Card(
                 modifier = Modifier
                     .constrainAs(boxImagem) {
-                        top.linkTo(areaTexto.bottom, margin = 70.dp)
+                        if (selecaoTurmas.isEmpty()){
+                            top.linkTo(areaTexto.bottom, margin = 25.dp)
+                        }
+                        else{
+                            top.linkTo(tagTurmas.bottom, margin = (-8).dp)
+                        }
                     }
                     .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .height(if (imagensColuna.isEmpty()) 200.dp else 220.dp * imagensColuna.size + 90.dp),
-                elevation = 8.dp,
-                backgroundColor = Color(241, 241, 241, 255)
+                backgroundColor = Color(255, 255, 255, 255)
             )
             {
                 if (imagensColuna.isEmpty()){
                     Box(
                         modifier = Modifier.fillMaxSize()
+                            .clickable {
+                                galeriaState = true
+                            }
                     ) {
                         loadImage(
-                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagempadrao_publicar.jpg",
-                            contentDescription = "Corujinha adc.Imagem",
+                            path = "https://i.imgur.com/jTFFtVa.png",
+                            contentDescription = "adc. Imagem",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier)
                     }
@@ -577,6 +633,7 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
         }
         onDispose {
             // Serve para executar alguma coisa como limpeza quando a execução acaba, nao sei como usar
+
         }
     }
 }
@@ -1130,14 +1187,15 @@ fun adicionarTurma(onDismiss:(List<turmasItem>) -> Unit){
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
-                    .padding(top = 26.dp)
+                    .padding(top = 26.dp),
+
             ){
                 items(listaTurmas){ turmaSelecionada ->
 
                     val selectedItem = items.find { it.title == turmaSelecionada.title }
                     Row(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
                                 text = turmaSelecionada.title,

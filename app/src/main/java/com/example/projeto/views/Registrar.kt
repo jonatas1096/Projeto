@@ -46,7 +46,7 @@ fun Registrar(navController: NavController) {
             .fillMaxSize()
 
     ) {
-        val (boxPrincipal,boxSOMBRA, beto, coruja, texto1, texto2, arrow) = createRefs()
+        val (boxPrincipal,boxSOMBRA, texto1, texto2, arrow) = createRefs()
 
         //Arrow voltar
         Box(modifier = Modifier.constrainAs(arrow){
@@ -176,41 +176,6 @@ fun Registrar(navController: NavController) {
                 .padding(0.dp)
         )
 
-
-        /*Box da gambiarra de imagem para o Béto
-        Box(
-            modifier = Modifier
-                .size(130.dp)
-                .constrainAs(beto) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom, margin = 460.dp)
-                    end.linkTo(parent.end)
-                }
-        ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coala1.png",
-                contentDescription = "Béto",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier)
-        }*/
-
-
-
-        //Box da gambiarra de imagem para a Coruja-ruja
-        Box(
-            modifier = Modifier
-                .size(150.dp)
-                .constrainAs(coruja) {
-                    bottom.linkTo(boxPrincipal.bottom, margin = (-3).dp)
-                    start.linkTo(boxPrincipal.start, margin = 232.dp)
-                }
-
-        ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/coruja1.png",
-                contentDescription = "Coruja",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier)
-        }
 
     }
 
