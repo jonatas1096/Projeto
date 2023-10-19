@@ -95,7 +95,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                     }
                     .size(260.dp)
             ) {
-                loadImage(path = "https://i.imgur.com/PqBJMau.png",
+                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_ofc.png",
                     contentDescription = "Logo do app",
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

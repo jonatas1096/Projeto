@@ -216,6 +216,11 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                     fontFamily = Dongle,
                                 )
 
+                                //Só pra espaçar do final
+                                Spacer(modifier = Modifier
+                                    .height(20.dp)
+                                    .border(2.dp, Color.Black))
+
                             }
                         }
                     }
@@ -228,7 +233,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         },
         sheetBackgroundColor = Color(247, 246, 246, 255),
         sheetShape = RoundedCornerShape(25.dp, 25.dp,0.dp, 0.dp),
-        sheetElevation = 8.dp,
+        sheetElevation = 2.dp,
     )
     {
         ConstraintLayout(
@@ -241,7 +246,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             //Começo constraint layout.
             //Eu vou começar por ele pra que as coisas que eu posicionar aqui tenham um menor hierarquia nas camadas em geral.
             //Tô optando por ele porque a forma padrão tava bugando dms
-            val (areaPublicar, arrow, fotoPerfil, nomeUsuario, areaTexto, areaTitulo, maxTituloText, tagTurmas, boxImagem) = createRefs()
+            val (areaPublicar, arrow, fotoPerfil, nomeUsuario, areaTexto, areaTitulo, maxTituloText, tagTurmas, boxImagem,removerImagem) = createRefs()
 
             var titulo by remember { mutableStateOf("") }
             var texto by remember { mutableStateOf("") }
@@ -293,23 +298,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 color = Color(0xFFBDBBBB))
                         }
                     }
-                    /*else if(titulo.length > maxCaracteresTitulo){
-                        Button(
-                            onClick = {
-                                Toast.makeText(context,"Título excedeu o tamanho limite de caracteres.",Toast.LENGTH_SHORT).show()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color(0xFFE7E6E6)
-                            ),
-                            modifier = Modifier
-                                .padding(16.dp, 5.dp, 20.dp, 5.dp)
-                        ) {
-                            Text(text = "Publicar",
-                                color = Color(0xFFBDBBBB),
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }*/
                     else{
                         Button(
                             onClick = {
@@ -483,9 +471,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     fontFamily = Jomhuria,
                     color = LARANJA,
                     lineHeight = (15).sp,
-                    modifier = Modifier.constrainAs(tagTurmas){
-                        top.linkTo(areaTexto.bottom, margin = 3.dp)
-                    }
+                    modifier = Modifier
+                        .constrainAs(tagTurmas) {
+                            top.linkTo(areaTexto.bottom, margin = 3.dp)
+                        }
                         .padding(horizontal = 8.dp)
                     )
             }
@@ -494,28 +483,29 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             Card(
                 modifier = Modifier
                     .constrainAs(boxImagem) {
-                        if (selecaoTurmas.isEmpty()){
+                        if (selecaoTurmas.isEmpty()) {
                             top.linkTo(areaTexto.bottom, margin = 25.dp)
-                        }
-                        else{
+                        } else {
                             top.linkTo(tagTurmas.bottom, margin = (-8).dp)
                         }
                     }
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp)
-                    .height(if (imagensColuna.isEmpty()) 200.dp else 220.dp * imagensColuna.size + 90.dp),
+                    .height(if (imagensColuna.isEmpty()) 200.dp else 220.dp * imagensColuna.size + 100.dp),
                 backgroundColor = Color(255, 255, 255, 255)
+
             )
             {
                 if (imagensColuna.isEmpty()){
                     Box(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
                             .clickable {
                                 galeriaState = true
                             }
                     ) {
                         loadImage(
-                            path = "https://i.imgur.com/jTFFtVa.png",
+                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/adc_novaimagem.png",
                             contentDescription = "adc. Imagem",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier)
@@ -524,13 +514,25 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 else{
                     LazyColumn(
                         modifier = Modifier
-                            .constrainAs(boxImagem) {
-                                top.linkTo(areaTexto.bottom, margin = 15.dp)
-                            }
                             .fillMaxWidth()
                             .height(220.dp)
                     ) {
                         items(imagensColuna) { imagem ->
+                            IconButton(
+                                onClick = {
+                                    imagensColuna.remove(imagem)
+                                },
+                                modifier = Modifier.constrainAs(removerImagem) {
+                                    start.linkTo(parent.start, margin = 10.dp)
+                                }
+                                    .size(20.dp)
+                            ){Image(
+                                ImageVector.vectorResource(id = R.drawable.ic_fechar2),
+                                contentDescription = "Ícone para remover a imagem já selecionada",
+                                colorFilter = ColorFilter.tint(Color.Red),
+                                //contentScale = ContentScale.Fit
+                            )}
+
                             Image(
                                 bitmap = imagem.asImageBitmap(),
                                 contentDescription = "Imagem Selecionada",
@@ -545,7 +547,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
                             )
                         }
-
 
                     }
                 }
