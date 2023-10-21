@@ -4,6 +4,7 @@ package com.example.projeto.layoutsprontos
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.drawable.Icon
+import android.service.autofill.UserData
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
@@ -556,7 +558,8 @@ fun BottomNavigationBar(items: List<BottomNavItem>, navController: NavController
 
 @Composable
 fun botaoDrawer(onClick: () -> Unit){
-
+/*
+    val imagemDrawer = UserData.
     IconButton(
         onClick = onClick,
         modifier = Modifier
@@ -564,9 +567,15 @@ fun botaoDrawer(onClick: () -> Unit){
             .padding(start = 5.dp)
             .padding(top = 15.dp)
     ){
-        Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
-            contentDescription = "Publicar",)
+        /*Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
+            contentDescription = "Publicar",)*/
+        loadImage(
+            path = ,
+            contentDescription = ,
+            contentScale = ,
+            modifier = )
     }
+*/
 }
 
 

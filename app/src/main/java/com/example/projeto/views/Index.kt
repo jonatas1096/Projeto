@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,7 +74,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     //Notificações do usuário
     var notificacoes by remember { mutableStateOf<Int?>(0) }
 
-
+    // Para aguardar a foto do perfil do usuário no drawerContent
+    var urlBaixada by remember{ mutableStateOf(false) }
 
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     LaunchedEffect(Unit){
@@ -202,11 +205,15 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         println("A URL não pôde ser obtida. Erro: $exception")
                     }
             }
+            delay(1000)
+            urlBaixada = true // a lógica pro progressIndicator
     }
 
     }
 
 
+
+    //Começo do layout
     Scaffold(
         scaffoldState = scaffoldState,
 
@@ -214,15 +221,58 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
            TopAppBar(
                backgroundColor = Color(0xFFFAFAFA),
            ) {
+               if (urlBaixada){
+                   if (!UserData.imagemUrl.isNullOrEmpty()){
+                       Surface(
+                           modifier = Modifier.clickable {
+                               scope.launch {
+                                   scaffoldState.drawerState.open()
+                               }
+                           }
+                               .size(36.dp),
+                           shape = RoundedCornerShape(30.dp)
+                       ){
+                           loadImage(
+                               path = UserData.imagemUrl,
+                               contentDescription = "Mini imagem do usuário para abrir o Drawer",
+                               contentScale = ContentScale.Crop,
+                               modifier = Modifier)
+                       }
+                   }else{
+                       IconButton(
+                           onClick = {
+                               scope.launch {
+                                   scaffoldState.drawerState.open()
+                               }
+                           },
+                           modifier = Modifier
+                               .size(40.dp)
+                               .padding(start = 5.dp)
+                               .padding(top = 15.dp)
+                       ){
+                           Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
+                               contentDescription = "Publicar",)
+                       }
+                   }
+               }
+               else{
+                   Surface(
+                       modifier = Modifier
+                           .size(30.dp)
+                           .padding(start = 1.dp)
+                           .padding(top = 1.dp),
+                       shape = CircleShape
+                   ) {
+                       CircularProgressIndicator(
+                           color = Color(9, 9, 9, 255),
+                           strokeWidth = 5.dp
+                       )
+                   }
+               }
 
            } //fechamento TopBar
-            botaoDrawer(
-                onClick = {
-                    scope.launch {
-                        scaffoldState.drawerState.open()
-                    }
-                }
-            )
+
+
        },
         drawerContent = { drawerPersonalizado(navController) },
         drawerBackgroundColor = Color.White,
@@ -237,24 +287,23 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
                 val (paravoce, linhaestetica, postagens) = createRefs()
 
-                //Começando a lógica da área das postagens
+                //A lógica da área das postagens
                 Row(
                     modifier = Modifier
                         .constrainAs(paravoce) {
                             top.linkTo(parent.top)
                         }
-                        .fillMaxWidth()
-                        .padding(top = 5.dp),
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ){
-                    Text(text = "Para você",
+                    Text(text = "Geral",
                         fontSize = 36.sp,
                         fontFamily = Dongle,
                         color = Color.Black
                     )
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Text(text = "Minhas postagens",
+                    Box(modifier = Modifier.width(50.dp))
+                    Text(text = "Para você",
                         fontSize = 34.sp,
                         fontFamily = Dongle,
                         color = Color.Black
@@ -267,7 +316,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                             top.linkTo(paravoce.bottom)
                         }
                         .fillMaxWidth()
-                        .size(8.dp)
+                        .size(2.dp)
                         .background(color = Color(209, 209, 209, 255))
                 ) {}
 
@@ -350,14 +399,34 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
            }
        },
         //propriedades do Scaffold
-        backgroundColor = Color.White
+        backgroundColor = Color.White,
     )
+
+    //Esse aqui é o mini logo do app que fica na top bar
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (miniLogo) = createRefs()
+
+        loadImage(
+            path = "https://i.imgur.com/c00cZHP.png",
+            contentDescription = "Mini Logo da Index",
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .constrainAs(miniLogo) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(parent.top, margin = 1.dp)
+                }
+                .size(60.dp))
+    }
 
 
     //Gambiarra para colocar sombra no Button de publicar
-  //  if (scaffoldState.drawerState.isClosed){
+    if (scaffoldState.drawerState.isClosed){
         ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .zIndex(2f)
         ) {
             val (publicar) = createRefs()
@@ -382,7 +451,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             }
         }
-//  }
+  }
 
 
 }

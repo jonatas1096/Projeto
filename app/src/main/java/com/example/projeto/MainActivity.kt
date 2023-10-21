@@ -40,7 +40,7 @@ fun Main() {
     val authViewModelCPS: AuthViewModelCPS = hiltViewModel()
     val publicacaoViewModel: PublicacaoViewModel = hiltViewModel()
 
-    NavHost(navController = navController, startDestination = "Publicar"){
+    NavHost(navController = navController, startDestination = "Index"){
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel, authViewModelCPS)
