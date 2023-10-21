@@ -340,7 +340,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             }//Fechamento do Constraint
 
 
-
         },
 
        bottomBar = {

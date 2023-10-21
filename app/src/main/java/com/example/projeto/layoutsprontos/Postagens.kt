@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
@@ -32,6 +33,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.datasource.UserData
+import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 import com.google.firebase.firestore.Query
@@ -61,11 +63,13 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             .background(color = Color.White)
             .fillMaxWidth()
             // .size( if(!imagensPost.isNullOrEmpty()) 470.dp else 240.dp)
-            .padding(bottom = 15.dp)
+            .padding(40.dp, 10.dp, 15.dp, 0.dp)
+            .border(2.dp, Color.Black)
     ) {
 
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
+                .border(2.dp, Color.Black)
         ) {
 
             val (foto, nome, apelido, titulo, tagTurmas, texto, imagemPost, fotoReacao, comentarios, compartilhamentos,
@@ -76,7 +80,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             Box(
                 modifier = Modifier
                     .constrainAs(foto) {
-                        start.linkTo(parent.start, margin = 7.dp)
+                        start.linkTo(parent.start, margin = -35.dp)
                         top.linkTo(parent.top, margin = 7.dp)
                     }
                     .size(50.dp)
@@ -105,7 +109,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     color = if (rm in setOf("23627", "12345")) {
                         Color(0xFF9B26BB)
                     } else {
-                        Color(56, 56, 56, 255)
+                        Color(70, 70, 70, 255)
                     },
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
@@ -119,7 +123,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     color = if (rm in setOf("23627", "12345")) {
                         Color(0xFF9B26BB)
                     } else {
-                        Color(56, 56, 56, 255)
+                        Color(70, 70, 70, 255)
                     },
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
@@ -132,6 +136,30 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
 
             }
 
+            //Turmas que foram marcadas
+            Text(text = if (turmasMarcadas.isNullOrEmpty()) "[Geral]" else "$turmasMarcadas",
+                fontSize = 24.sp,
+                fontFamily = Jomhuria,
+                color = LARANJA,
+                modifier = Modifier
+                    .constrainAs(tagTurmas) {
+                        top.linkTo(nome.bottom, margin = (-3).dp)
+                        start.linkTo(foto.end, margin = 7.dp)
+                    }
+                    .background(color = Color.White)
+            )
+
+            //Titulo da publicação
+            Text(text = tituloAutor,
+                color = Color(0, 0, 0, 255),
+                fontWeight = FontWeight.Bold,
+                fontSize = 26.sp,
+                fontFamily = Dongle,
+                modifier = Modifier.constrainAs(titulo) {
+                    start.linkTo(foto.end, margin = 7.dp)
+                    top.linkTo(tagTurmas.bottom, margin = (-10).dp)
+                })
+
 
             //Apelido (se houver)
             if (!apelidoAutor.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
@@ -139,7 +167,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     Text(text = "($apelidoAutor)".substring(0, maxCaracteresApelido) + "..)",
                         color = Color(148, 148, 148, 255),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.constrainAs(apelido) {
@@ -151,7 +179,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     Text(text = "($apelidoAutor)",
                         color = Color(148, 148, 148, 255),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.constrainAs(apelido) {
@@ -162,35 +190,26 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             }
 
 
-            //Titulo da publicação
-            Text(text = tituloAutor,
-                color = Color(221, 114, 0, 255),
-                fontWeight = FontWeight.Bold,
-                fontSize = 17.sp,
-                modifier = Modifier.constrainAs(titulo) {
-                    start.linkTo(foto.end, margin = 7.dp)
-                    top.linkTo(parent.top, margin = 30.dp)
-                })
+
 
 
             //Texto da publicação
             Row(
                 modifier = Modifier
                     .constrainAs(texto) {
-                        start.linkTo(parent.start)
-                        top.linkTo(foto.bottom, margin = 10.dp)
+                        start.linkTo(foto.end, margin = 7.dp)
+                        top.linkTo(titulo.bottom, margin = (-8).dp)
                     }
-                    .padding(start = 10.dp)
-                    .padding(end = 20.dp)
             ) {
                 var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
                 if (textoPostagem.length > maxCaracteresTexto.value) {
-                    println("valor antes: $maxCaracteresTexto")
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = textoPostagem.substring(0, maxCaracteresTexto.value) + "... ",
-                            fontSize = 18.sp,
+                            fontSize = 25.sp,
                             color = Color(39, 39, 39, 255),
+                            fontFamily = Dongle,
+                            lineHeight = (12).sp,
                         )
                         if (maxCaracteresTexto.value < textoPostagem.length){
                             Text(
@@ -199,7 +218,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                 color = LARANJA,
                                 modifier = Modifier.clickable {
                                     maxCaracteresTexto.value = textoPostagem.length
-                                    println("clicou $maxCaracteresTexto")
                                 }
                             )
                         }
@@ -208,35 +226,26 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                 } else {
                     Text(
                         text = textoPostagem,
-                        fontSize = 18.sp,
+                        fontSize = 25.sp,
                         color = Color(39, 39, 39, 255),
+                        fontFamily = Dongle,
+                        lineHeight = (12).sp,
                     )
                 }
             }
 
 
-            //Turmas que foram marcadas
-            // if (!turmasMarcadas.isNullOrEmpty()){ // " ! " para negação. Ou seja, existem turmas que foram marcadas e vamos exibir isso:
-            Text(text = if (turmasMarcadas.isNullOrEmpty()) "[Geral]" else "$turmasMarcadas",
-                fontSize = 26.sp,
-                fontFamily = Jomhuria,
-                color = LARANJA,
-                lineHeight = (15).sp,
-                modifier = Modifier
-                    .constrainAs(tagTurmas) {
-                        top.linkTo(texto.bottom, margin = (-0).dp)
-                    }
-                    .padding(horizontal = 3.dp)
-            )
+
             // }
 
             //Imagem da publicação (se houver)
-            if (!imagensPost.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio
+            if (!imagensPost.isNullOrEmpty()){
                 Box(
                     modifier = Modifier
                         .constrainAs(imagemPost) {
-                            start.linkTo(parent.start)
-                            top.linkTo(tagTurmas.bottom, margin = (-10).dp)
+                           // start.linkTo(foto.end, /*margin = 7.dp*/)*/
+                            top.linkTo(texto.bottom, margin = (-5).dp)
+                            //end.linkTo(parent.end)
                         }
                         .fillMaxWidth()
                         .size(220.dp)
@@ -246,11 +255,12 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             }
 
 
+
             //Fotinha
             Box(
                 modifier = Modifier
                     .constrainAs(fotoReacao) {
-                        start.linkTo(parent.start, margin = 8.dp)
+                        /*start.linkTo(parent.start, margin = 8.dp)*/
 
                         if (!imagensPost.isNullOrEmpty()) {
                             top.linkTo(imagemPost.bottom, margin = 5.dp)
