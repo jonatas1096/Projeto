@@ -355,7 +355,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 
     //Gambiarra para colocar sombra no Button de publicar
-  //  if (scaffoldState.drawerState.isClosed){
+    if (scaffoldState.drawerState.isClosed){
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
                 .zIndex(2f)
@@ -382,7 +382,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             }
         }
-//  }
+  }
 
 
 }
