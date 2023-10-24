@@ -14,64 +14,59 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.example.projeto.R
 import com.example.projeto.datasource.UserData
 import com.example.projeto.ui.theme.Dongle
 import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
-import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>, paginas:Int) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
+             idPostagem:String, numerocurtidas:Int, paginas:Int) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
-    val iconecompartilhar = painterResource(id = R.drawable.ic_compartilhar)
 
 
     val maxCaracteresNome = 18
     val maxCaracteresApelido = 16
 
-
+    //Lógica da curtida
+    var curtirState by remember{ mutableStateOf(false) }
+    var numeroCurtidas by remember { mutableStateOf(numerocurtidas) }
 
     //Container principal da postagem. Esse é o retângulo que vai guardar tudo
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(55.dp, 35.dp, 15.dp, 2.dp)
-                //.border(2.dp, Color.Red)
         ) {
 
-            val (boxPostagem, foto, nome, apelido, titulo, tagTurmas, texto, imagemPost, fotoReacao, comentarios,
-                linha, numeroReacoes, curtir, comentar) = createRefs()
+            val (boxPostagem, foto, fotoReacao, fotoReacao2, curtir, comentar, linhaestetica) = createRefs()
 
 
             //Essa é uma box para guardar a imagem do perfil do usuário.
             Box(
                 modifier = Modifier
                     .constrainAs(foto) {
-                        //start.linkTo(parent.start, margin = (-52).dp)
                         end.linkTo(boxPostagem.start, margin = 3.dp)
                         top.linkTo(parent.top, margin = 7.dp)
                     }
@@ -108,7 +103,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         verticalArrangement = Arrangement.spacedBy((-12).dp)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(horizontal = 12.dp),
                     ) {
                         //Nome do usuário
@@ -124,10 +120,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                 fontSize = 34.sp,
                                 fontFamily = Dongle,
                                 overflow = TextOverflow.Ellipsis,
-                                /*modifier = Modifier.constrainAs(nome) {
-                                    start.linkTo(foto.end, margin = 7.dp)
-                                    top.linkTo(parent.top, margin = 5.dp)
-                                }*/
                             )
                         } else {
                             Text(
@@ -142,10 +134,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                 fontFamily = Dongle,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                /*modifier = Modifier.constrainAs(nome) {
-                                    start.linkTo(foto.end, margin = 7.dp)
-                                    top.linkTo(parent.top, margin = 5.dp)
-                                }*/
                             )
                         }
 
@@ -160,10 +148,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                     fontFamily = Dongle,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    /*modifier = Modifier.constrainAs(apelido) {
-                                        start.linkTo(nome.end, margin = 7.dp)
-                                        top.linkTo(parent.top, margin = 7.dp)
-                                    }*/
                                     modifier = Modifier.padding(start = 3.dp, top = 3.dp)
                                 )
                             } else {
@@ -175,10 +159,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                     fontFamily = Dongle,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
-                                    /*modifier = Modifier.constrainAs(apelido) {
-                                        start.linkTo(nome.end, margin = 7.dp)
-                                        top.linkTo(parent.top, margin = 7.dp)
-                                    }*/
                                     modifier = Modifier.padding(start = 3.dp, top = 3.dp)
                                 )
                             }
@@ -193,12 +173,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         fontFamily = Jomhuria,
                         color = LARANJA,
                         lineHeight = (15).sp,
-                        /*modifier = Modifier
-                            .constrainAs(tagTurmas) {
-                                top.linkTo(nome.bottom, margin = (-14).dp)
-                                start.linkTo(foto.end, margin = 7.dp)
-                            }*/
-                        modifier = Modifier.padding(horizontal = 12.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
                             .padding(bottom = 8.dp)
                     )
 
@@ -207,24 +183,16 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         text = tituloAutor,
                         color = Color(0, 0, 0, 255),
                         fontWeight = FontWeight.Bold,
-                        fontSize = 29.sp,
+                        fontSize = 27.sp,
                         fontFamily = Dongle,
-                        /*modifier = Modifier.constrainAs(titulo) {
-                            start.linkTo(foto.end, margin = 7.dp)
-                            top.linkTo(tagTurmas.bottom, margin = (-8).dp)
-                        }*/
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )
 
 
                     //Texto da publicação
                     Row(
-                        /*modifier = Modifier
-                            .constrainAs(texto) {
-                                start.linkTo(foto.end, margin = 7.dp)
-                                top.linkTo(titulo.bottom, margin = (-10).dp)
-                            }*/
-                        modifier = Modifier.padding(horizontal = 12.dp)
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
                             .padding(bottom = 8.dp)
                     ) {
                         var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
@@ -235,7 +203,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                         0,
                                         maxCaracteresTexto.value
                                     ) + "... ",
-                                    fontSize = 27.sp,
+                                    fontSize = 29.sp,
                                     color = Color(39, 39, 39, 255),
                                     fontFamily = Dongle,
                                     lineHeight = (16).sp,
@@ -255,7 +223,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         } else {
                             Text(
                                 text = textoPostagem,
-                                fontSize = 27.sp,
+                                fontSize = 29.sp,
                                 color = Color(39, 39, 39, 255),
                                 fontFamily = Dongle,
                                 lineHeight = (16).sp,
@@ -268,12 +236,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     if (!imagensPost.isNullOrEmpty()) {
                         Card(
                             modifier = Modifier
-                                /*.constrainAs(imagemPost) {
-                                    top.linkTo(texto.bottom, margin = (-5).dp)
-                                }*/
                                 .fillMaxWidth()
-                                .size(220.dp)
-                            ,
+                                .size(220.dp),
                             shape = RoundedCornerShape(18.dp)
                         ) {
                             loadCoil(imagensPost = imagensPost, contentDescription = "")
@@ -285,16 +249,45 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
             }
 
 
+            //Parte das reações ao post
+            //Botão de like
+            IconButton(
+                onClick = {
+                    println("o id do post é: $idPostagem")
+                    curtirState = true
+                },
+                modifier = Modifier
+                    .constrainAs(curtir) {
+                        start.linkTo(boxPostagem.start, margin = 8.dp)
+                        top.linkTo(boxPostagem.bottom)
+                    }
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Icon(
+                        painter = iconecurtir,
+                        contentDescription = "Icone para curtir",
+                        modifier = Modifier
+                            .size(28.dp)
+                    )
+                    Text(
+                        text = "$numeroCurtidas",
+                        fontSize = 36.sp,
+                        fontFamily = Dongle,
+                    )
+                }
 
+            }
 
-            /*//Fotinha
+            //Fotinha
             Box(
                 modifier = Modifier
                     .constrainAs(fotoReacao) {
-                        start.linkTo(curtir.end, margin = 10.dp)
-                        top.linkTo(linha.bottom, margin = (2).dp)
+                        start.linkTo(curtir.end, margin = 6.dp)
+                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
                     }
-                    .size(23.dp)
+                    .size(32.dp)
                     .clip(CircleShape)
             ) {
                 loadImage(
@@ -304,94 +297,214 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     modifier = Modifier
                 )
             }
+            //Fotinha2
+            Box(
+                modifier = Modifier
+                    .constrainAs(fotoReacao2) {
+                        start.linkTo(fotoReacao.end, margin = (-16).dp)
+                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
+                    }
+                    .size(32.dp)
+                    .clip(CircleShape)
+            ) {
+                loadImage(
+                    path = "https://i.imgur.com/5r65eEe.png",
+                    contentDescription = "Foto",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+            /////////////////////
 
 
-            //Numero de reações
-            Text(text = "Luffy + 847", //11
-                fontSize = 20.sp,
-                fontFamily = Dongle,
-                color = Color(82, 81, 81, 255),
-                modifier = Modifier.constrainAs(numeroReacoes) {
-                    start.linkTo(fotoReacao.end, margin = 5.dp)
-                    top.linkTo(linha.bottom, margin = 3.dp)
-                }
-            )
 
-            //Comentarios
-            Text(text = "211 Comentários", //15
-                color = Color(82, 81, 81, 255),
-                fontSize = 20.sp,
-                fontFamily = Dongle,
-                modifier = Modifier.constrainAs(comentarios) {
-                    start.linkTo(numeroReacoes.end, margin = 26.dp)
-                    top.linkTo(linha.bottom, margin = 3.dp)
-                }
-            )
-
-
-            //Botão de like
+            //Parte dos Comentários
             IconButton(
                 onClick = {
-
-                },
-                modifier = Modifier
-                    .constrainAs(curtir) {
-                        start.linkTo(parent.start, margin = 20.dp)
-                        top.linkTo(fotoReacao.bottom, margin = (-8).dp)
-                    }
-            ) {
-                Row() {
-                    Icon(
-                        painter = iconecurtir,
-                        contentDescription = "Icone para curtir",
-                        modifier = Modifier
-                            .size(22.dp)
-                            .padding(end = 5.dp)
-                    )
-
-                    Text(
-                        text = "Curtir",
-                        fontSize = 15.sp,
-                        color = Color(68, 68, 68, 255),
-
-                        )
-                }
-
-            }
-            //
-
-
-            //Botão de Comentários
-            IconButton(onClick = {
-
             },
                 modifier = Modifier
                     .constrainAs(comentar) {
-                        start.linkTo(numeroReacoes.end, margin = 26.dp)
-                        top.linkTo(comentarios.bottom, margin = (-10).dp)
+                        start.linkTo(curtir.end, margin = 80.dp)
+                        top.linkTo(boxPostagem.bottom, /*margin = (1).dp*/)
                     }
             ) {
-                Row() {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
                     Icon(
                         painter = iconecomentarios,
                         contentDescription = "Icone para os comentários",
                         modifier = Modifier
-                            .size(22.dp)
-                            .padding(end = 5.dp)
+                            .size(28.dp)
                     )
                     Text(
-                        text = "Comentar",
-                        fontSize = 15.sp,
-                        color = Color(68, 68, 68, 255),
-
-                        )
+                        text = "32",
+                        fontSize = 32.sp,
+                        fontFamily = Dongle,
+                        modifier = Modifier
+                    )
                 }
 
-            }*/
-            //
+            }
+
+            //Linha estética final
+            Row(
+                modifier = Modifier
+                    .constrainAs(linhaestetica) {
+                        top.linkTo(curtir.bottom, margin = (-4).dp)
+                    }
+                    .fillMaxWidth()
+                    .size(2.dp)
+                    .background(color = Color(92, 92, 92, 255))
+            ){}
 
 
         }
+
+    if (curtirState){
+        curtirPublicacao(idPostagem, onCurtir = {novoNumeroCurtidas ->
+            numeroCurtidas = novoNumeroCurtidas
+            curtirState = false
+            println("atualizando para $numeroCurtidas")
+        })
+
+    }
+
+}
+
+
+@Composable
+fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
+
+    val firestore = Firebase.firestore // Instância do firebase
+
+    //RM do usuario para marcar a curtida dele no array
+    val rmUsuario = UserData.rmEncontrado
+    val cpsID = UserData.cpsIDEncontrado
+    //Scope
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+
+        val idPost = idPostagem
+        val postagensCollection = firestore.collection("Postagens")
+        postagensCollection.whereEqualTo("idPost", idPost)
+            .get()
+            .addOnSuccessListener { postagens ->
+                val postagemEncontrada = postagens.documents[0]
+                val usuariosCurtidas = postagemEncontrada.get("usuariosCurtidas") as? ArrayList<String> ?: ArrayList()
+                //Primeiro a parte do array dos usuarios que curtiram
+
+                scope.launch {
+                    if (postagemEncontrada.contains("usuariosCurtidas")) { //Ja existe um array usuariosCurtidas
+                        println("array existe, é ${usuariosCurtidas.size}")
+                        if (!rmUsuario.isNullOrEmpty()) {
+                            if (!usuariosCurtidas.contains(rmUsuario)) { //" ! " para negar, ou seja, nao contem.
+                                println("nao contem $rmUsuario, entao vamos adicionar.")
+                                usuariosCurtidas.add(rmUsuario)
+                            } else {
+                                println("contem $rmUsuario, entao vamos remover.")
+                                usuariosCurtidas.remove(rmUsuario)
+                            }
+                            val atualizarArray = hashMapOf(
+                                "usuariosCurtidas" to usuariosCurtidas
+                            )
+                            postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
+                                .addOnSuccessListener {
+                                    println("A lista de curtidas foi atualizada com sucesso com o valor $usuariosCurtidas")
+                                }
+                                .addOnFailureListener {
+                                    println("Erro ao curtir: $it")
+                                }
+                        } else {
+                            if (!usuariosCurtidas.contains(cpsID)) { //" ! " para negar, ou seja, nao contem.
+                                usuariosCurtidas.add(cpsID)
+                            } else {
+                                usuariosCurtidas.remove(cpsID)
+                            }
+
+                            val atualizarArray = hashMapOf(
+                                "usuariosCurtidas" to usuariosCurtidas
+                            )
+                            postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
+                                .addOnSuccessListener {
+                                    println("A lista de curtidas foi atualizada com sucesso!")
+                                }
+                                .addOnFailureListener {
+                                    println("Erro ao atualizar a lista: $it")
+                                }
+                        }
+                    } else {//Nao existe o array, entao vamos criar e adicionar o primeiro usuario.
+                        val usuariosCurtidas = ArrayList<String>() //criamos o array
+                        if (!rmUsuario.isNullOrEmpty()) {
+                            usuariosCurtidas.add(rmUsuario)
+                        } else {
+                            usuariosCurtidas.add(cpsID)
+                        }
+
+                        val atualizarArray = hashMapOf(
+                            "usuariosCurtidas" to usuariosCurtidas
+                        )
+                        postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
+                            .addOnSuccessListener {
+                                println("A lista de curtidas foi atualizada com sucesso!")
+                            }
+                            .addOnFailureListener {
+                                println("Erro ao atualizar a lista: $it")
+                            }
+
+                    }
+                    delay(500)
+                    println("saiu da primeira etapa, está com ${usuariosCurtidas.size}")
+                    var arraySize = usuariosCurtidas.size
+                    println("teste $arraySize")
+
+                    //Agora o número de curtidas do post em si
+                    //Validação do campo pré-existente "curtidas"
+                    var curtidasConversao = 0 //Auxiliar na conversao das curtidas
+                    if (postagemEncontrada.contains("curtidas")) { //Caso ja exista um campo previamente com curtidas
+
+                        //Nesse ponto do código esse array abaixo ja existe, é certeza. Então é só utilizar ele.
+                        println("o tamanho do arraySize é $arraySize")
+                        println("ENTROU NO SEGUNDO SCOPE, O tamanho do array no momento é $arraySize, ele contem o valor $usuariosCurtidas")
+                        val curtirPublicacao = hashMapOf(
+                            "curtidas" to arraySize, //altera o valor da curtida para o tamanho do array usuariosCurtidas
+                            //ou seja, cada rm ou cpsID é unico, entao se o numero de curtidas espelhar o tamanho desse array tambem vai ser.
+
+                        )
+                        //Subindo o valor:
+                        postagemEncontrada.reference.set(curtirPublicacao, SetOptions.merge())
+                            .addOnSuccessListener {
+                                curtidasConversao = arraySize
+                                println("curtidasConversao é de $curtidasConversao")
+                                onCurtir(curtidasConversao)
+                            }
+                            .addOnFailureListener {
+                                println("Erro ao curtir: $it")
+                            }
+                    } else { //não existe, vamos criar
+                        println("ELE NAO EXISTE, ENTAO VAI SER 1.")
+                        val curtirPublicacao = hashMapOf(
+                            "curtidas" to 1 //adiciona o valor da curtida como 1, já que não existe nenhuma curtida no momento.
+                        )
+                        postagemEncontrada.reference.set(curtirPublicacao, SetOptions.merge())
+                            .addOnSuccessListener {
+                                println("A curtida foi adicionada com sucesso!")
+                                curtidasConversao = 1
+                                onCurtir(curtidasConversao)
+                            }
+                            .addOnFailureListener {
+                                println("Erro ao curtir: $it")
+                            }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                println("O documento não existe. $it")
+            }
+
+    }
+
 
 }
 

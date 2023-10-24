@@ -31,6 +31,7 @@ import com.example.projeto.datasource.UserData
 import com.example.projeto.layoutsprontos.*
 import com.example.projeto.listener.ListenerPublicacao
 import com.example.projeto.ui.theme.Dongle
+import com.example.projeto.ui.theme.LARANJA
 import com.example.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
@@ -99,7 +100,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
 
             })
-
+            delay(1500)
 
 
             //Parte para trazer as postagens
@@ -110,7 +111,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
             filaOrdenar.get()
                 .addOnSuccessListener {postagens ->
-                println("Entrou no onSucess (ordenado os dados)")
+                println("Entrou no onSucess (ordenando os dados)")
                 println("Tamanho de postagens: ${postagens.size()}")
                 val postagensData = mutableListOf<PostagemData>()
                 for (posts in postagens){
@@ -122,6 +123,19 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     val texto = posts.getString("texto") ?: ""
                     val titulo = posts.getString("titulo") ?: ""
                     val turmas = posts.get("turmasMarcadas") as? List<String> ?: emptyList()
+                    val idPost = posts.getString("idPost") ?: ""
+                    //o numero de curtidas eu vou converter de long para int.
+                    var Curtidas = 0
+                    //Além disso, a validação do campo foi meio que necessário para nao quebrar o código:
+                    if (posts.contains("curtidas")){
+                        val numeroCurtidas = posts.getLong("curtidas")?.toInt()
+                        if (numeroCurtidas != null) {
+                            Curtidas = numeroCurtidas
+                        }
+                    }
+
+
+
 
                     println("Agora vai armazenar os dados na val postagemData.")
                     val postagemData = PostagemData(
@@ -133,6 +147,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         imagensPost = imagensPostagem,
                         tituloPost = titulo,
                         turmasMarcadas = turmas,
+                        idPostagem = idPost,
+                        curtidas = Curtidas,
                     )
 
                     postagensData.add(postagemData)
@@ -147,7 +163,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             }
 
 
-            delay(1500) //esse delay serve para dar tempo do rm ser guardado na classe UserData e conserguirmos fazer as lógicas abaixo.
+            delay(1000) //esse delay serve para dar tempo do rm ser guardado na classe UserData e conserguirmos fazer as lógicas abaixo.
 
             //Parte para trazer as notificações. Começando pelo aluno:
             if (!UserData.rmEncontrado.isNullOrEmpty()){// " ! " de negação, ou seja, não está vazio.
@@ -179,7 +195,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     }
             }
 
-
+            delay(500)
 
             //Parte para recuperar a foto de perfil do usuário (meio que provisória, fazemos o mesmo no profile).
             if (!UserData.rmEncontrado.isNullOrEmpty()) {
@@ -209,6 +225,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             }
             delay(1000)
             urlBaixada = true // a lógica pro progressIndicator
+            println(UserData.imagemUrl)
     }
 
     }
@@ -299,7 +316,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 
        },
-        drawerContent = { drawerPersonalizado(navController) },
+        drawerContent = { drawerPersonalizado(urlBaixada,navController) },
         drawerBackgroundColor = Color.White,
 
         //Tô usando o content para mesclar o constraintLayout à aplicação em geral, assim ele fica em cima da bottomBar (tipo camadas).
@@ -348,7 +365,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 }
                                 .width(60.dp)
                                 .size(3.dp)
-                                .background(color = Color(204, 78, 18, 255))
+                                .background(color = LARANJA)
                         ) {}
                     }
 
@@ -505,7 +522,9 @@ fun ListaDePostagens(postagens: List<PostagemData>) {
                 imagensPost = postagemData.imagensPost,
                 tituloAutor = postagemData.tituloPost,
                 turmasMarcadas = postagemData.turmasMarcadas,
+                idPostagem = postagemData.idPostagem,
                 paginas = postagemData.imagensPost.size,
+                numerocurtidas = postagemData.curtidas
             )
             println("Depois de criar a Postagem ${postagemData.imagensPost}")
         }

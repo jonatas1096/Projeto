@@ -2,14 +2,9 @@ package com.example.projeto.layoutsprontos
 
 
 import android.app.AlertDialog
-import android.content.Context
-import android.graphics.drawable.Icon
-import android.service.autofill.UserData
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -49,8 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.zIndex
-import androidx.constraintlayout.compose.ConstraintLayout
+import com.example.projeto.datasource.UserData
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.AsyncImage
@@ -555,42 +549,156 @@ fun BottomNavigationBar(items: List<BottomNavItem>, navController: NavController
 
 }
 
-@Composable
-fun botaoDrawer(onClick: () -> Unit){
-/*
-    val imagemDrawer = UserData.
-    IconButton(
-        onClick = onClick,
-        modifier = Modifier
-            .size(40.dp)
-            .padding(start = 5.dp)
-            .padding(top = 15.dp)
-    ){
-        /*Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
-            contentDescription = "Publicar",)*/
-        loadImage(
-            path = ,
-            contentDescription = ,
-            contentScale = ,
-            modifier = )
-    }
-*/
-}
-
 
 @Composable
-fun drawerPersonalizado(navController: NavController){
+fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
 
     val context = LocalContext.current
+    var dialogo = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .border(2.dp, Color.Black)
+        .background(Color(0xFF16202a))
+        .padding(25.dp, 60.dp, 10.dp, 30.dp),
+        verticalArrangement = Arrangement.spacedBy((-10).dp)
         ) {
-        Text(text = "Texto1")
-        Text(text = "Texto2")
-        Text(text = "Texto3")
 
+        //Surface para a foto de perfil ou foto padrão
+        Surface(
+            shape = CircleShape,
+            border = BorderStroke(3.dp, Color.White),
+            modifier = Modifier
+                .size(120.dp)
+                .clickable(onClick = {
+                    navController.navigate("Profile")
+                })
+        ){
+            if (urlbaixada){
+                if (!UserData.imagemUrl.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio
+                    loadImage(
+                        path = UserData.imagemUrl,
+                        contentDescription = "Imagem de perfil do Usuário",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                else{
+                    loadImage(
+                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                        contentDescription = "Imagem default do usuário",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
+        }
+
+        //Validação para nome ou apelido do usuário (dependendo da ordem)
+        if (!UserData.apelidoUsuario.isNullOrEmpty()){// na negativa "!", ou seja, nao está vazio ou nullo.
+            Text(
+                text = UserData.apelidoUsuario,
+                fontFamily = Dongle,
+                color = Color.White,
+                fontSize = 47.sp,
+                modifier = Modifier.padding(top = 18.dp)
+            )
+            Text(
+                text = UserData.nomeEncontrado,
+                fontFamily = Dongle,
+                color = Color(0xFF83898c),
+                fontSize = 34.sp,
+            )
+        }
+        else{
+            Text(
+                text = UserData.nomeEncontrado,
+                fontFamily = Dongle,
+                color = Color(0xFF83898c),
+                fontSize = 30.sp,
+            )
+        }
+
+        //RM
+        Text(
+            text = "RM: ${UserData.rmEncontrado}",
+            fontFamily = Dongle,
+            color = Color(0xFF83898c),
+            fontSize = 30.sp,
+            modifier = Modifier.padding(bottom = 15.dp)
+        )
+
+        //Linha estética
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(1.dp)
+                .padding(end = 30.dp)
+                .background(color = Color(107, 107, 107, 255))
+        ){}
+
+
+        //Parte das opções selecionáveis
+        Text(
+            text = "Minhas Publicações",
+            fontFamily = Dongle,
+            color = Color.White,
+            fontSize = 34.sp,
+            modifier = Modifier
+                .padding(top = 25.dp)
+                .clickable {
+                    Toast.makeText(context,"Em breve!", Toast.LENGTH_SHORT).show()
+                }
+        )
+
+        Text(
+            text = "Documentações",
+            fontFamily = Dongle,
+            color = Color.White,
+            fontSize = 34.sp,
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .clickable {
+                    Toast.makeText(context,"Em breve!", Toast.LENGTH_SHORT).show()
+                }
+        )
+
+        Text(
+            text = "Secretaria",
+            fontFamily = Dongle,
+            color = Color.White,
+            fontSize = 34.sp,
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .padding(bottom = 30.dp) //← TA FUNCIONANDO, caso queira aumentar mais o gap entre eles
+                .clickable {
+                    Toast.makeText(context,"Em breve!", Toast.LENGTH_SHORT).show()
+                }
+        )
+
+        //Linha estética
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(1.dp)
+                .padding(end = 30.dp)
+                .background(color = Color(107, 107, 107, 255))
+        ){}
+
+        Text(
+            text = "Termos de confiança",
+            fontFamily = Dongle,
+            color = Color.White,
+            fontSize = 34.sp,
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .clickable {
+                    dialogo.value = true
+                }
+        )
+
+
+        //Textbutton para deslogar da conta
         TextButton(
             onClick = {
                 val alertDialog = AlertDialog.Builder(context)
@@ -605,15 +713,28 @@ fun drawerPersonalizado(navController: NavController){
 
                 }
                     .show()
-        }) {
+        },
+            modifier = Modifier.padding(top = 160.dp)
+        ) {
             Text(
                 text = "Sair",
-                fontSize = 18.sp,
+                fontSize = 28.sp,
+                //fontFamily = Dongle,
                 fontWeight = FontWeight.Bold,
-
+                color = Color.White,
             )
         }
     }
+
+    if (dialogo.value){
+        AlertDialogPersonalizado(
+            dialogo = dialogo,
+            onDismissRequest = {
+                dialogo.value = false
+            },
+            cor = LARANJA)
+    }
+
 }
 
 

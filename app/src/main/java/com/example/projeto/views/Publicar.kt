@@ -255,7 +255,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             val maxCaracteresTitulo = 35
             var maxTitulo = maxCaracteresTitulo - titulo.length
 
-
             Card(
                 modifier = Modifier
                     .constrainAs(areaPublicar) {
@@ -737,6 +736,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                     //Esse bloco só vai ser executado caso as  duas variaveis tenham o mesmo valor
                                     //Ou seja, se o total de imagens for igual as imagens que foram enviadas, tudo está perfeitamente bem.
                                     if (imagesEnviadasComSucesso == totalImagens) {
+                                        val uniqueID = UUID.randomUUID().toString() //Esse aqui é o ID único que está sendo gerado para cada post
+
                                         println("Imagens enviadas: $imagensUrls, total de imagens $totalImagens")
                                         val usuarioPostagem = hashMapOf(
                                             "fotoPerfil" to UserData.imagemUrl,
@@ -747,7 +748,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                             "turmasMarcadas" to turmasSelecionadas,
                                             "texto" to texto,
                                             "imagensPostagem" to imagensUrls, //(lista de urls)
-                                            "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                                            "ultimaAtualizacao" to FieldValue.serverTimestamp(), // Adiciona a data/hora da atualização
+                                            "idPost" to uniqueID,
                                         )
 
 
@@ -775,6 +777,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         }
                 }
                 else{ //Não há imagens no post
+                    val uniqueID = UUID.randomUUID().toString() //Esse aqui é o ID único que está sendo gerado para cada post
 
                     val usuarioPostagem = hashMapOf(
                         "fotoPerfil" to UserData.imagemUrl,
@@ -784,7 +787,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         "titulo" to titulo,
                         "turmasMarcadas" to turmasSelecionadas,
                         "texto" to texto,
-                        "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                        "ultimaAtualizacao" to FieldValue.serverTimestamp(), // Adiciona a data/hora da atualização
+                        "idPost" to uniqueID,
                     )
 
                     postagensColecao.document(titulo)
@@ -954,7 +958,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                     //Esse bloco só vai ser executado caso as  duas variaveis tenham o mesmo valor
                                     //Ou seja, se o total de imagens for igual as imagens que foram enviadas, tudo está perfeitamente bem.
                                     if (imagesEnviadasComSucesso == totalImagens) {
-                                        println("Imagens enviadas: $imagensUrls, total de imagens $totalImagens")
+                                        val uniqueID = UUID.randomUUID().toString()
+
                                         val usuarioPostagem = hashMapOf(
                                             "fotoPerfil" to UserData.imagemUrl,
                                             "nome" to UserData.nomeEncontrado,
@@ -963,7 +968,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                             "titulo" to titulo,
                                             "texto" to texto,
                                             "imagensPostagem" to imagensUrls, //(lista de urls)
-                                            "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                                            "ultimaAtualizacao" to FieldValue.serverTimestamp(), // Adiciona a data/hora da atualização
+                                            "idPost" to uniqueID,
                                         )
 
 
@@ -991,6 +997,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         }
                 }
                 else{ //Não há imagens no post
+                    val uniqueID = UUID.randomUUID().toString()
 
                     val usuarioPostagem = hashMapOf(
                         "fotoPerfil" to UserData.imagemUrl,
@@ -999,7 +1006,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         "RM" to UserData.rmEncontrado,
                         "titulo" to titulo,
                         "texto" to texto,
-                        "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                        "ultimaAtualizacao" to FieldValue.serverTimestamp(), // Adiciona a data/hora da atualização
+                        "idPost" to uniqueID,
                     )
 
                     postagensColecao.document(titulo)
