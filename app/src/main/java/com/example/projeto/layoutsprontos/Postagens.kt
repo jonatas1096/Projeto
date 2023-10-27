@@ -98,351 +98,351 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
     )
 
 
-        //Container principal da postagem. Esse é o retângulo que vai guardar tudo
-        ConstraintLayout(
+    //Container principal da postagem. Esse é o retângulo que vai guardar tudo
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(55.dp, 35.dp, 15.dp, 2.dp)
+    ) {
+
+        val (boxPostagem, foto, fotoReacao, fotoReacao2, curtir, comentar, linhaestetica) = createRefs()
+
+
+        //Essa é uma box para guardar a imagem do perfil do usuário.
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(55.dp, 35.dp, 15.dp, 2.dp)
+                .constrainAs(foto) {
+                    end.linkTo(boxPostagem.start, margin = 3.dp)
+                    top.linkTo(parent.top, margin = 7.dp)
+                }
+                .size(50.dp)
+                .clip(CircleShape)
+                .clickable {
+                    imagemPerfilState = !imagemPerfilState
+                    abrirFotoPostagem(imagemPerfilState)
+                }
         ) {
-
-            val (boxPostagem, foto, fotoReacao, fotoReacao2, curtir, comentar, linhaestetica) = createRefs()
-
-
-            //Essa é uma box para guardar a imagem do perfil do usuário.
-            Box(
+            loadImage(
+                path = fotoPerfil,
+                contentDescription = "Foto",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .constrainAs(foto) {
-                        end.linkTo(boxPostagem.start, margin = 3.dp)
-                        top.linkTo(parent.top, margin = 7.dp)
-                    }
-                    .size(50.dp)
-                    .clip(CircleShape)
-                    .clickable {
-                        imagemPerfilState = !imagemPerfilState
-                        abrirFotoPostagem(imagemPerfilState)
-                    }
-            ) {
+            )
+            if (fotoPerfil.isNullOrEmpty()) {
                 loadImage(
-                    path = fotoPerfil,
+                    path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
                     contentDescription = "Foto",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                 )
-                if (fotoPerfil.isNullOrEmpty()) {
-                    loadImage(
-                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
-                        contentDescription = "Foto",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                    )
-                }
             }
+        }
 
-            //Essa box abaixo é a que vai guardar a postagem do nome até o texto em si
-            Box(
+        //Essa box abaixo é a que vai guardar a postagem do nome até o texto em si
+        Box(
+            modifier = Modifier
+                .constrainAs(boxPostagem) {
+                    start.linkTo(parent.start)
+                }
+                .clip(RoundedCornerShape(20.dp))
+        ) {
+            Column(
                 modifier = Modifier
-                    .constrainAs(boxPostagem) {
-                        start.linkTo(parent.start)
-                    }
-                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color(0xB3FFFFFF)),
+                verticalArrangement = Arrangement.spacedBy((-12).dp)
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .background(Color(0xB3FFFFFF)),
-                        verticalArrangement = Arrangement.spacedBy((-12).dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp),
-                    ) {
-                        //Nome do usuário
-                        if (nomeAutor.length > maxCaracteresNome) {
+                    //Nome do usuário
+                    if (nomeAutor.length > maxCaracteresNome) {
+                        Text(
+                            text = nomeAutor.substring(0, maxCaracteresNome) + "..",
+                            color = if (rm in setOf("23627", "12345")) {
+                                Color(0xFF9B26BB)
+                            } else {
+                                Color(70, 70, 70, 255)
+                            },
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 34.sp,
+                            fontFamily = Dongle,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    } else {
+                        Text(
+                            text = nomeAutor,
+                            color = if (rm in setOf("23627", "12345")) {
+                                Color(0xFF9B26BB)
+                            } else {
+                                Color(70, 70, 70, 255)
+                            },
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 34.sp,
+                            fontFamily = Dongle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+
+                    //Apelido (se houver)
+                    if (!apelidoAutor.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
+                        if (apelidoAutor.length > 16) {
                             Text(
-                                text = nomeAutor.substring(0, maxCaracteresNome) + "..",
-                                color = if (rm in setOf("23627", "12345")) {
-                                    Color(0xFF9B26BB)
-                                } else {
-                                    Color(70, 70, 70, 255)
-                                },
+                                text = "($apelidoAutor)".substring(0, maxCaracteresApelido) + "..)",
+                                color = Color(148, 148, 148, 255),
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 34.sp,
-                                fontFamily = Dongle,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        } else {
-                            Text(
-                                text = nomeAutor,
-                                color = if (rm in setOf("23627", "12345")) {
-                                    Color(0xFF9B26BB)
-                                } else {
-                                    Color(70, 70, 70, 255)
-                                },
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 34.sp,
+                                fontSize = 28.sp,
                                 fontFamily = Dongle,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(start = 3.dp, top = 3.dp)
                             )
-                        }
-
-                        //Apelido (se houver)
-                        if (!apelidoAutor.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
-                            if (apelidoAutor.length > 16) {
-                                Text(
-                                    text = "($apelidoAutor)".substring(0, maxCaracteresApelido) + "..)",
-                                    color = Color(148, 148, 148, 255),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 28.sp,
-                                    fontFamily = Dongle,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(start = 3.dp, top = 3.dp)
-                                )
-                            } else {
-                                Text(
-                                    text = "($apelidoAutor)",
-                                    color = Color(148, 148, 148, 255),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 28.sp,
-                                    fontFamily = Dongle,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(start = 3.dp, top = 3.dp)
-                                )
-                            }
-                        }
-                    }
-
-
-                    //Turmas que foram marcadas
-                    Text(
-                        text = if (turmasMarcadas.isNullOrEmpty()) "[Geral]" else "$turmasMarcadas",
-                        fontSize = 26.sp,
-                        fontFamily = Jomhuria,
-                        color = LARANJA,
-                        lineHeight = (15).sp,
-                        modifier = Modifier
-                            .padding(horizontal = 12.dp)
-                            .padding(bottom = 8.dp)
-                    )
-
-                    //Titulo da publicação
-                    Text(
-                        text = tituloAutor,
-                        color = Color(0, 0, 0, 255),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 27.sp,
-                        fontFamily = Dongle,
-                        modifier = Modifier.padding(horizontal = 12.dp)
-                    )
-
-
-                    //Texto da publicação
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 12.dp)
-                            .padding(bottom = 8.dp)
-                    ) {
-                        var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
-                        if (textoPostagem.length > maxCaracteresTexto.value) {
-                            Column(modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy((-8).dp)
-                            ) {
-                                Text(
-                                    text = textoPostagem.substring(
-                                        0,
-                                        maxCaracteresTexto.value
-                                    ) + "... ",
-                                    fontSize = 29.sp,
-                                    color = Color(39, 39, 39, 255),
-                                    fontFamily = Dongle,
-                                    lineHeight = (16).sp,
-                                )
-                                if (maxCaracteresTexto.value < textoPostagem.length) {
-                                    Text(
-                                        text = "<Ver mais>",
-                                        fontSize = 18.sp,
-                                        color = LARANJA,
-                                        modifier = Modifier.clickable {
-                                            maxCaracteresTexto.value = textoPostagem.length
-                                        }
-                                            .padding(bottom = 8.dp)
-                                    )
-                                }
-                            }
-
                         } else {
                             Text(
-                                text = textoPostagem,
+                                text = "($apelidoAutor)",
+                                color = Color(148, 148, 148, 255),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 28.sp,
+                                fontFamily = Dongle,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.padding(start = 3.dp, top = 3.dp)
+                            )
+                        }
+                    }
+                }
+
+
+                //Turmas que foram marcadas
+                Text(
+                    text = if (turmasMarcadas.isNullOrEmpty()) "[Geral]" else "$turmasMarcadas",
+                    fontSize = 26.sp,
+                    fontFamily = Jomhuria,
+                    color = LARANJA,
+                    lineHeight = (15).sp,
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 8.dp)
+                )
+
+                //Titulo da publicação
+                Text(
+                    text = tituloAutor,
+                    color = Color(0, 0, 0, 255),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 27.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier.padding(horizontal = 12.dp)
+                )
+
+
+                //Texto da publicação
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 8.dp)
+                ) {
+                    var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
+                    if (textoPostagem.length > maxCaracteresTexto.value) {
+                        Column(modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy((-8).dp)
+                        ) {
+                            Text(
+                                text = textoPostagem.substring(
+                                    0,
+                                    maxCaracteresTexto.value
+                                ) + "... ",
                                 fontSize = 29.sp,
                                 color = Color(39, 39, 39, 255),
                                 fontFamily = Dongle,
                                 lineHeight = (16).sp,
                             )
+                            if (maxCaracteresTexto.value < textoPostagem.length) {
+                                Text(
+                                    text = "<Ver mais>",
+                                    fontSize = 18.sp,
+                                    color = LARANJA,
+                                    modifier = Modifier.clickable {
+                                        maxCaracteresTexto.value = textoPostagem.length
+                                    }
+                                        .padding(bottom = 8.dp)
+                                )
+                            }
                         }
-                    }
 
-
-                    //Imagem da publicação (se houver)
-                    if (!imagensPost.isNullOrEmpty()) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .size(220.dp),
-                            shape = RoundedCornerShape(18.dp)
-                        ) {
-                            loadCoil(imagensPost = imagensPost, contentDescription = "")
-                        }
-                    }
-
-
-                }
-            }
-
-
-            //Parte das reações ao post
-            //Botão de like
-            IconButton(
-                onClick = {
-                    println("o id do post é: $idPostagem")
-                    curtirState = true
-                },
-                modifier = Modifier
-                    .constrainAs(curtir) {
-                        start.linkTo(boxPostagem.start, margin = 8.dp)
-                        top.linkTo(boxPostagem.bottom)
-                    }
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
-                ) {
-                    //Parte para saber se o usuario ja curtiu o post ou não
-                    if (usuarioCurtiu){
-                        Icon(
-                            painter = iconecurtido,
-                            contentDescription = "Icone para post já curtido",
-                            modifier = Modifier
-                                .size(28.dp)
-                        )
+                    } else {
                         Text(
-                            text = "$numeroCurtidas",
-                            fontSize = 36.sp,
+                            text = textoPostagem,
+                            fontSize = 29.sp,
+                            color = Color(39, 39, 39, 255),
                             fontFamily = Dongle,
-                        )
-                    }else{
-                        Icon(
-                            painter = iconecurtir,
-                            contentDescription = "Icone para curtir",
-                            modifier = Modifier
-                                .size(28.dp)
-                        )
-                        Text(
-                            text = "$numeroCurtidas",
-                            fontSize = 36.sp,
-                            fontFamily = Dongle,
+                            lineHeight = (16).sp,
                         )
                     }
                 }
 
-            }
 
-            if (fotosBaixadas){ //Ainda está baixando as imagens
-                //Fotinha
-                // if (!primeiraReacao.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
-                Box(
-                    modifier = Modifier
-                        .constrainAs(fotoReacao) {
-                            start.linkTo(curtir.end, margin = 6.dp)
-                            top.linkTo(boxPostagem.bottom, margin = 5.dp)
-                        }
-                        .size(35.dp)
-                        .clip(CircleShape)
-
-                ) {
-                    loadImage(
-                        path = "${primeiraFotinha.value}",
-                        contentDescription = "Foto Reação 1",
-                        contentScale = ContentScale.Crop,
+                //Imagem da publicação (se houver)
+                if (!imagensPost.isNullOrEmpty()) {
+                    Card(
                         modifier = Modifier
-                    )
+                            .fillMaxWidth()
+                            .size(220.dp),
+                        shape = RoundedCornerShape(18.dp)
+                    ) {
+                        loadCoil(imagensPost = imagensPost, contentDescription = "")
+                    }
                 }
-                // }
-                //Fotinha2
-                //  if (!segundaReacao.isNullOrEmpty()){
-                Box(
-                    modifier = Modifier
-                        .constrainAs(fotoReacao2) {
-                            start.linkTo(fotoReacao.end, margin = (-11).dp)
-                            top.linkTo(boxPostagem.bottom, margin = 5.dp)
-                        }
-                        .size(35.dp)
-                        .clip(CircleShape)
-                ) {
-                    loadImage(
-                        path = "${segundaFotinha.value}",
-                        contentDescription = "Foto Reação 2",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                    )
-                }
-                //   }
+
+
             }
+        }
 
-            /////////////////////
 
-
-            //Parte dos Comentários
-            IconButton(
-                onClick = {
-                    comentariosState = !comentariosState
-                    expandir(comentariosState)
+        //Parte das reações ao post
+        //Botão de like
+        IconButton(
+            onClick = {
+                println("o id do post é: $idPostagem")
+                curtirState = true
             },
-                modifier = Modifier
-                    .constrainAs(comentar) {
-                        start.linkTo(curtir.end, margin = 90.dp)
-                        top.linkTo(boxPostagem.bottom)
-                    }
+            modifier = Modifier
+                .constrainAs(curtir) {
+                    start.linkTo(boxPostagem.start, margin = 8.dp)
+                    top.linkTo(boxPostagem.bottom)
+                }
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(3.dp)
-                ) {
+                //Parte para saber se o usuario ja curtiu o post ou não
+                if (usuarioCurtiu){
                     Icon(
-                        painter = iconecomentarios,
-                        contentDescription = "Icone para os comentários",
+                        painter = iconecurtido,
+                        contentDescription = "Icone para post já curtido",
                         modifier = Modifier
                             .size(28.dp)
                     )
                     Text(
-                        text = "32",
-                        fontSize = 32.sp,
+                        text = "$numeroCurtidas",
+                        fontSize = 36.sp,
                         fontFamily = Dongle,
+                    )
+                }else{
+                    Icon(
+                        painter = iconecurtir,
+                        contentDescription = "Icone para curtir",
                         modifier = Modifier
-                            .clickable {
-                                comentariosState = !comentariosState
-                                expandir(comentariosState)
-                            }
+                            .size(28.dp)
+                    )
+                    Text(
+                        text = "$numeroCurtidas",
+                        fontSize = 36.sp,
+                        fontFamily = Dongle,
                     )
                 }
-
             }
 
+        }
 
-
-
-            //Linha estética final
-            Row(
+        if (fotosBaixadas){ //Ainda está baixando as imagens
+            //Fotinha
+            // if (!primeiraReacao.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
+            Box(
                 modifier = Modifier
-                    .constrainAs(linhaestetica) {
-                        top.linkTo(curtir.bottom, margin = (-4).dp)
+                    .constrainAs(fotoReacao) {
+                        start.linkTo(curtir.end, margin = 6.dp)
+                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
                     }
-                    .fillMaxWidth()
-                    .size(2.dp)
-                    .background(color = Color(92, 92, 92, 255))
-            ){}
+                    .size(35.dp)
+                    .clip(CircleShape)
 
+            ) {
+                loadImage(
+                    path = "${primeiraFotinha.value}",
+                    contentDescription = "Foto Reação 1",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+            // }
+            //Fotinha2
+            //  if (!segundaReacao.isNullOrEmpty()){
+            Box(
+                modifier = Modifier
+                    .constrainAs(fotoReacao2) {
+                        start.linkTo(fotoReacao.end, margin = (-11).dp)
+                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
+                    }
+                    .size(35.dp)
+                    .clip(CircleShape)
+            ) {
+                loadImage(
+                    path = "${segundaFotinha.value}",
+                    contentDescription = "Foto Reação 2",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+            //   }
+        }
+
+        /////////////////////
+
+
+        //Parte dos Comentários
+        IconButton(
+            onClick = {
+                comentariosState = !comentariosState
+                expandir(comentariosState)
+            },
+            modifier = Modifier
+                .constrainAs(comentar) {
+                    start.linkTo(curtir.end, margin = 90.dp)
+                    top.linkTo(boxPostagem.bottom)
+                }
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(3.dp)
+            ) {
+                Icon(
+                    painter = iconecomentarios,
+                    contentDescription = "Icone para os comentários",
+                    modifier = Modifier
+                        .size(28.dp)
+                )
+                Text(
+                    text = "32",
+                    fontSize = 32.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier
+                        .clickable {
+                            comentariosState = !comentariosState
+                            expandir(comentariosState)
+                        }
+                )
+            }
 
         }
+
+
+
+
+        //Linha estética final
+        Row(
+            modifier = Modifier
+                .constrainAs(linhaestetica) {
+                    top.linkTo(curtir.bottom, margin = (-4).dp)
+                }
+                .fillMaxWidth()
+                .size(2.dp)
+                .background(color = Color(92, 92, 92, 255))
+        ){}
+
+
+    }
 
     //Curtir a pub
     if (curtirState){
@@ -515,27 +515,27 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit,  mudarIcone: (B
                 scope.launch {
                     if (postagemEncontrada.contains("usuariosCurtidas")) { //Ja existe um array usuariosCurtidas
 
-                            if (!usuariosCurtidas.contains(identificacaoUsuario)) { //" ! " para negar, ou seja, nao contem.
-                                println("nao contem $identificacaoUsuario, entao vamos adicionar.")
-                                usuariosCurtidas.add(identificacaoUsuario)
-                                val usuarioCurtiu = true
-                                mudarIcone(usuarioCurtiu)
-                            } else {
-                                println("contem $identificacaoUsuario, entao vamos remover.")
-                                usuariosCurtidas.remove(identificacaoUsuario)
-                                val usuarioCurtiu = false
-                                mudarIcone(usuarioCurtiu)
+                        if (!usuariosCurtidas.contains(identificacaoUsuario)) { //" ! " para negar, ou seja, nao contem.
+                            println("nao contem $identificacaoUsuario, entao vamos adicionar.")
+                            usuariosCurtidas.add(identificacaoUsuario)
+                            val usuarioCurtiu = true
+                            mudarIcone(usuarioCurtiu)
+                        } else {
+                            println("contem $identificacaoUsuario, entao vamos remover.")
+                            usuariosCurtidas.remove(identificacaoUsuario)
+                            val usuarioCurtiu = false
+                            mudarIcone(usuarioCurtiu)
+                        }
+                        val atualizarArray = hashMapOf(
+                            "usuariosCurtidas" to usuariosCurtidas
+                        )
+                        postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
+                            .addOnSuccessListener {
+                                println("A lista de curtidas foi atualizada com sucesso com o valor $usuariosCurtidas")
                             }
-                            val atualizarArray = hashMapOf(
-                                "usuariosCurtidas" to usuariosCurtidas
-                            )
-                            postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
-                                .addOnSuccessListener {
-                                    println("A lista de curtidas foi atualizada com sucesso com o valor $usuariosCurtidas")
-                                }
-                                .addOnFailureListener {
-                                    println("Erro ao curtir: $it")
-                                }
+                            .addOnFailureListener {
+                                println("Erro ao curtir: $it")
+                            }
                     } else {//Nao existe o array, entao vamos criar e adicionar o primeiro usuario.
                         val usuariosCurtidas = ArrayList<String>() //criamos o array
                         usuariosCurtidas.add(identificacaoUsuario)
@@ -554,7 +554,7 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit,  mudarIcone: (B
                             }
                     }
 
-                   delay(500)
+                    delay(500)
                     println("saiu da primeira etapa, está com ${usuariosCurtidas.size}")
                     var arraySize = usuariosCurtidas.size
                     println("teste $arraySize")
@@ -618,100 +618,100 @@ fun downloadFotosReacao(idPost:String, rm:String, cpsID:String,primeiraFoto: (St
 
     println("Mandando a funcao novamente")
 
-        println("iniciou")
-        val idPost = idPost
-        val postagensCollection = firestore.collection("Postagens")
-        postagensCollection.whereEqualTo("idPost", idPost)
-            .get()
-            .addOnSuccessListener { postagens ->
-                if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
-                    val postagemEncontrada = postagens.documents[0]
-                    println("o post existe, é $postagemEncontrada")
-                    val usuariosCurtidas = postagemEncontrada.get("usuariosCurtidas") as? ArrayList<String> ?: ArrayList()
-                    if (usuariosCurtidas.contains(rm) || usuariosCurtidas.contains(cpsID)){
-                        usuarioCurtiu = true //o estado é verdadeiro, o usuario curtiu o post
-                    }
-                    //Recuperar as fotos como reações
-                    println("vai iniciar a validação")
-                    if (usuariosCurtidas.size >= 1){
-                        println("entrou no if")
-                        val primeiroindice = usuariosCurtidas[0]
+    println("iniciou")
+    val idPost = idPost
+    val postagensCollection = firestore.collection("Postagens")
+    postagensCollection.whereEqualTo("idPost", idPost)
+        .get()
+        .addOnSuccessListener { postagens ->
+            if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                val postagemEncontrada = postagens.documents[0]
+                println("o post existe, é $postagemEncontrada")
+                val usuariosCurtidas = postagemEncontrada.get("usuariosCurtidas") as? ArrayList<String> ?: ArrayList()
+                if (usuariosCurtidas.contains(rm) || usuariosCurtidas.contains(cpsID)){
+                    usuarioCurtiu = true //o estado é verdadeiro, o usuario curtiu o post
+                }
+                //Recuperar as fotos como reações
+                println("vai iniciar a validação")
+                if (usuariosCurtidas.size >= 1){
+                    println("entrou no if")
+                    val primeiroindice = usuariosCurtidas[0]
 
-                        //Como eu não sei se a primeira foto vai ser de um Aluno ou CPS, vou ter que procurar nas duas pastas.
-                        val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
-                        val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
+                    //Como eu não sei se a primeira foto vai ser de um Aluno ou CPS, vou ter que procurar nas duas pastas.
+                    val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
+                    val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
 
-                        //Começando pela primeira pessoa que curtiu o post
-                        pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
-                            .addOnSuccessListener {result->
-                                for (item in result.items){
-                                    val caminhoFoto = item.path
-                                    if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
-                                        item.downloadUrl.addOnSuccessListener { uri ->
-                                            primeiraReacao = uri.toString()
-                                            primeiraFoto(primeiraReacao!!)
-                                        }
-
+                    //Começando pela primeira pessoa que curtiu o post
+                    pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
+                        .addOnSuccessListener {result->
+                            for (item in result.items){
+                                val caminhoFoto = item.path
+                                if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                    item.downloadUrl.addOnSuccessListener { uri ->
+                                        primeiraReacao = uri.toString()
+                                        primeiraFoto(primeiraReacao!!)
                                     }
+
                                 }
                             }
-                        //Procurando na pasta do CPS
-                        pastaCPS.listAll()
-                            .addOnSuccessListener {result->
-                                for (item in result.items){
-                                    val caminhoFoto = item.path
-                                    if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
-                                        item.downloadUrl.addOnSuccessListener { uri ->
-                                            primeiraReacao = uri.toString()
-                                            primeiraFoto(primeiraReacao!!)
-                                        }
-
+                        }
+                    //Procurando na pasta do CPS
+                    pastaCPS.listAll()
+                        .addOnSuccessListener {result->
+                            for (item in result.items){
+                                val caminhoFoto = item.path
+                                if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                    item.downloadUrl.addOnSuccessListener { uri ->
+                                        primeiraReacao = uri.toString()
+                                        primeiraFoto(primeiraReacao!!)
                                     }
+
                                 }
                             }
-                    }
-
-                    if (usuariosCurtidas.size >= 2){
-                        val segundoindice = usuariosCurtidas[1]
-                        val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
-                        val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
-
-                        //Começando pela primeira pessoa que curtiu o post
-                        pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
-                            .addOnSuccessListener {result->
-                                for (item in result.items){
-                                    val caminhoFoto = item.path
-                                    if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
-                                        item.downloadUrl.addOnSuccessListener { uri ->
-                                            segundaReacao= uri.toString()
-                                            segundaFoto(segundaReacao!!)
-                                        }
-
-                                    }
-                                }
-                            }
-                        //Procurando na pasta do CPS
-                        pastaCPS.listAll()
-                            .addOnSuccessListener {result->
-                                for (item in result.items){
-                                    val caminhoFoto = item.path
-                                    if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
-                                        item.downloadUrl.addOnSuccessListener { uri ->
-                                            segundaReacao= uri.toString()
-                                            segundaFoto(segundaReacao!!)
-                                        }
-
-                                    }
-                                }
-                            }
-                    }
-                    fotoBaixada = true
-                    fotosBaixadas(fotoBaixada)
-                } else {
-                    println("A coleção de documentos está vazia.")
+                        }
                 }
 
+                if (usuariosCurtidas.size >= 2){
+                    val segundoindice = usuariosCurtidas[1]
+                    val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
+                    val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
+
+                    //Começando pela primeira pessoa que curtiu o post
+                    pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
+                        .addOnSuccessListener {result->
+                            for (item in result.items){
+                                val caminhoFoto = item.path
+                                if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                    item.downloadUrl.addOnSuccessListener { uri ->
+                                        segundaReacao= uri.toString()
+                                        segundaFoto(segundaReacao!!)
+                                    }
+
+                                }
+                            }
+                        }
+                    //Procurando na pasta do CPS
+                    pastaCPS.listAll()
+                        .addOnSuccessListener {result->
+                            for (item in result.items){
+                                val caminhoFoto = item.path
+                                if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                    item.downloadUrl.addOnSuccessListener { uri ->
+                                        segundaReacao= uri.toString()
+                                        segundaFoto(segundaReacao!!)
+                                    }
+
+                                }
+                            }
+                        }
+                }
+                fotoBaixada = true
+                fotosBaixadas(fotoBaixada)
+            } else {
+                println("A coleção de documentos está vazia.")
             }
+
+        }
 }
 
 //Essa função aqui vai servir para saber se o usuario ja curtiu a publicacao ou nao, isso quando a index iniciar.

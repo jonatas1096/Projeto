@@ -98,7 +98,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
-               // .height(643.dp)
+                // .height(643.dp)
                 .background(Color.White, shape = RoundedCornerShape(25.dp))
                 .constrainAs(boxRegistroAluno) {
                     start.linkTo(parent.start)
@@ -108,132 +108,132 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
 
 
         ){
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(top = 125.dp)
-                        .padding(horizontal = 15.dp)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(top = 125.dp)
+                    .padding(horizontal = 15.dp)
 
-                ) {
+            ) {
 
-                    //Email
-                    OutlinedRegistro(
-                        value = email,
-                        onValueChange = {email = it},
-                        label = "Email",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email
-                        ),
-                        visualTransformation = VisualTransformation.None,
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.ic_email),
-                                contentDescription = "Ícone de Email no registro",
-                                modifier = Modifier.size(28.dp))
-                        }
-                    )
-                    //Senha
-                    OutlinedRegistro(
-                        value = senha,
-                        onValueChange = {senha = it},
-                        label = "Senha",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password
-                        ),
-                        visualTransformation = PasswordVisualTransformation(),
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.ic_senha),
-                                contentDescription = "Ícone de Senha no registro",
-                                modifier = Modifier.size(28.dp))
-                        }
-                    )
-                    //RM
-                    OutlinedRegistro(
-                        value = rm,
-                        onValueChange = {rm = it},
-                        label = "RM",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Number
-                        ),
-                        visualTransformation = VisualTransformation.None,
-                        leadingIcon = {
-                            Icon(
-                                painterResource(id = R.drawable.ic_rmoucps),
-                                contentDescription = "Ícone de RM no registro",
-                                modifier = Modifier.size(28.dp))
-                        }
-                    )
+                //Email
+                OutlinedRegistro(
+                    value = email,
+                    onValueChange = {email = it},
+                    label = "Email",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
+                    visualTransformation = VisualTransformation.None,
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_email),
+                            contentDescription = "Ícone de Email no registro",
+                            modifier = Modifier.size(28.dp))
+                    }
+                )
+                //Senha
+                OutlinedRegistro(
+                    value = senha,
+                    onValueChange = {senha = it},
+                    label = "Senha",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    visualTransformation = PasswordVisualTransformation(),
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_senha),
+                            contentDescription = "Ícone de Senha no registro",
+                            modifier = Modifier.size(28.dp))
+                    }
+                )
+                //RM
+                OutlinedRegistro(
+                    value = rm,
+                    onValueChange = {rm = it},
+                    label = "RM",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    visualTransformation = VisualTransformation.None,
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_rmoucps),
+                            contentDescription = "Ícone de RM no registro",
+                            modifier = Modifier.size(28.dp))
+                    }
+                )
 
-                    //Termos e Condições
-                    Row {
-                        CheckBoxPersonalizada{isChecked ->
+                //Termos e Condições
+                Row {
+                    CheckBoxPersonalizada{isChecked ->
 
-                           checkboxmarcada = isChecked
-                        }
-
-                        val dialogo = remember { mutableStateOf(false) } //variavel para a lógica dos termos e condições
-
-                            TextDuasCores(
-                                color1 = Color(0xFFF5E5E5E),
-                                color2 = LARANJA,
-                                texto1 = "Eu li e concordo com os ",
-                                texto2 = "Termos & Condições",
-                                onclick = {
-                                    dialogo.value = true
-
-                                },
-                                fontSize = 13.sp
-                            )
-
-                        if (dialogo.value){
-                            AlertDialogPersonalizado(
-                                dialogo = dialogo,
-                                onDismissRequest = {
-                                    dialogo.value = false
-                                },
-                                cor = LARANJA
-                            )
-
-                        }
+                        checkboxmarcada = isChecked
                     }
 
-                    //Botão registrar
-                    if (checkboxmarcada){
-                        BotaoRegistrar(
-                            onClick = {
-                                //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                                viewModel.cadastro(email, senha,rm, object : ListenerAuth{
-                                    override fun onSucess(mensagem: String) {
-                                        Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
-                                        navController.navigate("Login")
-                                    }
+                    val dialogo = remember { mutableStateOf(false) } //variavel para a lógica dos termos e condições
 
-                                    override fun onFailure(erro: String) {
-                                        Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
-                                    }
+                    TextDuasCores(
+                        color1 = Color(0xFFF5E5E5E),
+                        color2 = LARANJA,
+                        texto1 = "Eu li e concordo com os ",
+                        texto2 = "Termos & Condições",
+                        onclick = {
+                            dialogo.value = true
 
-                                })
+                        },
+                        fontSize = 13.sp
+                    )
+
+                    if (dialogo.value){
+                        AlertDialogPersonalizado(
+                            dialogo = dialogo,
+                            onDismissRequest = {
+                                dialogo.value = false
                             },
-                            corBotao = LARANJA)
-                        Spacer(modifier = Modifier
-                            .height(130.dp))
+                            cor = LARANJA
+                        )
+
                     }
-                    else{
-                        BotaoRegistrar(
-                            onClick = {
-                               Toast.makeText(context,"Você deve concordar com os termos para prosseguir!",Toast.LENGTH_SHORT).show()
-                            },
-                            corBotao = LARANJA)
-                        Spacer(modifier = Modifier
-                            .height(130.dp))
-                    }
-
-
-
-
                 }
+
+                //Botão registrar
+                if (checkboxmarcada){
+                    BotaoRegistrar(
+                        onClick = {
+                            //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
+                            viewModel.cadastro(email, senha,rm, object : ListenerAuth{
+                                override fun onSucess(mensagem: String) {
+                                    Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
+                                    navController.navigate("Login")
+                                }
+
+                                override fun onFailure(erro: String) {
+                                    Toast.makeText(context,erro, Toast.LENGTH_SHORT).show()
+                                }
+
+                            })
+                        },
+                        corBotao = LARANJA)
+                    Spacer(modifier = Modifier
+                        .height(130.dp))
+                }
+                else{
+                    BotaoRegistrar(
+                        onClick = {
+                            Toast.makeText(context,"Você deve concordar com os termos para prosseguir!",Toast.LENGTH_SHORT).show()
+                        },
+                        corBotao = LARANJA)
+                    Spacer(modifier = Modifier
+                        .height(130.dp))
+                }
+
+
+
+
+            }
 
         }
 
@@ -264,7 +264,7 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     bottom.linkTo(boxRegistroAluno.top, margin = (-20).dp)
                 }
                 .size(90.dp))//
-        
+
         //Identificação da página
         Text(text = "Aluno",
             fontSize = 46.sp,

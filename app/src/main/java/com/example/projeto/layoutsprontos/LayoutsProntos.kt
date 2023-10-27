@@ -60,13 +60,13 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun loadImage(path:String, contentDescription:String, contentScale: ContentScale, modifier: Modifier){
     GlideImage(
-    model = path,
-    contentDescription = contentDescription,
-    contentScale = contentScale,
-    modifier = modifier
+        model = path,
+        contentDescription = contentDescription,
+        contentScale = contentScale,
+        modifier = modifier
     )
 
- }
+}
 
 
 //TESTE COIL:
@@ -159,10 +159,10 @@ fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, k
         singleLine = true,
         shape = RoundedCornerShape(50.dp),
         visualTransformation =
-            if (senhaVisibilidade){
-                VisualTransformation.None
-            }else
-                PasswordVisualTransformation()
+        if (senhaVisibilidade){
+            VisualTransformation.None
+        }else
+            PasswordVisualTransformation()
         ,
         leadingIcon = leadingIcon,
         trailingIcon = {
@@ -245,7 +245,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
         IconButton(
             onClick = onClick,
 
-        ) {
+            ) {
 
             Row(
                 horizontalArrangement = Arrangement.Start,
@@ -254,7 +254,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
             ) {
                 IconButton(
                     onClick = onClick,
-                        // Ação ao clicar no ícone
+                    // Ação ao clicar no ícone
 
                 ) {
                     Image(
@@ -281,7 +281,7 @@ fun BotaoEscolha(onClick: () -> Unit, text:String, fontSize: TextUnit = 36.sp, i
 
                 IconButton(
                     onClick = onClick,
-                        // Ação ao clicar no ícone
+                    // Ação ao clicar no ícone
                 ) {
                     Image(
                         imageVector = imageVector2,
@@ -310,7 +310,7 @@ fun CheckBoxPersonalizada(onCheckedChange : (Boolean) -> Unit){
             uncheckedColor = Color.Gray,
         ),
 
-    )
+        )
 }
 
 @Composable
@@ -324,8 +324,8 @@ fun BotaoRegistrar(onClick: () -> Unit, corBotao: Color, fontSize: TextUnit = 22
         modifier = Modifier.width(200.dp)
     ) {
         Text(text = "Registrar-se",
-        color = Color.White,
-        fontSize = fontSize)
+            color = Color.White,
+            fontSize = fontSize)
     }
 }
 
@@ -403,43 +403,43 @@ fun AlertDialogPersonalizado(
                     ) {}
                     Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            text = "Bem-vindo à nossa rede social móvel para alunos e professores da [ETEC Zona Leste]. Estes termos e condições regem o uso do nosso aplicativo. Ao utilizá-lo, você concorda expressamente com os seguintes termos e condições:",
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(bottom = 18.dp)
-                        )
+                    Text(
+                        text = "Bem-vindo à nossa rede social móvel para alunos e professores da [ETEC Zona Leste]. Estes termos e condições regem o uso do nosso aplicativo. Ao utilizá-lo, você concorda expressamente com os seguintes termos e condições:",
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(bottom = 18.dp)
+                    )
                     //Privacidade
-                        Text(text = "1. Privacidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Respeitamos sua privacidade e comprometemo-nos a proteger seus dados pessoais. Para obter informações detalhadas sobre como os coletamos, usamos e protegemos suas informações pessoais, consulte algum dos desenvolvedores."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "1. Privacidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Respeitamos sua privacidade e comprometemo-nos a proteger seus dados pessoais. Para obter informações detalhadas sobre como os coletamos, usamos e protegemos suas informações pessoais, consulte algum dos desenvolvedores."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Cadastro de usuário
-                        Text(text = "2. Cadastro de usuário:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Para utilizar nosso aplicativo, você deve criar uma conta. Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades que ocorrerem em sua conta durante o uso."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "2. Cadastro de usuário:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Para utilizar nosso aplicativo, você deve criar uma conta. Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades que ocorrerem em sua conta durante o uso."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Uso Aceitável
-                        Text(text = "3. Uso Aceitável:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Você concorda em utilizar nosso aplicativo de maneira respeitosa e ética. Comportamentos inadequados como assédio, machismo, racismo ou qualquer outro tipo de discurso de ódio que viole os direitos de terceiros, não será tolerado."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "3. Uso Aceitável:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Você concorda em utilizar nosso aplicativo de maneira respeitosa e ética. Comportamentos inadequados como assédio, machismo, racismo ou qualquer outro tipo de discurso de ódio que viole os direitos de terceiros, não será tolerado."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Propriedade Intelectual:
-                        Text(text = "4. Propriedade Intelectual:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Todo o conteúdo gerado pelos usuários como postagens, fotos, vídeos ou comentários, pertence aos respectivos criadores. Você não tem permissão para usar esse conteúdo sem a devida autorização."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "4. Propriedade Intelectual:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Todo o conteúdo gerado pelos usuários como postagens, fotos, vídeos ou comentários, pertence aos respectivos criadores. Você não tem permissão para usar esse conteúdo sem a devida autorização."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Responsabilidade:
-                        Text(text = "5. Responsabilidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Você reconhece que os desenvolvedores não são responsáveis por qualquer dano, perda, inconveniência ou prejuízo causado pelo uso de nosso aplicativo. Utilize-o por sua conta e risco."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "5. Responsabilidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Você reconhece que os desenvolvedores não são responsáveis por qualquer dano, perda, inconveniência ou prejuízo causado pelo uso de nosso aplicativo. Utilize-o por sua conta e risco."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Encerramento de Conta:
-                        Text(text = "6. Encerramento de conta:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Você pode encerrar sua conta a qualquer momento contactando qualquer um dos desenvolvedores. Isso resultará na exclusão permanente de seus dados, ou seja, não podemos recuperar informações de contas excluídas."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "6. Encerramento de conta:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Você pode encerrar sua conta a qualquer momento contactando qualquer um dos desenvolvedores. Isso resultará na exclusão permanente de seus dados, ou seja, não podemos recuperar informações de contas excluídas."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Diretrizes de Conteúdo:
-                        Text(text = "7. Diretrizes de Conteúdo:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "É estritamente proibido qualquer tipo de postagem que inclua conteúdo ilegal, como discurso de ódio, nudez, violência, etc. O usuário irá arcar com as consequências caso o mesmo ocorra."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "7. Diretrizes de Conteúdo:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "É estritamente proibido qualquer tipo de postagem que inclua conteúdo ilegal, como discurso de ódio, nudez, violência, etc. O usuário irá arcar com as consequências caso o mesmo ocorra."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Rescisão de Serviço:
-                        Text(text = "8. Rescisão de Serviço:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                        Text(text = "Reservamos o direito para que os desenvolvedores possam encerrar ou modificar o serviço a qualquer momento, com ou sem aviso prévio."
-                            ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
+                    Text(text = "8. Rescisão de Serviço:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Reservamos o direito para que os desenvolvedores possam encerrar ou modificar o serviço a qualquer momento, com ou sem aviso prévio."
+                        ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
 
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -562,7 +562,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
         .background(Color(0xFF16202a))
         .padding(25.dp, 60.dp, 10.dp, 30.dp),
         verticalArrangement = Arrangement.spacedBy((-10).dp)
-        ) {
+    ) {
 
         //Surface para a foto de perfil ou foto padrão
         Surface(
@@ -602,7 +602,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
                 fontFamily = Dongle,
                 color = Color.White,
                 fontSize = 47.sp,
-                modifier = Modifier.padding(top = 18.dp)
+                modifier = Modifier.padding(top = 22.dp)
             )
             Text(
                 text = UserData.nomeEncontrado,
@@ -725,7 +725,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
 
                 }
                     .show()
-        },
+            },
             modifier = Modifier.padding(top = 160.dp)
         ) {
             Text(

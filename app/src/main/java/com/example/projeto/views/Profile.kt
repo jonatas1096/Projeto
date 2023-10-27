@@ -208,7 +208,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 iconRMCPS,rmoucpsTitulo, rmoucps, iconTurma, turmaTitulo, turma) = createRefs()
 
 
-                // Fundo laranja/aluno
+            // Fundo laranja/aluno
             if (!UserData.rmEncontrado.isNullOrEmpty()){ // " ! " na negativa, ou seja, não está vazio.
                 Card(
                     elevation = 8.dp,
@@ -427,8 +427,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFFFCFCFC),
 
-                )
-                ) {
+                    )
+            ) {
                 Text(text = "Index",
                     fontFamily = Dongle,
                     fontWeight = FontWeight.Bold,
@@ -482,7 +482,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 }
             )
             if(apelidoState){
-              //  val dialogo = remember { mutableStateOf(false) } //para abrir a caixa de dialogo, se necessário.
+                //  val dialogo = remember { mutableStateOf(false) } //para abrir a caixa de dialogo, se necessário.
 
                 //MaxCaracteres para inserir o apelido:
                 Text(text = "Max.Caracteres: $atualCaracteres",
@@ -529,7 +529,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         }
                         .height(1.dp)
                         .width(170.dp),
-                        color = Color(0xFF838383)
+                    color = Color(0xFF838383)
                 ) {}
                 //Botões para cancelar ou confirmar:
                 //Cancelar:
@@ -553,8 +553,8 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 //Confirmar:
                 IconButton(
                     onClick = {
-                       // dialogo.value = true
-                       inserirApelido = true
+                        // dialogo.value = true
+                        inserirApelido = true
                     },
                     modifier = Modifier
                         .constrainAs(confirmarTextField) {

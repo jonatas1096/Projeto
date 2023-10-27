@@ -116,58 +116,58 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
             filaOrdenar.get()
                 .addOnSuccessListener {postagens ->
-                println("Entrou no onSucess (ordenando os dados)")
-                println("Tamanho de postagens: ${postagens.size()}")
-                val postagensData = mutableListOf<PostagemData>()
-                for (posts in postagens){
-                    val fotoPerfil = posts.getString("fotoPerfil") ?: ""
-                    val imagensPostagem = posts.get("imagensPostagem") as? List<String> ?: emptyList()
-                    val nome = posts.getString("nome") ?: ""
-                    val rm = posts.getString("RM") ?: ""
-                    val cpsID = posts.getString("cpsID") ?: ""
-                    val apelido = posts.getString("apelido") ?: ""
-                    val texto = posts.getString("texto") ?: ""
-                    val titulo = posts.getString("titulo") ?: ""
-                    val turmas = posts.get("turmasMarcadas") as? List<String> ?: emptyList()
-                    val idPost = posts.getString("idPost") ?: ""
-                    //o numero de curtidas eu vou converter de long para int.
-                    var Curtidas = 0
-                    //Além disso, a validação do campo foi meio que necessário para nao quebrar o código:
-                    if (posts.contains("curtidas")){
-                        val numeroCurtidas = posts.getLong("curtidas")?.toInt()
-                        if (numeroCurtidas != null) {
-                            Curtidas = numeroCurtidas
+                    println("Entrou no onSucess (ordenando os dados)")
+                    println("Tamanho de postagens: ${postagens.size()}")
+                    val postagensData = mutableListOf<PostagemData>()
+                    for (posts in postagens){
+                        val fotoPerfil = posts.getString("fotoPerfil") ?: ""
+                        val imagensPostagem = posts.get("imagensPostagem") as? List<String> ?: emptyList()
+                        val nome = posts.getString("nome") ?: ""
+                        val rm = posts.getString("RM") ?: ""
+                        val cpsID = posts.getString("cpsID") ?: ""
+                        val apelido = posts.getString("apelido") ?: ""
+                        val texto = posts.getString("texto") ?: ""
+                        val titulo = posts.getString("titulo") ?: ""
+                        val turmas = posts.get("turmasMarcadas") as? List<String> ?: emptyList()
+                        val idPost = posts.getString("idPost") ?: ""
+                        //o numero de curtidas eu vou converter de long para int.
+                        var Curtidas = 0
+                        //Além disso, a validação do campo foi meio que necessário para nao quebrar o código:
+                        if (posts.contains("curtidas")){
+                            val numeroCurtidas = posts.getLong("curtidas")?.toInt()
+                            if (numeroCurtidas != null) {
+                                Curtidas = numeroCurtidas
+                            }
                         }
+
+
+
+
+                        println("Agora vai armazenar os dados na val postagemData.")
+                        val postagemData = PostagemData(
+                            fotoPerfil = fotoPerfil,
+                            nomeAutor = nome,
+                            rm = rm,
+                            cpsID = cpsID,
+                            apelidoAutor = apelido,
+                            textoPostagem = texto,
+                            imagensPost = imagensPostagem,
+                            tituloPost = titulo,
+                            turmasMarcadas = turmas,
+                            idPostagem = idPost,
+                            curtidas = Curtidas,
+                        )
+
+                        postagensData.add(postagemData)
+                        println("Printando o conteúdo da postagemData: $postagemData")
+
                     }
-
-
-
-
-                    println("Agora vai armazenar os dados na val postagemData.")
-                    val postagemData = PostagemData(
-                        fotoPerfil = fotoPerfil,
-                        nomeAutor = nome,
-                        rm = rm,
-                        cpsID = cpsID,
-                        apelidoAutor = apelido,
-                        textoPostagem = texto,
-                        imagensPost = imagensPostagem,
-                        tituloPost = titulo,
-                        turmasMarcadas = turmas,
-                        idPostagem = idPost,
-                        curtidas = Curtidas,
-                    )
-
-                    postagensData.add(postagemData)
-                    println("Printando o conteúdo da postagemData: $postagemData")
-
+                    postagensOrdenadas.clear()
+                    postagensOrdenadas.addAll(postagensData)
                 }
-                postagensOrdenadas.clear()
-                postagensOrdenadas.addAll(postagensData)
-            }
-            .addOnFailureListener{erro ->
-                println("Não foi possivel coletar os dados $erro")
-            }
+                .addOnFailureListener{erro ->
+                    println("Não foi possivel coletar os dados $erro")
+                }
 
 
             delay(1000) //esse delay serve para dar tempo do rm ser guardado na classe UserData e conserguirmos fazer as lógicas abaixo.
@@ -233,7 +233,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             delay(1000)
             urlBaixada = true // a lógica pro progressIndicator
             println(UserData.imagemUrl)
-    }
+        }
 
     }
 
@@ -247,85 +247,85 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     Scaffold(
         scaffoldState = scaffoldState,
 
-       topBar = {
-           TopAppBar(
-               backgroundColor = Color(0xFFFBF7F5),
-               elevation = 0.dp
-           ) {
-               Row() {
-                   if (urlBaixada){
-                       if (!UserData.imagemUrl.isNullOrEmpty()){
-                           Surface(
-                               modifier = Modifier
-                                   .clickable {
-                                       scope.launch {
-                                           scaffoldState.drawerState.open()
-                                       }
-                                   }
-                                   .size(36.dp),
-                               shape = RoundedCornerShape(30.dp)
-                           ){
-                               loadImage(
-                                   path = UserData.imagemUrl,
-                                   contentDescription = "Mini imagem do usuário para abrir o Drawer",
-                                   contentScale = ContentScale.Crop,
-                                   modifier = Modifier)
-                           }
-                       }else{
-                           IconButton(
-                               onClick = {
-                                   scope.launch {
-                                       scaffoldState.drawerState.open()
-                                   }
-                               },
-                               modifier = Modifier
-                                   .size(40.dp)
-                                   .padding(start = 5.dp)
-                                   .padding(top = 15.dp)
-                           ){
-                               Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
-                                   contentDescription = "Publicar",)
-                           }
-                       }
-                   }
-                   else{
-                       Surface(
-                           modifier = Modifier
-                               .size(30.dp)
-                               .padding(start = 1.dp)
-                               .padding(top = 1.dp),
-                           shape = CircleShape
-                       ) {
-                           CircularProgressIndicator(
-                               color = Color(9, 9, 9, 255),
-                               strokeWidth = 5.dp
-                           )
-                       }
-                   }
-               }
-               Row(
-                   modifier = Modifier
-                       .fillMaxSize()
-                       .padding(end = 34.dp, top = 4.dp),
-                   horizontalArrangement = Arrangement.Center,
-                   verticalAlignment = Alignment.CenterVertically
-               ) {
-                   Box(
-                       modifier = Modifier.size(60.dp)
-                   ) {
-                       loadImage(
-                           path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
-                           contentDescription = "Mini Logo da Index",
-                           contentScale = ContentScale.Fit,
-                           modifier = Modifier
-                       )
-                   }
-               }
+        topBar = {
+            TopAppBar(
+                backgroundColor = Color(0xFFFBF7F5),
+                elevation = 0.dp
+            ) {
+                Row() {
+                    if (urlBaixada){
+                        if (!UserData.imagemUrl.isNullOrEmpty()){
+                            Surface(
+                                modifier = Modifier
+                                    .clickable {
+                                        scope.launch {
+                                            scaffoldState.drawerState.open()
+                                        }
+                                    }
+                                    .size(36.dp),
+                                shape = RoundedCornerShape(30.dp)
+                            ){
+                                loadImage(
+                                    path = UserData.imagemUrl,
+                                    contentDescription = "Mini imagem do usuário para abrir o Drawer",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier)
+                            }
+                        }else{
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        scaffoldState.drawerState.open()
+                                    }
+                                },
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .padding(start = 5.dp)
+                                    .padding(top = 15.dp)
+                            ){
+                                Image(ImageVector.vectorResource(id = R.drawable.ic_drawermenu),
+                                    contentDescription = "Publicar",)
+                            }
+                        }
+                    }
+                    else{
+                        Surface(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .padding(start = 1.dp)
+                                .padding(top = 1.dp),
+                            shape = CircleShape
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color(9, 9, 9, 255),
+                                strokeWidth = 5.dp
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(end = 34.dp, top = 4.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier.size(60.dp)
+                    ) {
+                        loadImage(
+                            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
+                            contentDescription = "Mini Logo da Index",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                        )
+                    }
+                }
 
-           } //fechamento TopBar
+            } //fechamento TopBar
 
 
-       },
+        },
         drawerContent = { drawerPersonalizado(urlBaixada,navController) },
         drawerBackgroundColor = Color.White,
 
@@ -453,8 +453,28 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 modifier = Modifier
                             )
                         }
+                        Button(
+                            onClick = {
+                                abrirFoto = !abrirFoto
+                            },
+                            modifier = Modifier.constrainAs(fecharFoto){
+                                top.linkTo(fotoPerfilPub.bottom, margin = 5.dp)
+                                end.linkTo(fotoPerfilPub.end, margin = 5.dp)
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.White,
+                            ),
+                        ) {
+                            Text(
+                                text = "Fechar",
+                                fontSize = 26.sp,
+                                fontFamily = Dongle,
+                                color = Color.Black,
+                                lineHeight = (15).sp
+                            )
+                        }
                         //Fechar também
-                        Text(
+                        /*Text(
                             text = "Fechar",
                             fontSize = 34.sp,
                             fontFamily = Dongle,
@@ -463,7 +483,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 top.linkTo(fotoPerfilPub.bottom, margin = 5.dp)
                                 end.linkTo(fotoPerfilPub.end, margin = 5.dp)
                             }
-                        )
+                        )*/
                     }
                     indexState = false
                 }//Fechamento do segundo Constraint
@@ -471,65 +491,65 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
         },
 
-       bottomBar = {
-           //Gambiarra para colocar sombra na bottomNavigation (a padrão dela por algum motivo nao estava indo).
-           Surface(
-               elevation = 6.dp,
-               modifier = Modifier
-                   .height(55.dp)
-           ) {
-               BottomNavigationBar(
-                   items = listOf(
-                       BottomNavItem(
-                           nome = "Home",
-                           route = "Index",
-                           badgeCount = 0,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_home)
-                       ).withIconModifier(Modifier.size(25.dp)),
-                       BottomNavItem(
-                           nome = "Chat",
-                           route = "Chat",
-                           badgeCount = 4,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
-                       ).withIconModifier(
-                           Modifier
-                               .size(32.dp)
-                               .padding(end = 2.dp)),
-                       BottomNavItem( //esse é uma gambiarra daquelas kkkk
-                           nome = "",
-                           route = null,
-                           badgeCount = 0,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_blank)
-                       ).withIconModifier(Modifier.size(2.dp)),
-                       BottomNavItem(
-                           nome = "Notificações",
-                           route = "Notificacoes",
-                           badgeCount = notificacoes!!,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
-                       ).withIconModifier(Modifier.size(32.dp)),
-                       BottomNavItem(
-                           nome = "Icone Usuário",
-                           route = "Profile",
-                           badgeCount = 0,
-                           icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
-                       ).withIconModifier(Modifier.size(30.dp))
-                   ),
-                   navController = navController,
-                   onClickItem = { item ->
-                       item.route?.let { route ->
-                           navController.navigate(route)
-                       }
-                   },
-                   ModifierIcon = Modifier.size(35.dp),
+        bottomBar = {
+            //Gambiarra para colocar sombra na bottomNavigation (a padrão dela por algum motivo nao estava indo).
+            Surface(
+                elevation = 6.dp,
+                modifier = Modifier
+                    .height(55.dp)
+            ) {
+                BottomNavigationBar(
+                    items = listOf(
+                        BottomNavItem(
+                            nome = "Home",
+                            route = "Index",
+                            badgeCount = 0,
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_home)
+                        ).withIconModifier(Modifier.size(25.dp)),
+                        BottomNavItem(
+                            nome = "Chat",
+                            route = "Chat",
+                            badgeCount = 4,
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
+                        ).withIconModifier(
+                            Modifier
+                                .size(32.dp)
+                                .padding(end = 2.dp)),
+                        BottomNavItem( //esse é uma gambiarra daquelas kkkk
+                            nome = "",
+                            route = null,
+                            badgeCount = 0,
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_blank)
+                        ).withIconModifier(Modifier.size(2.dp)),
+                        BottomNavItem(
+                            nome = "Notificações",
+                            route = "Notificacoes",
+                            badgeCount = notificacoes!!,
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
+                        ).withIconModifier(Modifier.size(32.dp)),
+                        BottomNavItem(
+                            nome = "Icone Usuário",
+                            route = "Profile",
+                            badgeCount = 0,
+                            icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
+                        ).withIconModifier(Modifier.size(30.dp))
+                    ),
+                    navController = navController,
+                    onClickItem = { item ->
+                        item.route?.let { route ->
+                            navController.navigate(route)
+                        }
+                    },
+                    ModifierIcon = Modifier.size(35.dp),
 
-               )
-           }
-       },
+                    )
+            }
+        },
         //propriedades do Scaffold
         backgroundColor = Color(0xFFFBF7F5),
 
 
-    )
+        )
 
 
     //Gambiarra para colocar sombra no Button de publicar
@@ -560,7 +580,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             }
         }
-  }
+    }
 
     //Teste área de comentários (aqui vai ficar só o layout em si)
     if (expandirCard){
@@ -619,7 +639,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         fontSize = 32.sp,
                         fontFamily = Dongle,
 
-                    )
+                        )
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .size(2.dp)
@@ -658,7 +678,7 @@ fun ListaDePostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit,
                     cardState = true
                     expandir(cardState)},
                 abrirFotoPostagem = {
-                   // abrirFoto = true
+                    // abrirFoto = true
                     abrirFoto(postagemData.fotoPerfil)
                 },
                 paginas = postagemData.imagensPost.size,

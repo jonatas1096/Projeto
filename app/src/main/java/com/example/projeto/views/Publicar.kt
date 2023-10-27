@@ -151,7 +151,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 modifier = Modifier
                                     .size(29.dp),
                                 colorFilter = ColorFilter.tint(Color(0xFFBB26D5)),
-                                )
+                            )
 
 
                             //Só pra espaçar um pouco a imagem e o texto
@@ -375,7 +375,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             //Área do nome do usuario
             Text(
                 text = if
-                        (!UserData.apelidoUsuario.isNullOrEmpty()) "${UserData.nomeEncontrado} (${UserData.apelidoUsuario})"
+                               (!UserData.apelidoUsuario.isNullOrEmpty()) "${UserData.nomeEncontrado} (${UserData.apelidoUsuario})"
                 else
                     UserData.nomeEncontrado,
                 fontSize = 30.sp,
@@ -438,11 +438,11 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     texto = it
                 },
                 label = {
-                        Text(text =
-                        if (imagensColuna.isNullOrEmpty())"O que você deseja contar?" else "Diga algo sobre essa foto!",
-                            fontSize = 18.sp,
-                            color = Color(148, 148, 148, 255),
-                        )
+                    Text(text =
+                    if (imagensColuna.isNullOrEmpty())"O que você deseja contar?" else "Diga algo sobre essa foto!",
+                        fontSize = 18.sp,
+                        color = Color(148, 148, 148, 255),
+                    )
                 },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     backgroundColor = Color(250, 250, 250, 255),
@@ -450,7 +450,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     unfocusedBorderColor = Color(170, 169, 169, 255),
                     cursorColor = Color(184, 184, 184, 255),
 
-                ),
+                    ),
                 textStyle = TextStyle(
                     fontSize = 16.sp,
                 ),
@@ -466,7 +466,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             //Área para mostrar as turmas que serão marcadas
             if (!selecaoTurmas.isNullOrEmpty()){
                 Text(text = "$selecaoTurmas",
-                fontSize = 30.sp,
+                    fontSize = 30.sp,
                     fontFamily = Jomhuria,
                     color = LARANJA,
                     lineHeight = (15).sp,
@@ -475,7 +475,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                             top.linkTo(areaTexto.bottom, margin = 3.dp)
                         }
                         .padding(horizontal = 8.dp)
-                    )
+                )
             }
 
             //Área que mostra as imagens
@@ -889,7 +889,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             }
 
             println("Encerrando o processo de publicação")
-         }
+        }
 
         //////////////////////////
         //Parte do Aluno
@@ -1026,7 +1026,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             }
 
         }
-        }
+    }
 }
 
 @Composable
@@ -1175,8 +1175,8 @@ fun adicionarTurma(onDismiss:(List<turmasItem>) -> Unit){
         var listaTurmas = items.filter { it.isSelected }
         Card(
             elevation = 5.dp,
-                shape = RoundedCornerShape(10.dp),
-                backgroundColor = Color.White,
+            shape = RoundedCornerShape(10.dp),
+            backgroundColor = Color.White,
             modifier = Modifier
                 .constrainAs(turmasSelecionadasPreview) {
                     top.linkTo(checkBox.bottom, margin = (-0).dp)
@@ -1198,31 +1198,31 @@ fun adicionarTurma(onDismiss:(List<turmasItem>) -> Unit){
                     .padding(8.dp)
                     .padding(top = 26.dp),
 
-            ){
+                ){
                 items(listaTurmas){ turmaSelecionada ->
 
                     val selectedItem = items.find { it.title == turmaSelecionada.title }
                     Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = turmaSelecionada.title,
-                                fontSize = 34.sp,
-                                color = LARANJA,
-                                fontFamily = Jomhuria,
-                                modifier = Modifier
-                                    .padding(end = 12.dp)
-                                    .clickable {
-                                        items = items.map { item ->
-                                            if (item == selectedItem) {
-                                                item.copy(isSelected = false)
-                                            } else {
-                                                item
-                                            }
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = turmaSelecionada.title,
+                            fontSize = 34.sp,
+                            color = LARANJA,
+                            fontFamily = Jomhuria,
+                            modifier = Modifier
+                                .padding(end = 12.dp)
+                                .clickable {
+                                    items = items.map { item ->
+                                        if (item == selectedItem) {
+                                            item.copy(isSelected = false)
+                                        } else {
+                                            item
                                         }
                                     }
-                            )
+                                }
+                        )
                         IconButton(
                             onClick = {
                                 items = items.map { item ->
@@ -1238,7 +1238,7 @@ fun adicionarTurma(onDismiss:(List<turmasItem>) -> Unit){
                             contentDescription = "Ícone para remover a turma selecionada",
                             colorFilter = ColorFilter.tint(Color.Red))
                         }
-                        }
+                    }
 
                 }
             }

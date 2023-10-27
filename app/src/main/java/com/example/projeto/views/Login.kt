@@ -78,217 +78,217 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
     }
 
 
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-        ) {
-            val (logo, areaLogin,areaLoginSOMBRA) = createRefs()
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
+        val (logo, areaLogin,areaLoginSOMBRA) = createRefs()
 
-            //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
-            Box(
+        //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
+        Box(
+            modifier = Modifier
+                .constrainAs(logo) {
+                    top.linkTo(parent.top, margin = 0.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .size(260.dp)
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_ofc.png",
+                contentDescription = "Logo do app",
+                contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .constrainAs(logo) {
-                        top.linkTo(parent.top, margin = 0.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .size(260.dp)
-            ) {
-                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_ofc.png",
-                    contentDescription = "Logo do app",
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                )
-            }
+            )
+        }
 
 
         //Essa surface é uma gambiarra do carai só pra colocar uma sombra na Box abaixo, infelizmente o elevation padrão fica bugado:
-            Surface(
-                shape = RoundedCornerShape(30.dp),
-                elevation = 15.dp,
+        Surface(
+            shape = RoundedCornerShape(30.dp),
+            elevation = 15.dp,
+            modifier = Modifier
+                .constrainAs(areaLoginSOMBRA) {
+                    top.linkTo(logo.bottom, margin = (20).dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .width(310.dp)
+                .height(430.dp)
+        ){}
+
+
+        //Box que vai guardar email e senha:
+        Box(
+            modifier = Modifier
+                .constrainAs(areaLogin) {
+                    top.linkTo(logo.bottom, margin = (20).dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+
+                }
+                .width(310.dp)
+                .background(
+                    Color.White,
+                    shape = RoundedCornerShape(30.dp)
+                )
+        ) {
+            Column(
                 modifier = Modifier
-                    .constrainAs(areaLoginSOMBRA) {
-                        top.linkTo(logo.bottom, margin = (20).dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .width(310.dp)
-                    .height(430.dp)
-            ){}
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-
-            //Box que vai guardar email e senha:
-                Box(
+                Text(
+                    text = "Bem vindo(a)!",
+                    color = Color(0xFF858585),
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Dongle,
                     modifier = Modifier
-                        .constrainAs(areaLogin) {
-                            top.linkTo(logo.bottom, margin = (20).dp)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
+                        .padding(top = 5.dp)
+                        .padding(bottom = 0.dp)
 
-                        }
-                        .width(310.dp)
-                        .background(
-                            Color.White,
-                            shape = RoundedCornerShape(30.dp)
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                )
 
-                        Text(
-                            text = "Bem vindo(a)!",
-                            color = Color(0xFF858585),
-                            fontSize = 36.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Dongle,
-                            modifier = Modifier
-                                .padding(top = 5.dp)
-                                .padding(bottom = 0.dp)
+                Text(
+                    text = "Logue-se para participar!",
+                    color = Color(0xFF8D8D8D),
+                    fontSize = 26.sp,
+                    fontFamily = Dongle,
+                    modifier = Modifier
+                        .padding(bottom = 20.dp)
 
-                        )
-
-                        Text(
-                            text = "Logue-se para participar!",
-                            color = Color(0xFF8D8D8D),
-                            fontSize = 26.sp,
-                            fontFamily = Dongle,
-                            modifier = Modifier
-                                .padding(bottom = 20.dp)
-
-                        )
+                )
 
 
-                        //Email
-                        OutlinedEmail(value = email,
-                            onValueChange = {email = it},
-                            label = "Email",
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Email
-                            ),
-                            visualTransformation = VisualTransformation.None,
-                            leadingIcon = {
-                                Icon(painterResource(id = R.drawable.ic_email),
-                                    contentDescription = "Ícone de email",
-                                    modifier = Modifier.size(22.dp))
-                            },
-                        )
+                //Email
+                OutlinedEmail(value = email,
+                    onValueChange = {email = it},
+                    label = "Email",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email
+                    ),
+                    visualTransformation = VisualTransformation.None,
+                    leadingIcon = {
+                        Icon(painterResource(id = R.drawable.ic_email),
+                            contentDescription = "Ícone de email",
+                            modifier = Modifier.size(22.dp))
+                    },
+                )
 
 
-                        //Senha
-                        OutlinedSenha(value = senha,
-                            onValueChange = {senha = it},
-                            label = "Senha",
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password
-                            ),
-                            leadingIcon = {
-                                Icon(
-                                    painterResource(id = R.drawable.ic_senha),
-                                    contentDescription = "Ícone da senha",
-                                modifier = Modifier.size(22.dp))
-                            }
-
-                        )
-
-
-
-                            //Esqueceu a senha
-
-                                Text(text = "Esqueceu a sua senha?",
-                                    fontSize = 34.sp,
-                                    fontFamily = Jomhuria,
-                                    color = LARANJA,
-                                    modifier = Modifier
-                                        .padding(bottom = 0.dp)
-                                        .clickable {
-                                            redefinirState = true
-                                        }
-
-                                )
-
-                        //Gambiarrazinha p colocar a linha entre as opções
-                        Surface(
-                            modifier = Modifier
-                                .border(2.dp, Color(0xFF9C9C9C))
-                                .height(2.dp)
-                                .width(130.dp)
-                                .border(2.dp, Color.Black)
-                                .padding(start = 30.dp)
-                        ) {
-
-                        }
-
-
-                        //Registrar-se:
-                        //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
-                        val textodiferente = buildAnnotatedString {
-                            withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
-                                append("Não possui uma conta?")
-                            }
-                            withStyle(style = SpanStyle(LARANJA)){
-                                append(" Registre-se!")
-                            }
-                        }
-                        Text(text = textodiferente,
-                            fontFamily = Jomhuria,
-                            fontSize = 31.sp,
-                            modifier = Modifier
-                                //.padding(start = 30.dp)
-                                .clickable {
-                                    navController.navigate("Registrar")
-                                }
-                                .padding(0.dp)
-                        )
-
-
-
-
-
-
-                        //Logar
-                        Button(
-                            onClick = {
-                                viewModel.login(email,senha, object : ListenerAuth{
-                                    override fun onSucess(mensagem: String) {
-                                        Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
-                                        navController.navigate("Index")
-                                    }
-
-                                    override fun onFailure(erro: String) {
-                                        Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
-                                    }
-
-                                })
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = LARANJA,
-                                contentColor = Color.White,
-                            ),
-                            shape = RoundedCornerShape(30.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 80.dp)
-                                .padding(top = 26.dp)
-                        ) {
-                            Text(
-                                text = "Login",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-
-
+                //Senha
+                OutlinedSenha(value = senha,
+                    onValueChange = {senha = it},
+                    label = "Senha",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    leadingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.ic_senha),
+                            contentDescription = "Ícone da senha",
+                            modifier = Modifier.size(22.dp))
                     }
+
+                )
+
+
+
+                //Esqueceu a senha
+
+                Text(text = "Esqueceu a sua senha?",
+                    fontSize = 34.sp,
+                    fontFamily = Jomhuria,
+                    color = LARANJA,
+                    modifier = Modifier
+                        .padding(bottom = 0.dp)
+                        .clickable {
+                            redefinirState = true
+                        }
+
+                )
+
+                //Gambiarrazinha p colocar a linha entre as opções
+                Surface(
+                    modifier = Modifier
+                        .border(2.dp, Color(0xFF9C9C9C))
+                        .height(2.dp)
+                        .width(130.dp)
+                        .border(2.dp, Color.Black)
+                        .padding(start = 30.dp)
+                ) {
 
                 }
 
 
+                //Registrar-se:
+                //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
+                val textodiferente = buildAnnotatedString {
+                    withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
+                        append("Não possui uma conta?")
+                    }
+                    withStyle(style = SpanStyle(LARANJA)){
+                        append(" Registre-se!")
+                    }
+                }
+                Text(text = textodiferente,
+                    fontFamily = Jomhuria,
+                    fontSize = 31.sp,
+                    modifier = Modifier
+                        //.padding(start = 30.dp)
+                        .clickable {
+                            navController.navigate("Registrar")
+                        }
+                        .padding(0.dp)
+                )
+
+
+
+
+
+
+                //Logar
+                Button(
+                    onClick = {
+                        viewModel.login(email,senha, object : ListenerAuth{
+                            override fun onSucess(mensagem: String) {
+                                Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
+                                navController.navigate("Index")
+                            }
+
+                            override fun onFailure(erro: String) {
+                                Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
+                            }
+
+                        })
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = LARANJA,
+                        contentColor = Color.White,
+                    ),
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 80.dp)
+                        .padding(top = 26.dp)
+                ) {
+                    Text(
+                        text = "Login",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+
+            }
+
         }
+
+
+    }
 
     if (redefinirState){
         redefinirSenha(onDismissRequest = {
@@ -331,7 +331,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
 
             Dialog(
                 onDismissRequest = {
-                        onDismissRequest()
+                    onDismissRequest()
                 },
                 properties = DialogProperties(
                     dismissOnClickOutside = true,
@@ -357,7 +357,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(text = "Redifina a senha da sua conta",
-                            fontSize = 40.sp,
+                                fontSize = 40.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = Jomhuria
                             )
@@ -393,10 +393,10 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                                     focusedBorderColor = LARANJA,
                                     focusedLabelColor = LARANJA,
                                     cursorColor = LARANJA,
-                            ),
+                                ),
                                 maxLines = 1,
 
-                            )
+                                )
                         }
                         Row(
                             modifier = Modifier
@@ -408,19 +408,19 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             OutlinedTextField(
                                 value = confirmarEmail,
                                 onValueChange = {
-                                   confirmEmail = it
+                                    confirmEmail = it
                                 },
                                 label = {
                                     Text(text = "Confirme o Email",
                                         fontSize = 18.sp
                                     )
                                 },
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                        unfocusedBorderColor = Color(0xFFE7E6E6),
-                                focusedBorderColor = LARANJA,
-                                focusedLabelColor = LARANJA,
-                                cursorColor = LARANJA,
-                            ),
+                                colors = TextFieldDefaults.outlinedTextFieldColors(
+                                    unfocusedBorderColor = Color(0xFFE7E6E6),
+                                    focusedBorderColor = LARANJA,
+                                    focusedLabelColor = LARANJA,
+                                    cursorColor = LARANJA,
+                                ),
                                 maxLines = 1
                             )
                         }
@@ -440,63 +440,63 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             }
                         }
 
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = if (camposDiferentes) 1.dp else 25.dp),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                Button(
-                                    onClick = {
-                                        onDismissRequest()
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color(0xFFE7E6E6),
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = if (camposDiferentes) 1.dp else 25.dp),
+                            horizontalArrangement = Arrangement.End
+                        ) {
+                            Button(
+                                onClick = {
+                                    onDismissRequest()
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = Color(0xFFE7E6E6),
 
-                                        ),
-                                    modifier = Modifier.padding(end = 15.dp)
-                                ) {
-                                    Text(text = "Cancelar",
-                                        fontSize = 16.sp,
-                                        color = Color(0xFF979797),
-                                    )
-                                }
-                                Button(
-                                    onClick = {
-                                        if (email != confirmarEmail){
-                                            camposDiferentes = true
-
-                                        }
-                                        else if(email.isNullOrEmpty() || confirmarEmail.isNullOrEmpty()){
-                                            Toast.makeText(context, "Insira o email nos dois campos!",Toast.LENGTH_SHORT).show()
-                                        }
-                                        else{
-                                            camposDiferentes = false
-                                            auth.sendPasswordResetEmail(email)
-                                                .addOnSuccessListener {
-                                                    println("email: $email, confirmar email : $confirmarEmail")
-                                                    Toast.makeText(context, "Email enviado com sucesso!",Toast.LENGTH_SHORT).show()
-                                                    onDismissRequest()
-                                                    mensagemRedefinir.value = true
-                                                }
-                                                .addOnFailureListener{e ->
-                                                    Toast.makeText(context, "Email não cadastrado no banco de dados!",Toast.LENGTH_SHORT).show()
-                                                    println("Erro. $e")
-                                                }
-
-                                        }
-
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = LARANJA,
                                     ),
-                                ) {
-                                    Text(text = "Pesquisar",
-                                        fontSize = 16.sp,
-                                        color = Color.White
-                                    )
-                                }
+                                modifier = Modifier.padding(end = 15.dp)
+                            ) {
+                                Text(text = "Cancelar",
+                                    fontSize = 16.sp,
+                                    color = Color(0xFF979797),
+                                )
                             }
+                            Button(
+                                onClick = {
+                                    if (email != confirmarEmail){
+                                        camposDiferentes = true
+
+                                    }
+                                    else if(email.isNullOrEmpty() || confirmarEmail.isNullOrEmpty()){
+                                        Toast.makeText(context, "Insira o email nos dois campos!",Toast.LENGTH_SHORT).show()
+                                    }
+                                    else{
+                                        camposDiferentes = false
+                                        auth.sendPasswordResetEmail(email)
+                                            .addOnSuccessListener {
+                                                println("email: $email, confirmar email : $confirmarEmail")
+                                                Toast.makeText(context, "Email enviado com sucesso!",Toast.LENGTH_SHORT).show()
+                                                onDismissRequest()
+                                                mensagemRedefinir.value = true
+                                            }
+                                            .addOnFailureListener{e ->
+                                                Toast.makeText(context, "Email não cadastrado no banco de dados!",Toast.LENGTH_SHORT).show()
+                                                println("Erro. $e")
+                                            }
+
+                                    }
+
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = LARANJA,
+                                ),
+                            ) {
+                                Text(text = "Pesquisar",
+                                    fontSize = 16.sp,
+                                    color = Color.White
+                                )
+                            }
+                        }
 
                     }
                 }
