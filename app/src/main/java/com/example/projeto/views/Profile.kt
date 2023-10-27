@@ -140,17 +140,33 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
 
     // Fundo
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF7F7F7))
-    ) {
-        loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundoficial.png",
-            contentDescription = "Background Profile - Aluno",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+    if (!UserData.rmEncontrado.isNullOrEmpty()){ // " ! " na negativa, ou seja, não está vazio.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF7F7F7))
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundoficial.png",
+                contentDescription = "Background Profile - Aluno",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }else{
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Red)
+        ) {
+            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundcps.png",
+                contentDescription = "Background Profile - CPS",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
+
+
 
 
     // Box da tela
@@ -193,6 +209,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
 
                 // Fundo laranja/aluno
+            if (!UserData.rmEncontrado.isNullOrEmpty()){ // " ! " na negativa, ou seja, não está vazio.
                 Card(
                     elevation = 8.dp,
                     shape = RoundedCornerShape(30.dp),
@@ -209,6 +226,25 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+            }else{//CPS
+                Card(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .height(320.dp)
+                        .constrainAs(card) {
+                            top.linkTo(parent.top)
+                        }
+                ){
+                    loadImage(
+                        path = "https://i.imgur.com/qjUyjn2.png",
+                        contentDescription = "Background do Profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
+
 
 
 

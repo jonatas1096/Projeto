@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import com.example.projeto.datasource.UserData
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -619,14 +620,25 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             )
         }
 
-        //RM
-        Text(
-            text = "RM: ${UserData.rmEncontrado}",
-            fontFamily = Dongle,
-            color = Color(0xFF83898c),
-            fontSize = 30.sp,
-            modifier = Modifier.padding(bottom = 15.dp)
-        )
+        //RM ou cpsID
+        if (!UserData.rmEncontrado.isNullOrEmpty()){// na negativa "!", ou seja, nao está vazio ou nullo.
+            Text(
+                text = "RM: ${UserData.rmEncontrado}",
+                fontFamily = Dongle,
+                color = Color(0xFF83898c),
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 15.dp)
+            )
+        }else{
+            Text(
+                text = "cpsID: ${UserData.cpsIDEncontrado}",
+                fontFamily = Dongle,
+                color = Color(0xFF83898c),
+                fontSize = 30.sp,
+                modifier = Modifier.padding(bottom = 15.dp)
+            )
+        }
+
 
         //Linha estética
         Row(

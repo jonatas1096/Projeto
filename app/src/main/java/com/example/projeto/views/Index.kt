@@ -2,6 +2,8 @@ package com.example.projeto.views
 
 import android.annotation.SuppressLint
 import android.widget.Space
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,10 +15,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -43,6 +47,7 @@ import kotlinx.coroutines.launch
 
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
@@ -119,6 +124,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     val imagensPostagem = posts.get("imagensPostagem") as? List<String> ?: emptyList()
                     val nome = posts.getString("nome") ?: ""
                     val rm = posts.getString("RM") ?: ""
+                    val cpsID = posts.getString("cpsID") ?: ""
                     val apelido = posts.getString("apelido") ?: ""
                     val texto = posts.getString("texto") ?: ""
                     val titulo = posts.getString("titulo") ?: ""
@@ -142,6 +148,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         fotoPerfil = fotoPerfil,
                         nomeAutor = nome,
                         rm = rm,
+                        cpsID = cpsID,
                         apelidoAutor = apelido,
                         textoPostagem = texto,
                         imagensPost = imagensPostagem,
@@ -232,6 +239,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
 
 
+    var expandirCard by remember { mutableStateOf(false) }
+    var abrirFoto by remember { mutableStateOf(false) }
+    var caminhoImagem by remember { mutableStateOf("") }
 
     //Começo do layout
     Scaffold(
@@ -304,7 +314,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                        modifier = Modifier.size(60.dp)
                    ) {
                        loadImage(
-                           path = "https://i.imgur.com/c00cZHP.png",
+                           path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
                            contentDescription = "Mini Logo da Index",
                            contentScale = ContentScale.Fit,
                            modifier = Modifier
@@ -328,8 +338,10 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     modifier = Modifier.fillMaxWidth()
 
                 ) {
-                    val (geral, paravoce, paginaAtual, linhaestetica) = createRefs()
+
+                    val (geral, paravoce, paginaAtual, linhaestetica,bottomC) = createRefs()
                     var paginaIndex by remember { mutableStateOf(true) }
+
 
                     Text(text = "Geral",
                         fontSize = 36.sp,
@@ -378,6 +390,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                             .size(2.dp)
                             .background(color = Color(209, 209, 209, 255))
                     ){}
+
                 }
 
 
@@ -386,6 +399,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
+                    val (fotoPerfilPub,fecharFoto) = createRefs()
+
+                    //Fundo da index
                     loadImage(
                         path = "https://i.imgur.com/1M0HtXz.png",
                         contentDescription = "",
@@ -393,22 +409,65 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         modifier = Modifier
                     )
 
-                    //A lógica da área das postagens
+                    //A lógica da área das postagens aqui
                     Column(
                         modifier = Modifier
-                            /*.constrainAs(postagens) {
-                                top.linkTo(linhaestetica.bottom)
-                            }*/
                             .padding(bottom = 60.dp)
                     ) {
-                        ListaDePostagens(postagens = postagensOrdenadas)
+                        ListaDePostagens(
+                            postagens = postagensOrdenadas,
+                            expandir = {resultado ->
+                                expandirCard = resultado},
+                            abrirFoto = { resultado ->
+                                caminhoImagem = resultado
+                                abrirFoto = !abrirFoto
+                            }
+                        )
+                    }
+                    //Lógica para maximizar a foto de perfil da pub
+                    if (abrirFoto){
+                        //Essa primeira box é só para desfocar e adc. o click pra sair externo
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color(0, 0, 0, 39)) //Desfoque
+                                .clickable {
+                                    abrirFoto = !abrirFoto
+                                }
+                        ) {}
+                        //A foto em si (já maximizada).
+                        Box(
+                            modifier = Modifier
+                                .constrainAs(fotoPerfilPub) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top)
+                                    end.linkTo(parent.end)
+                                    bottom.linkTo(parent.bottom, margin = 140.dp)
+                                }
+                                .size(336.dp)
+                        ) {
+                            loadImage(
+                                path = caminhoImagem,
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                            )
+                        }
+                        //Fechar também
+                        Text(
+                            text = "Fechar",
+                            fontSize = 34.sp,
+                            fontFamily = Dongle,
+                            color = Color.White,
+                            modifier = Modifier.constrainAs(fecharFoto){
+                                top.linkTo(fotoPerfilPub.bottom, margin = 5.dp)
+                                end.linkTo(fotoPerfilPub.end, margin = 5.dp)
+                            }
+                        )
                     }
                     indexState = false
-
                 }//Fechamento do segundo Constraint
             }
-
-
 
         },
 
@@ -468,8 +527,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
        },
         //propriedades do Scaffold
         backgroundColor = Color(0xFFFBF7F5),
-    )
 
+
+    )
 
 
     //Gambiarra para colocar sombra no Button de publicar
@@ -477,7 +537,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f)
         ) {
             val (publicar) = createRefs()
             Surface(
@@ -503,30 +562,108 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         }
   }
 
+    //Teste área de comentários (aqui vai ficar só o layout em si)
+    if (expandirCard){
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val (droparCard, comentariosConstraint, columnComentarios) = createRefs()
+
+            val cardOffset = if (expandirCard) {
+                IntOffset(0, 0) // A posição "final" do Card quando estiver expandido
+            } else {
+                IntOffset(0, -200) // A posição "inicial" do Card quando estiver recolhido
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0, 0, 0, 39)) //Desfoque
+                    .clickable {
+                        expandirCard = !expandirCard
+                        println(expandirCard)
+                    }
+            ) {}
+
+            Card(modifier = Modifier
+                .constrainAs(comentariosConstraint) {
+                    bottom.linkTo(parent.bottom, margin = 1.dp)
+                }
+                .offset { cardOffset }
+                .height(440.dp)
+                .zIndex(1f)
+                .fillMaxWidth(),
+                backgroundColor = Color(252, 252, 252, 255)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    //verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    IconButton(
+                        onClick = {
+                            expandirCard = !expandirCard
+                        },
+                        modifier = Modifier
+                            .size(50.dp)
+                    )
+                    {
+                        Image(ImageVector.vectorResource(id = R.drawable.ic_droparcard),
+                            contentDescription = "Ícone para dropar o card",
+                            //colorFilter = ColorFilter.tint(color)
+                        )
+                    }
+                    Text(
+                        text = "Comentários",
+                        fontSize = 32.sp,
+                        fontFamily = Dongle,
+
+                    )
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .size(2.dp)
+                        .background(color = Color(206, 202, 202, 255))
+                    ){}
+
+                }
+
+            }
+
+        }
+    }
 
 }
 
 
 @Composable
-fun ListaDePostagens(postagens: List<PostagemData>) {
+fun ListaDePostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, abrirFoto: (String) -> Unit) {
 
+    var cardState by remember { mutableStateOf(false) }
+    var abrirFoto by remember { mutableStateOf(false) }
     LazyColumn(){
         items(postagens) { postagemData ->
-            println("Antes de criar a Postagem ${postagemData.imagensPost}")
             Postagem(
                 fotoPerfil = postagemData.fotoPerfil,
                 nomeAutor = postagemData.nomeAutor,
                 rm = postagemData.rm,
+                cpsID = postagemData.cpsID,
                 apelidoAutor = postagemData.apelidoAutor,
                 textoPostagem = postagemData.textoPostagem,
                 imagensPost = postagemData.imagensPost,
                 tituloAutor = postagemData.tituloPost,
                 turmasMarcadas = postagemData.turmasMarcadas,
                 idPostagem = postagemData.idPostagem,
+                expandir = {
+                    cardState = true
+                    expandir(cardState)},
+                abrirFotoPostagem = {
+                   // abrirFoto = true
+                    abrirFoto(postagemData.fotoPerfil)
+                },
                 paginas = postagemData.imagensPost.size,
                 numerocurtidas = postagemData.curtidas
             )
-            println("Depois de criar a Postagem ${postagemData.imagensPost}")
         }
     }
 }

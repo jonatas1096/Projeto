@@ -2,23 +2,25 @@ package com.example.projeto.layoutsprontos
 
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -31,29 +33,72 @@ import com.example.projeto.ui.theme.Jomhuria
 import com.example.projeto.ui.theme.LARANJA
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
-             idPostagem:String, numerocurtidas:Int, paginas:Int) {
+fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
+             idPostagem:String, numerocurtidas:Int, expandir: (Boolean) -> Unit , abrirFotoPostagem:(Boolean) -> Unit, paginas:Int) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
+    val iconecurtido = painterResource(id = R.drawable.ic_curtido)
     val iconecomentarios = painterResource(id = R.drawable.ic_comentarios)
 
 
     val maxCaracteresNome = 18
     val maxCaracteresApelido = 16
 
+    //Abrir a imagem de perfil (pub)
+    var imagemPerfilState by remember{ mutableStateOf(false) }
     //Lógica da curtida
     var curtirState by remember{ mutableStateOf(false) }
     var numeroCurtidas by remember { mutableStateOf(numerocurtidas) }
+    //RM do usuario (também pertence à lógica da curtida)
+    var usuarioCurtiu by remember{ mutableStateOf(false) }
 
-    //Container principal da postagem. Esse é o retângulo que vai guardar tudo
+    //As fotos (reações nas curtidas)
+    val storage = Firebase.storage
+    var primeiraFotinha = remember { mutableStateOf<String?>("") }
+    var segundaFotinha = remember { mutableStateOf<String?>("") }
+    var fotosBaixadas by remember { mutableStateOf(false) }
+    var fotinhasState by remember{ mutableStateOf(false) }
+    //
+
+    //Lógica para abrir os comentários
+    var comentariosState by remember { mutableStateOf(false) }
+    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
+
+
+    checarEstado(
+        idPost = idPostagem,
+        estado = {estadoCurtida ->
+            usuarioCurtiu = estadoCurtida
+        })
+
+    downloadFotosReacao(
+        idPost = idPostagem,
+        rm = rm,
+        cpsID = cpsID,
+        primeiraFoto = {fotoBaixada ->
+            primeiraFotinha.value = fotoBaixada
+            println("deu certo, $fotoBaixada")
+        },
+        segundaFoto = {fotoBaixada ->
+            segundaFotinha.value = fotoBaixada
+            println("deu certo 2, $fotoBaixada")
+        },
+        fotosBaixadas = {downloadState ->
+            fotosBaixadas = downloadState
+        }
+    )
+
+
+        //Container principal da postagem. Esse é o retângulo que vai guardar tudo
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,6 +117,10 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     }
                     .size(50.dp)
                     .clip(CircleShape)
+                    .clickable {
+                        imagemPerfilState = !imagemPerfilState
+                        abrirFotoPostagem(imagemPerfilState)
+                    }
             ) {
                 loadImage(
                     path = fotoPerfil,
@@ -197,7 +246,9 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                     ) {
                         var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
                         if (textoPostagem.length > maxCaracteresTexto.value) {
-                            Column(modifier = Modifier.fillMaxWidth()) {
+                            Column(modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy((-8).dp)
+                            ) {
                                 Text(
                                     text = textoPostagem.substring(
                                         0,
@@ -216,6 +267,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                                         modifier = Modifier.clickable {
                                             maxCaracteresTexto.value = textoPostagem.length
                                         }
+                                            .padding(bottom = 8.dp)
                                     )
                                 }
                             }
@@ -265,67 +317,91 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Icon(
-                        painter = iconecurtir,
-                        contentDescription = "Icone para curtir",
-                        modifier = Modifier
-                            .size(28.dp)
-                    )
-                    Text(
-                        text = "$numeroCurtidas",
-                        fontSize = 36.sp,
-                        fontFamily = Dongle,
-                    )
+                    //Parte para saber se o usuario ja curtiu o post ou não
+                    if (usuarioCurtiu){
+                        Icon(
+                            painter = iconecurtido,
+                            contentDescription = "Icone para post já curtido",
+                            modifier = Modifier
+                                .size(28.dp)
+                        )
+                        Text(
+                            text = "$numeroCurtidas",
+                            fontSize = 36.sp,
+                            fontFamily = Dongle,
+                        )
+                    }else{
+                        Icon(
+                            painter = iconecurtir,
+                            contentDescription = "Icone para curtir",
+                            modifier = Modifier
+                                .size(28.dp)
+                        )
+                        Text(
+                            text = "$numeroCurtidas",
+                            fontSize = 36.sp,
+                            fontFamily = Dongle,
+                        )
+                    }
                 }
 
             }
 
-            //Fotinha
-            Box(
-                modifier = Modifier
-                    .constrainAs(fotoReacao) {
-                        start.linkTo(curtir.end, margin = 6.dp)
-                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
-                    }
-                    .size(32.dp)
-                    .clip(CircleShape)
-            ) {
-                loadImage(
-                    path = "https://nerdhits.com.br/wp-content/uploads/2023/06/buggy-one-piece-768x402.jpg",
-                    contentDescription = "Foto",
-                    contentScale = ContentScale.Crop,
+            if (fotosBaixadas){ //Ainda está baixando as imagens
+                //Fotinha
+                // if (!primeiraReacao.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
+                Box(
                     modifier = Modifier
-                )
-            }
-            //Fotinha2
-            Box(
-                modifier = Modifier
-                    .constrainAs(fotoReacao2) {
-                        start.linkTo(fotoReacao.end, margin = (-16).dp)
-                        top.linkTo(boxPostagem.bottom, margin = 5.dp)
-                    }
-                    .size(32.dp)
-                    .clip(CircleShape)
-            ) {
-                loadImage(
-                    path = "https://i.imgur.com/5r65eEe.png",
-                    contentDescription = "Foto",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                )
-            }
-            /////////////////////
+                        .constrainAs(fotoReacao) {
+                            start.linkTo(curtir.end, margin = 6.dp)
+                            top.linkTo(boxPostagem.bottom, margin = 5.dp)
+                        }
+                        .size(35.dp)
+                        .clip(CircleShape)
 
+                ) {
+                    loadImage(
+                        path = "${primeiraFotinha.value}",
+                        contentDescription = "Foto Reação 1",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+                // }
+                //Fotinha2
+                //  if (!segundaReacao.isNullOrEmpty()){
+                Box(
+                    modifier = Modifier
+                        .constrainAs(fotoReacao2) {
+                            start.linkTo(fotoReacao.end, margin = (-11).dp)
+                            top.linkTo(boxPostagem.bottom, margin = 5.dp)
+                        }
+                        .size(35.dp)
+                        .clip(CircleShape)
+                ) {
+                    loadImage(
+                        path = "${segundaFotinha.value}",
+                        contentDescription = "Foto Reação 2",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+                //   }
+            }
+
+            /////////////////////
 
 
             //Parte dos Comentários
             IconButton(
                 onClick = {
+                    comentariosState = !comentariosState
+                    expandir(comentariosState)
             },
                 modifier = Modifier
                     .constrainAs(comentar) {
-                        start.linkTo(curtir.end, margin = 80.dp)
-                        top.linkTo(boxPostagem.bottom, /*margin = (1).dp*/)
+                        start.linkTo(curtir.end, margin = 90.dp)
+                        top.linkTo(boxPostagem.bottom)
                     }
             ) {
                 Row(
@@ -342,10 +418,17 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
                         fontSize = 32.sp,
                         fontFamily = Dongle,
                         modifier = Modifier
+                            .clickable {
+                                comentariosState = !comentariosState
+                                expandir(comentariosState)
+                            }
                     )
                 }
 
             }
+
+
+
 
             //Linha estética final
             Row(
@@ -361,26 +444,60 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, apelidoAutor:String
 
         }
 
+    //Curtir a pub
     if (curtirState){
         curtirPublicacao(idPostagem, onCurtir = {novoNumeroCurtidas ->
             numeroCurtidas = novoNumeroCurtidas
             curtirState = false
             println("atualizando para $numeroCurtidas")
-        })
+        },
+            mudarIcone = {mudarIcone->
+                usuarioCurtiu = mudarIcone
+            }
+        )
 
     }
 
+    //Enviar as fotos de reações
+    if (fotinhasState){
+        downloadFotosReacao(
+            idPost = idPostagem,
+            rm = rm,
+            cpsID = cpsID,
+            primeiraFoto = {fotoBaixada ->
+                primeiraFotinha.value = fotoBaixada
+            },
+            segundaFoto = {fotoBaixada ->
+                segundaFotinha.value = fotoBaixada
+            },
+            fotosBaixadas = {downloadState ->
+                fotosBaixadas = downloadState
+            }
+        )
+    }
+
+    if (comentariosState){
+        comentariosCard()
+    }
 }
 
 
 @Composable
-fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
+fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit,  mudarIcone: (Boolean) -> Unit) {
 
     val firestore = Firebase.firestore // Instância do firebase
 
     //RM do usuario para marcar a curtida dele no array
     val rmUsuario = UserData.rmEncontrado
     val cpsID = UserData.cpsIDEncontrado
+    var identificacaoUsuario = ""
+
+    if (!rmUsuario.isNullOrEmpty()){ //" ! " para negar, ou seja, nao está vazio.
+        identificacaoUsuario = rmUsuario
+    }else{
+        identificacaoUsuario = cpsID
+    }
+
     //Scope
     val scope = rememberCoroutineScope()
 
@@ -397,14 +514,17 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
 
                 scope.launch {
                     if (postagemEncontrada.contains("usuariosCurtidas")) { //Ja existe um array usuariosCurtidas
-                        println("array existe, é ${usuariosCurtidas.size}")
-                        if (!rmUsuario.isNullOrEmpty()) {
-                            if (!usuariosCurtidas.contains(rmUsuario)) { //" ! " para negar, ou seja, nao contem.
-                                println("nao contem $rmUsuario, entao vamos adicionar.")
-                                usuariosCurtidas.add(rmUsuario)
+
+                            if (!usuariosCurtidas.contains(identificacaoUsuario)) { //" ! " para negar, ou seja, nao contem.
+                                println("nao contem $identificacaoUsuario, entao vamos adicionar.")
+                                usuariosCurtidas.add(identificacaoUsuario)
+                                val usuarioCurtiu = true
+                                mudarIcone(usuarioCurtiu)
                             } else {
-                                println("contem $rmUsuario, entao vamos remover.")
-                                usuariosCurtidas.remove(rmUsuario)
+                                println("contem $identificacaoUsuario, entao vamos remover.")
+                                usuariosCurtidas.remove(identificacaoUsuario)
+                                val usuarioCurtiu = false
+                                mudarIcone(usuarioCurtiu)
                             }
                             val atualizarArray = hashMapOf(
                                 "usuariosCurtidas" to usuariosCurtidas
@@ -416,31 +536,11 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
                                 .addOnFailureListener {
                                     println("Erro ao curtir: $it")
                                 }
-                        } else {
-                            if (!usuariosCurtidas.contains(cpsID)) { //" ! " para negar, ou seja, nao contem.
-                                usuariosCurtidas.add(cpsID)
-                            } else {
-                                usuariosCurtidas.remove(cpsID)
-                            }
-
-                            val atualizarArray = hashMapOf(
-                                "usuariosCurtidas" to usuariosCurtidas
-                            )
-                            postagemEncontrada.reference.set(atualizarArray, SetOptions.merge())
-                                .addOnSuccessListener {
-                                    println("A lista de curtidas foi atualizada com sucesso!")
-                                }
-                                .addOnFailureListener {
-                                    println("Erro ao atualizar a lista: $it")
-                                }
-                        }
                     } else {//Nao existe o array, entao vamos criar e adicionar o primeiro usuario.
                         val usuariosCurtidas = ArrayList<String>() //criamos o array
-                        if (!rmUsuario.isNullOrEmpty()) {
-                            usuariosCurtidas.add(rmUsuario)
-                        } else {
-                            usuariosCurtidas.add(cpsID)
-                        }
+                        usuariosCurtidas.add(identificacaoUsuario)
+                        val usuarioCurtiu = true
+                        mudarIcone(usuarioCurtiu)
 
                         val atualizarArray = hashMapOf(
                             "usuariosCurtidas" to usuariosCurtidas
@@ -452,9 +552,9 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
                             .addOnFailureListener {
                                 println("Erro ao atualizar a lista: $it")
                             }
-
                     }
-                    delay(500)
+
+                   delay(500)
                     println("saiu da primeira etapa, está com ${usuariosCurtidas.size}")
                     var arraySize = usuariosCurtidas.size
                     println("teste $arraySize")
@@ -476,14 +576,12 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
                         postagemEncontrada.reference.set(curtirPublicacao, SetOptions.merge())
                             .addOnSuccessListener {
                                 curtidasConversao = arraySize
-                                println("curtidasConversao é de $curtidasConversao")
                                 onCurtir(curtidasConversao)
                             }
                             .addOnFailureListener {
                                 println("Erro ao curtir: $it")
                             }
                     } else { //não existe, vamos criar
-                        println("ELE NAO EXISTE, ENTAO VAI SER 1.")
                         val curtirPublicacao = hashMapOf(
                             "curtidas" to 1 //adiciona o valor da curtida como 1, já que não existe nenhuma curtida no momento.
                         )
@@ -505,6 +603,152 @@ fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit) {
 
     }
 
-
 }
 
+@Composable
+fun downloadFotosReacao(idPost:String, rm:String, cpsID:String,primeiraFoto: (String) -> Unit,segundaFoto: (String) -> Unit, fotosBaixadas: (Boolean) -> Unit ){
+
+    val firestore = Firebase.firestore // Instância do firebase
+    var usuarioCurtiu by remember{ mutableStateOf(false) }
+    val storage = Firebase.storage
+    val storageRef = storage.reference
+    var primeiraReacao by remember { mutableStateOf<String?>("") }
+    var segundaReacao by remember { mutableStateOf<String?>("") }
+    var fotoBaixada by remember { mutableStateOf(false) }
+
+    println("Mandando a funcao novamente")
+
+        println("iniciou")
+        val idPost = idPost
+        val postagensCollection = firestore.collection("Postagens")
+        postagensCollection.whereEqualTo("idPost", idPost)
+            .get()
+            .addOnSuccessListener { postagens ->
+                if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                    val postagemEncontrada = postagens.documents[0]
+                    println("o post existe, é $postagemEncontrada")
+                    val usuariosCurtidas = postagemEncontrada.get("usuariosCurtidas") as? ArrayList<String> ?: ArrayList()
+                    if (usuariosCurtidas.contains(rm) || usuariosCurtidas.contains(cpsID)){
+                        usuarioCurtiu = true //o estado é verdadeiro, o usuario curtiu o post
+                    }
+                    //Recuperar as fotos como reações
+                    println("vai iniciar a validação")
+                    if (usuariosCurtidas.size >= 1){
+                        println("entrou no if")
+                        val primeiroindice = usuariosCurtidas[0]
+
+                        //Como eu não sei se a primeira foto vai ser de um Aluno ou CPS, vou ter que procurar nas duas pastas.
+                        val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
+                        val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
+
+                        //Começando pela primeira pessoa que curtiu o post
+                        pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
+                            .addOnSuccessListener {result->
+                                for (item in result.items){
+                                    val caminhoFoto = item.path
+                                    if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                        item.downloadUrl.addOnSuccessListener { uri ->
+                                            primeiraReacao = uri.toString()
+                                            primeiraFoto(primeiraReacao!!)
+                                        }
+
+                                    }
+                                }
+                            }
+                        //Procurando na pasta do CPS
+                        pastaCPS.listAll()
+                            .addOnSuccessListener {result->
+                                for (item in result.items){
+                                    val caminhoFoto = item.path
+                                    if (caminhoFoto.endsWith(primeiroindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                        item.downloadUrl.addOnSuccessListener { uri ->
+                                            primeiraReacao = uri.toString()
+                                            primeiraFoto(primeiraReacao!!)
+                                        }
+
+                                    }
+                                }
+                            }
+                    }
+
+                    if (usuariosCurtidas.size >= 2){
+                        val segundoindice = usuariosCurtidas[1]
+                        val pastaAlunos = storageRef.child("Alunos/Fotos de Perfil")
+                        val pastaCPS = storageRef.child("CPS/Fotos de Perfil")
+
+                        //Começando pela primeira pessoa que curtiu o post
+                        pastaAlunos.listAll() //Listando todas as fotos que existe na pasta dos Alunos
+                            .addOnSuccessListener {result->
+                                for (item in result.items){
+                                    val caminhoFoto = item.path
+                                    if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                        item.downloadUrl.addOnSuccessListener { uri ->
+                                            segundaReacao= uri.toString()
+                                            segundaFoto(segundaReacao!!)
+                                        }
+
+                                    }
+                                }
+                            }
+                        //Procurando na pasta do CPS
+                        pastaCPS.listAll()
+                            .addOnSuccessListener {result->
+                                for (item in result.items){
+                                    val caminhoFoto = item.path
+                                    if (caminhoFoto.endsWith(segundoindice)){  //Se a foto for igual ao valor da curtida, eu vou baixar a url dela
+                                        item.downloadUrl.addOnSuccessListener { uri ->
+                                            segundaReacao= uri.toString()
+                                            segundaFoto(segundaReacao!!)
+                                        }
+
+                                    }
+                                }
+                            }
+                    }
+                    fotoBaixada = true
+                    fotosBaixadas(fotoBaixada)
+                } else {
+                    println("A coleção de documentos está vazia.")
+                }
+
+            }
+}
+
+//Essa função aqui vai servir para saber se o usuario ja curtiu a publicacao ou nao, isso quando a index iniciar.
+@Composable
+fun checarEstado(idPost:String, estado: (Boolean) -> Unit){
+
+    val firestore = Firebase.firestore // Instância do firebase
+    var usuarioCurtiu by remember{ mutableStateOf(false) }
+    val rm = UserData.rmEncontrado
+    val cpsID = UserData.cpsIDEncontrado
+    println("aqui no checar estado RM $rm, id $cpsID")
+
+    val idPost = idPost
+    val postagensCollection = firestore.collection("Postagens")
+    postagensCollection.whereEqualTo("idPost", idPost)
+        .get()
+        .addOnSuccessListener { postagens ->
+            if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                val postagemEncontrada = postagens.documents[0]
+                val usuariosCurtidas =
+                    postagemEncontrada.get("usuariosCurtidas") as? ArrayList<String> ?: ArrayList()
+                if (usuariosCurtidas.contains(rm) || usuariosCurtidas.contains(cpsID)) {
+                    usuarioCurtiu = true
+                    estado(usuarioCurtiu)
+                }
+            }
+            else{
+                usuarioCurtiu = false
+                estado(usuarioCurtiu)
+            }
+        }
+}
+
+//Função para abrir os comentários
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun comentariosCard(){
+
+
+}
