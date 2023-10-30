@@ -585,11 +585,16 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     if (expandirCard){
         //Pequena lógica para saber quem está tentando comentar
 
-        var identificacaoUsuario = ""
-        identificacaoUsuario = if (!UserData.rmEncontrado.isNullOrEmpty()){
-            UserData.rmEncontrado
-        }else{
-            UserData.cpsIDEncontrado
+
+        var nomeUsuario = UserData.nomeEncontrado
+        var apelido = remember{ mutableStateOf("") }
+        var urlFoto = remember{ mutableStateOf("") }
+
+        if (!UserData.apelidoUsuario.isNullOrEmpty()){
+            apelido.value = UserData.apelidoUsuario
+        }
+        if (!UserData.imagemUrl.isNullOrEmpty()){
+            urlFoto.value = UserData.imagemUrl
         }
 
         //chamando o layout com os dados necessários para subir a postagem (está no layoutsProntos)
@@ -599,7 +604,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 expandirCard = expandir
             },
             postagemID = postagemReferencia,
-            identificacao = identificacaoUsuario
+            nome = nomeUsuario,
+            apelido = apelido.value,
+            fotoPerfil = urlFoto.value,
         )
         println(postagemReferencia)
     }

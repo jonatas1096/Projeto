@@ -747,7 +747,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
         }
     }
 
-    //Constraint Layout exclusivo para a roww de cima
+    //Constraint Layout exclusivo para a arrow de cima
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (arrow) = createRefs()
         // Arrow voltar superior (seta que volta)

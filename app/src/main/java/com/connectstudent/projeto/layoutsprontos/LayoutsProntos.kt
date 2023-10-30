@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -55,6 +57,7 @@ import coil.compose.AsyncImage
 import com.connectstudent.projeto.bottomNavigation.BottomNavItem
 import com.connectstudent.projeto.ui.theme.AZULCLARO
 import com.connectstudent.projeto.R
+import com.connectstudent.projeto.datasource.ComentariosData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
@@ -781,11 +784,19 @@ fun arrowVoltar(onClick: () -> Unit, modifier: Modifier = Modifier, color:Color)
 
 
 @Composable
-fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postagemID:String, identificacao:String){
+fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postagemID:String, nome:String, apelido:String, fotoPerfil:String){
 
     val firestore = Firebase.firestore // Instância do firebase
 
     var expandir by remember { mutableStateOf(false) }
+    var listaComentarios  by remember { mutableStateOf<List<ComentariosData>>(emptyList()) }
+
+    comentariosLoad(
+        idPost = postagemID,
+        listaPreenchida = { resultado ->
+            listaComentarios = resultado
+        }
+    )
 
     ConstraintLayout(
         modifier = Modifier
@@ -851,13 +862,21 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     .background(color = Color(206, 202, 202, 255))
                 ){}
 
-                Column(
+                //Os comentários em si
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(310.dp)
                         .background(Color(240, 238, 238, 255))
                 ) {
-
+                    items(listaComentarios){ comentario->
+                        boxComentario(
+                            usuarioFoto = comentario.fotoPerfil,
+                            comentario = comentario.comentario,
+                            nome = comentario.nome,
+                            apelido = comentario.apelido
+                        )
+                    }
                 }
 
                 //  Inserir o comentário
@@ -904,7 +923,9 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                                     val comentariosArray = postagemDoc.get("comentarios") as? ArrayList<HashMap<String, String>> ?: arrayListOf()
 
                                                     val novoComentario = hashMapOf(
-                                                        "identificacao" to identificacao, //para puxar a fotinha de perfil
+                                                        "nome" to nome,
+                                                        "apelido" to apelido,
+                                                        "fotoPerfil" to fotoPerfil,
                                                         "comentario" to comentario
                                                     )
                                                     comentariosArray.add(novoComentario)
@@ -967,6 +988,98 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
     }
 }
 
+
+//Primeiro a função para obter os comentários do post em si:
+@Composable
+fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Unit){
+
+    val firestore = Firebase.firestore // Instância do firebase
+
+    println("iniciou o comentariosLoad")
+    //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
+    val postagensCollection = firestore.collection("Postagens")
+    postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
+        .get()
+        .addOnSuccessListener { postagens ->
+            println("Encontramos a postagem")
+            if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                println("Não está vazia")
+                val postagemEncontrada = postagens.documents[0]
+                val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
+
+                println("recuperamos o comentario. $comentarios")
+                val listaComentarios = mutableListOf<ComentariosData>() //Armazenar os dados
+
+                comentarios.forEach { comentario ->
+                    val apelido = comentario["apelido"] ?: ""
+                    val textoComentario = comentario["comentario"] ?: ""
+                    val fotoPerfil = comentario["fotoPerfil"] ?: ""
+                    val nome = comentario["nome"] ?: ""
+
+                    val comentarioBox = ComentariosData(
+                        nome = nome as? String ?: "",
+                        apelido = apelido as? String ?: "",
+                        fotoPerfil = fotoPerfil as? String ?: "",
+                        comentario = textoComentario as? String ?: ""
+                    )
+
+                    listaComentarios.add(comentarioBox)
+                }
+
+
+
+                println("Preparando o callback")
+                listaPreenchida(listaComentarios)
+            }
+        }
+
+
+}
+
+//Agora o layout dos comentários:
+@Composable
+fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: String){
+
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .clickable {
+
+                }
+        ) {
+            loadImage(
+                path = usuarioFoto,
+                contentDescription = "Foto de perfil do usuário que comentou",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier)
+        }
+        Column() {
+            Row() {
+                Text(
+                    text = nome,
+                    fontSize = 17.sp,
+                    fontFamily = Dongle,
+                )
+                Text(
+                    text = apelido,
+                    fontSize = 16.sp,
+                    fontFamily = Dongle,
+                )
+            }
+
+
+            Text(
+                text = comentario,
+                fontSize = 23.sp,
+                fontFamily = Dongle,
+            )
+        }
+
+
+    }
+}
 //Preview:
 @Composable
 @Preview(showBackground = true)
