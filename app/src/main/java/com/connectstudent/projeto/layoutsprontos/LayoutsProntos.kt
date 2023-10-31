@@ -2,6 +2,7 @@ package com.connectstudent.projeto.layoutsprontos
 
 
 import android.app.AlertDialog
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -64,6 +65,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 
 //Carregar uma imagem do github:
@@ -790,6 +792,7 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
 
     var expandir by remember { mutableStateOf(false) }
     var listaComentarios  by remember { mutableStateOf<List<ComentariosData>>(emptyList()) }
+    var loadState by remember{ mutableStateOf(false) }
 
     comentariosLoad(
         idPost = postagemID,
@@ -879,7 +882,7 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     }
                 }
 
-                //  Inserir o comentário
+                //Inserir o comentário
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -934,9 +937,13 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                                     postagemDoc.reference.update("comentarios", comentariosArray)
                                                         .addOnSuccessListener {
                                                             println("Novo comentário adicionado com sucesso.")
+                                                            comentario = ""
+                                                            loadState = true
+                                                            recarregar(loadState)
                                                         }
                                                         .addOnFailureListener { e ->
                                                             println("Erro ao adicionar o comentário: $e")
+                                                            comentario = ""
                                                         }
 
                                                 } else {
@@ -986,6 +993,8 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
         }
 
     }
+
+
 }
 
 
@@ -994,44 +1003,48 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
 fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Unit){
 
     val firestore = Firebase.firestore // Instância do firebase
+    val scope = rememberCoroutineScope()
 
-    println("iniciou o comentariosLoad")
-    //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
-    val postagensCollection = firestore.collection("Postagens")
-    postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
-        .get()
-        .addOnSuccessListener { postagens ->
-            println("Encontramos a postagem")
-            if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
-                println("Não está vazia")
-                val postagemEncontrada = postagens.documents[0]
-                val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
+    LaunchedEffect(Unit){
+        scope.launch{
+            println("iniciou o comentariosLoad")
+            //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
+            val postagensCollection = firestore.collection("Postagens")
+            postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
+                .get()
+                .addOnSuccessListener { postagens ->
+                    println("Encontramos a postagem")
+                    if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                        println("Não está vazia")
+                        val postagemEncontrada = postagens.documents[0]
+                        val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
 
-                println("recuperamos o comentario. $comentarios")
-                val listaComentarios = mutableListOf<ComentariosData>() //Armazenar os dados
+                        println("recuperamos o comentario. $comentarios")
+                        val listaComentarios = mutableListOf<ComentariosData>() //Armazenar os dados
 
-                comentarios.forEach { comentario ->
-                    val apelido = comentario["apelido"] ?: ""
-                    val textoComentario = comentario["comentario"] ?: ""
-                    val fotoPerfil = comentario["fotoPerfil"] ?: ""
-                    val nome = comentario["nome"] ?: ""
+                        comentarios.forEach { comentario ->
+                            val apelido = comentario["apelido"] ?: ""
+                            val textoComentario = comentario["comentario"] ?: ""
+                            val fotoPerfil = comentario["fotoPerfil"] ?: ""
+                            val nome = comentario["nome"] ?: ""
 
-                    val comentarioBox = ComentariosData(
-                        nome = nome as? String ?: "",
-                        apelido = apelido as? String ?: "",
-                        fotoPerfil = fotoPerfil as? String ?: "",
-                        comentario = textoComentario as? String ?: ""
-                    )
+                            val comentarioBox = ComentariosData(
+                                nome = nome as? String ?: "",
+                                apelido = apelido as? String ?: "",
+                                fotoPerfil = fotoPerfil as? String ?: "",
+                                comentario = textoComentario as? String ?: ""
+                            )
 
-                    listaComentarios.add(comentarioBox)
+                            listaComentarios.add(comentarioBox)
+                        }
+
+                        println("Preparando o callback")
+                        listaPreenchida(listaComentarios)
+                    }
                 }
-
-
-
-                println("Preparando o callback")
-                listaPreenchida(listaComentarios)
-            }
         }
+    }
+
 
 
 }
@@ -1068,7 +1081,6 @@ fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: 
                     fontFamily = Dongle,
                 )
             }
-
 
             Text(
                 text = comentario,

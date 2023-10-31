@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.connectstudent.projeto.R
@@ -45,12 +46,16 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
     var alunoLogado = viewModel.verificarUsuarioLogado().collectAsState(initial = false).value
     var cpsLogado = viewModelCPS.verificarUsuarioLogado().collectAsState(initial = false).value
+    var loadingState by remember{ mutableStateOf(true) }
+
 
     LaunchedEffect(alunoLogado, cpsLogado) {
         if (alunoLogado || cpsLogado) {
             navController.navigate("Index")
+            loadingState = false
         }
     }
+
 
     var email by remember { mutableStateOf("") }
     var emailRedefinir by remember { mutableStateOf("") }
@@ -64,6 +69,48 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
     var redefinirState by remember{ mutableStateOf(false) }
     var mensagemRedefinir = remember{ mutableStateOf(false) }
 
+
+
+
+   /* if (loadingState){
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(255, 255, 255, 163))
+                .zIndex(1f)
+        ){
+            val (circularProgress, logo) = createRefs()
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(circularProgress) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(150.dp),
+                color = Color(43, 41, 41, 233),
+                strokeWidth = 10.dp
+            )
+            Box(
+                modifier = Modifier.constrainAs(logo) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+                    .size(80.dp)
+            ){
+                loadImage(
+                    path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
+                    contentDescription = "logo do App",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+
+        }
+    }*/
     //Background ocupando toda a tela
     Box(
         modifier = Modifier.fillMaxSize()
@@ -287,7 +334,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
         }
 
-
+        loadingState = false
     }
 
     if (redefinirState){
@@ -299,6 +346,8 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
     if (mensagemRedefinir.value){
         mensagemAposRedefinir()
     }
+
+
 }
 
 @Composable

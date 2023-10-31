@@ -84,6 +84,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     // Para aguardar a foto do perfil do usuário no drawerContent
     var urlBaixada by remember{ mutableStateOf(false) }
 
+
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     LaunchedEffect(Unit){
 
@@ -157,9 +158,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                             curtidas = Curtidas,
                         )
 
-                        postagensData.add(postagemData)
-                        println("Printando o conteúdo da postagemData: $postagemData")
-
+                        postagensData.add(postagemData) //O conteúdo da postagem está todo aqui
                     }
                     postagensOrdenadas.clear()
                     postagensOrdenadas.addAll(postagensData)
@@ -233,7 +232,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             urlBaixada = true // a lógica pro progressIndicator
             println(UserData.imagemUrl)
         }
-
     }
 
 
@@ -589,7 +587,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         var nomeUsuario = UserData.nomeEncontrado
         var apelido = remember{ mutableStateOf("") }
         var urlFoto = remember{ mutableStateOf("") }
-
+        val context = LocalContext.current
         if (!UserData.apelidoUsuario.isNullOrEmpty()){
             apelido.value = UserData.apelidoUsuario
         }

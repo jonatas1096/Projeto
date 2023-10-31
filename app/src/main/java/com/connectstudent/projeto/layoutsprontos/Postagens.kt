@@ -393,9 +393,9 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
         //Parte dos Comentários
         IconButton(
             onClick = {
+                postagemRef(idPostagem)
                 comentariosState = !comentariosState
                 expandir(comentariosState)
-                postagemRef(idPostagem)
             },
             modifier = Modifier
                 .constrainAs(comentar) {

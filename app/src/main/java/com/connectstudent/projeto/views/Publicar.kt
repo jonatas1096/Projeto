@@ -86,6 +86,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
     var selecaoTurmas: List<String> by remember { mutableStateOf(emptyList()) } //a lista das turmas em si
     var operacaoConcluida by remember { mutableStateOf(false) } //gambiarra pra nao bugar
 
+    //Lógica da box de loading
+    var loadingState by remember{ mutableStateOf(false) }
+
+
     BottomSheetScaffold(
         scaffoldState = scaffoldState,
         sheetContent = { //essa parte do sheetContent é a parte de baixo (kkkkkk vai entender)
@@ -514,9 +518,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                                 onClick = {
                                     imagensColuna.remove(imagem)
                                 },
-                                modifier = Modifier.constrainAs(removerImagem) {
-                                    start.linkTo(parent.start, margin = 10.dp)
-                                }
+                                modifier = Modifier
+                                    .constrainAs(removerImagem) {
+                                        start.linkTo(parent.start, margin = 10.dp)
+                                    }
                                     .size(20.dp)
                             ){Image(
                                 ImageVector.vectorResource(id = R.drawable.ic_fechar2),
@@ -573,7 +578,10 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     texto =  texto,
                     imagensPublicacao = imagensColuna,
                     turmasSelecionadas = selecaoTurmas,
-                    navController = navController
+                    navController = navController,
+                    loading = {state ->
+                        loadingState = true
+                    }
                 )
             }
 
@@ -591,7 +599,45 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
         })
     }
 
-    println("Fora: $selecaoTurmas")
+    if (loadingState){
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(255, 255, 255, 163))
+        ){
+            val (circularProgress, logo) = createRefs()
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(circularProgress) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(150.dp),
+                color = Color(43, 41, 41, 233),
+                strokeWidth = 10.dp
+            )
+            Box(
+                modifier = Modifier.constrainAs(logo) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+                    .size(80.dp)
+            ){
+                loadImage(
+                    path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
+                    contentDescription = "logo do App",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+
+        }
+    }
+
 }
 
 //Função para abrir a galeria e selecionar imagens
@@ -637,7 +683,7 @@ fun SelecionarImagem(onImageSelected: (Bitmap?) -> Unit) {
 //Nesta parte fica a função que vai coletar os dados daqui e mandar para o firebase com os dados da nova publicação.
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>, turmasSelecionadas: List<String>, navController: NavController){
+fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imagensPublicacao: List<Bitmap>, turmasSelecionadas: List<String>, navController: NavController, loading:(Boolean) -> Unit){
 
 
     // A instância do firebase firestore (vou usar para os dados normais, nome, titulo e texto):
@@ -659,11 +705,19 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
     //////////////////
     val context = LocalContext.current
     //
+    //Tela de carregamento
+    var loadingState by remember{ mutableStateOf(false) }
 
 
+    println("loading = $loadingState")
+    //Tela de carregamento para sinalizar que a publicação está sendo enviada
 
     //Começo da lógica do post:
     LaunchedEffect(Unit) {
+        loadingState = true
+        if (loadingState){
+            loading(loadingState)
+        }
         if (alunoRM.isEmpty()) { //se o alunoRM estiver vazio, entendemos que é um professor que está tentando fazer uma postagem:
 
             /////////////
@@ -672,6 +726,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             println(formatoFinal)
 
             if (!imagensPublicacao.isNullOrEmpty()) { // " ! " para negação, ou seja, não está vazio
+                Toast.makeText(context,"Estamos trabalhando nisso! Aguarde...", Toast.LENGTH_SHORT).show()
                 coroutineScope {
                     for ((index, imagem) in imagensPublicacao.withIndex()) {
                         val caminhoImagem =
@@ -1019,6 +1074,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             }
 
         }
+        loadingState = false
     }
 }
 
