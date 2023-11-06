@@ -3,11 +3,16 @@ package com.connectstudent.projeto
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.ComposeView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.viewpager.widget.ViewPager
 import com.connectstudent.projeto.viewmodel.AuthViewModel
 import com.connectstudent.projeto.viewmodel.AuthViewModelCPS
 import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
@@ -18,6 +23,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -41,6 +47,11 @@ fun Main() {
         //tela de login principal
         composable("Login"){
             Login(navController, authViewModel, authViewModelCPS)
+        }
+
+        //tela para os detalhes do app
+        composable("Detalhes"){
+            Detalhes(navController)
         }
 
         //tela para se registrar
@@ -68,7 +79,7 @@ fun Main() {
             Publicar(navController, publicacaoViewModel)
         }
 
-        //Profile (estudos Anahi)
+        //Profile
         composable("Profile"){
             Profile(navController, publicacaoViewModel)
         }

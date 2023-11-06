@@ -38,6 +38,8 @@ import com.connectstudent.projeto.ui.theme.LARANJA
 import com.connectstudent.projeto.viewmodel.AuthViewModel
 import com.connectstudent.projeto.viewmodel.AuthViewModelCPS
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -49,13 +51,6 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
     var loadingState by remember{ mutableStateOf(true) }
 
 
-    LaunchedEffect(alunoLogado, cpsLogado) {
-        if (alunoLogado || cpsLogado) {
-            navController.navigate("Index")
-            loadingState = false
-        }
-    }
-
 
     var email by remember { mutableStateOf("") }
     var emailRedefinir by remember { mutableStateOf("") }
@@ -65,6 +60,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
 
     var redefinirState by remember{ mutableStateOf(false) }
     var mensagemRedefinir = remember{ mutableStateOf(false) }
@@ -72,14 +68,16 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
 
 
 
-   /* if (loadingState){
+
+    //Lógica da tela de carregamento
+    if (loadingState){
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = Color(255, 255, 255, 163))
                 .zIndex(1f)
         ){
-            val (circularProgress, logo) = createRefs()
+            val (circularProgress, logo, nomes) = createRefs()
             CircularProgressIndicator(
                 modifier = Modifier
                     .constrainAs(circularProgress) {
@@ -93,12 +91,13 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                 strokeWidth = 10.dp
             )
             Box(
-                modifier = Modifier.constrainAs(logo) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }
+                modifier = Modifier
+                    .constrainAs(logo) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
                     .size(80.dp)
             ){
                 loadImage(
@@ -109,245 +108,287 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                 )
             }
 
-        }
-    }*/
-    //Background ocupando toda a tela
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ){
-        loadImage(
-            path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlogin.png",
-            contentDescription = "Background do Login",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-
-        )
-    }
-
-
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-    ) {
-        val (logo, areaLogin,areaLoginSOMBRA) = createRefs()
-
-        //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
-        Box(
-            modifier = Modifier
-                .constrainAs(logo) {
-                    top.linkTo(parent.top, margin = 0.dp)
+            Column(
+                modifier = Modifier.constrainAs(nomes){
+                    top.linkTo(circularProgress.bottom, margin = 12.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .size(260.dp)
-        ) {
-            loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_ofc.png",
-                contentDescription = "Logo do app",
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
+            ) {
+                Text(
+                    text = "Anahi Mamani",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = "Beatriz Witer",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = "Joissi Airane",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    text = "Jonatas Bahia",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+
+            }
+        }
+    }
+    else{
+        //Background ocupando toda a tela
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ){
+            loadImage(
+                path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/backgroundlogin.png",
+                contentDescription = "Background do Login",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+
             )
         }
 
 
-        //Essa surface é uma gambiarra do carai só pra colocar uma sombra na Box abaixo, infelizmente o elevation padrão fica bugado:
-        Surface(
-            shape = RoundedCornerShape(30.dp),
-            elevation = 15.dp,
+        ConstraintLayout(
             modifier = Modifier
-                .constrainAs(areaLoginSOMBRA) {
-                    top.linkTo(logo.bottom, margin = (20).dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .width(310.dp)
-                .height(430.dp)
-        ){}
-
-
-        //Box que vai guardar email e senha:
-        Box(
-            modifier = Modifier
-                .constrainAs(areaLogin) {
-                    top.linkTo(logo.bottom, margin = (20).dp)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-
-                }
-                .width(310.dp)
-                .background(
-                    Color.White,
-                    shape = RoundedCornerShape(30.dp)
-                )
+                .fillMaxSize()
+                .verticalScroll(scrollState)
         ) {
-            Column(
+            val (logo, areaLogin) = createRefs()
+
+            //Estava tendo problemas com o tamanho da imagem, então coloquei dentro de uma box e scalonei pela box:
+            Box(
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .constrainAs(logo) {
+                        top.linkTo(parent.top, margin = 0.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .size(260.dp)
             ) {
-
-                Text(
-                    text = "Bem vindo(a)!",
-                    color = Color(0xFF858585),
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = Dongle,
+                loadImage(path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_ofc.png",
+                    contentDescription = "Logo do app",
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .padding(top = 5.dp)
-                        .padding(bottom = 0.dp)
-
                 )
-
-                Text(
-                    text = "Logue-se para participar!",
-                    color = Color(0xFF8D8D8D),
-                    fontSize = 26.sp,
-                    fontFamily = Dongle,
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-
-                )
-
-
-                //Email
-                OutlinedEmail(value = email,
-                    onValueChange = {email = it},
-                    label = "Email",
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email
-                    ),
-                    visualTransformation = VisualTransformation.None,
-                    leadingIcon = {
-                        Icon(painterResource(id = R.drawable.ic_email),
-                            contentDescription = "Ícone de email",
-                            modifier = Modifier.size(22.dp))
-                    },
-                )
-
-
-                //Senha
-                OutlinedSenha(value = senha,
-                    onValueChange = {senha = it},
-                    label = "Senha",
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            painterResource(id = R.drawable.ic_senha),
-                            contentDescription = "Ícone da senha",
-                            modifier = Modifier.size(22.dp))
-                    }
-
-                )
-
-
-
-                //Esqueceu a senha
-
-                Text(text = "Esqueceu a sua senha?",
-                    fontSize = 34.sp,
-                    fontFamily = Jomhuria,
-                    color = LARANJA,
-                    modifier = Modifier
-                        .padding(bottom = 0.dp)
-                        .clickable {
-                            redefinirState = true
-                        }
-
-                )
-
-                //Gambiarrazinha p colocar a linha entre as opções
-                Surface(
-                    modifier = Modifier
-                        .border(2.dp, Color(0xFF9C9C9C))
-                        .height(2.dp)
-                        .width(130.dp)
-                        .border(2.dp, Color.Black)
-                        .padding(start = 30.dp)
-                ) {
-
-                }
-
-
-                //Registrar-se:
-                //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
-                val textodiferente = buildAnnotatedString {
-                    withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
-                        append("Não possui uma conta?")
-                    }
-                    withStyle(style = SpanStyle(LARANJA)){
-                        append(" Registre-se!")
-                    }
-                }
-                Text(text = textodiferente,
-                    fontFamily = Jomhuria,
-                    fontSize = 31.sp,
-                    modifier = Modifier
-                        //.padding(start = 30.dp)
-                        .clickable {
-                            navController.navigate("Registrar")
-                        }
-                        .padding(0.dp)
-                )
-
-
-
-
-
-
-                //Logar
-                Button(
-                    onClick = {
-                        viewModel.login(email,senha, object : ListenerAuth{
-                            override fun onSucess(mensagem: String) {
-                                Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
-                                navController.navigate("Index")
-                            }
-
-                            override fun onFailure(erro: String) {
-                                Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
-                            }
-
-                        })
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = LARANJA,
-                        contentColor = Color.White,
-                    ),
-                    shape = RoundedCornerShape(30.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 80.dp)
-                        .padding(top = 26.dp)
-                ) {
-                    Text(
-                        text = "Login",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-
-
             }
 
+
+            //Card que vai guardar email e senha:
+            Card(
+                modifier = Modifier
+                    .constrainAs(areaLogin) {
+                        top.linkTo(logo.bottom, margin = (20).dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+
+                    }
+                    .width(310.dp),
+                backgroundColor = Color.White,
+                shape = RoundedCornerShape(30.dp),
+                elevation = 8.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = "Bem vindo(a)!",
+                        color = Color(0xFF858585),
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Dongle,
+                        modifier = Modifier
+                            .padding(top = 5.dp)
+                            .padding(bottom = 0.dp)
+
+                    )
+
+                    Text(
+                        text = "Logue-se para participar!",
+                        color = Color(0xFF8D8D8D),
+                        fontSize = 26.sp,
+                        fontFamily = Dongle,
+                        modifier = Modifier
+                            .padding(bottom = 16.dp)
+
+                    )
+
+
+                    //Email
+                    OutlinedEmail(value = email,
+                        onValueChange = {email = it},
+                        label = "Email",
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email
+                        ),
+                        visualTransformation = VisualTransformation.None,
+                        leadingIcon = {
+                            Icon(painterResource(id = R.drawable.ic_email),
+                                contentDescription = "Ícone de email",
+                                modifier = Modifier.size(22.dp))
+                        },
+                    )
+
+
+                    //Senha
+                    OutlinedSenha(value = senha,
+                        onValueChange = {senha = it},
+                        label = "Senha",
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                painterResource(id = R.drawable.ic_senha),
+                                contentDescription = "Ícone da senha",
+                                modifier = Modifier.size(22.dp))
+                        }
+
+                    )
+
+
+
+                    //Esqueceu a senha
+
+                    Text(text = "Esqueceu a sua senha?",
+                        fontSize = 34.sp,
+                        fontFamily = Jomhuria,
+                        color = LARANJA,
+                        modifier = Modifier
+                            .padding(bottom = 0.dp)
+                            .clickable {
+                                redefinirState = true
+                            }
+
+                    )
+
+                    //Gambiarrazinha p colocar a linha entre as opções
+                    Surface(
+                        modifier = Modifier
+                            .border(2.dp, Color(0xFF9C9C9C))
+                            .height(2.dp)
+                            .width(130.dp)
+                            .border(2.dp, Color.Black)
+                            .padding(start = 30.dp)
+                    ) {}
+
+
+                    //Registrar-se:
+                    //aqui existe essa pequena função para colocar estilos diferentes no mesmo "text". Usei para colocar laranja no "Registre-se!"
+                    val textodiferente = buildAnnotatedString {
+                        withStyle(style = SpanStyle(Color(0xFF8D8D8D))){
+                            append("Não possui uma conta?")
+                        }
+                        withStyle(style = SpanStyle(LARANJA)){
+                            append(" Registre-se!")
+                        }
+                    }
+                    Text(text = textodiferente,
+                        fontFamily = Jomhuria,
+                        fontSize = 31.sp,
+                        modifier = Modifier
+                            //.padding(start = 30.dp)
+                            .clickable {
+                                navController.navigate("Registrar")
+                            }
+                            .padding(0.dp)
+                    )
+
+                    //Gambiarrazinha p colocar a linha entre as opções
+                    Surface(
+                        modifier = Modifier
+                            .border(2.dp, Color(0xFF9C9C9C))
+                            .height(2.dp)
+                            .width(130.dp)
+                            .border(2.dp, Color.Black)
+                            .padding(start = 30.dp)
+                    ) {}
+                Text(
+                    text = "Sobre o app",
+                    color = LARANJA,
+                    fontSize = 32.sp,
+                    fontFamily = Jomhuria,
+                    modifier = Modifier.clickable {
+                        navController.navigate("Detalhes")
+                    }
+                )
+
+
+
+
+                    //Logar
+                    Button(
+                        onClick = {
+                            viewModel.login(email,senha, object : ListenerAuth{
+                                override fun onSucess(mensagem: String) {
+                                    Toast.makeText(context, mensagem, Toast.LENGTH_SHORT).show()
+                                    navController.navigate("Index")
+                                }
+
+                                override fun onFailure(erro: String) {
+                                    Toast.makeText(context, erro, Toast.LENGTH_SHORT).show()
+                                }
+
+                            })
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = LARANJA,
+                            contentColor = Color.White,
+                        ),
+                        shape = RoundedCornerShape(30.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 80.dp)
+                            .padding(top = 6.dp)
+                            .padding(bottom = 6.dp)
+                    ) {
+                        Text(
+                            text = "Login",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+
+
+                }
+
+            }
         }
 
-        loadingState = false
+        if (redefinirState){
+            redefinirSenha(onDismissRequest = {
+                redefinirState = false},
+                emailRedefinir, confirmarEmail, mensagemRedefinir)
+        }
+
+        if (mensagemRedefinir.value){
+            mensagemAposRedefinir()
+        }
     }
 
-    if (redefinirState){
-        redefinirSenha(onDismissRequest = {
-            redefinirState = false},
-            emailRedefinir, confirmarEmail, mensagemRedefinir)
+
+
+    LaunchedEffect(alunoLogado, cpsLogado) {
+        scope.launch {
+            if (alunoLogado || cpsLogado) {
+                navController.navigate("Index")
+                delay(1500)
+                loadingState = false
+            }
+            delay(1000)
+            loadingState = false
+        }
+
     }
-
-    if (mensagemRedefinir.value){
-        mensagemAposRedefinir()
-    }
-
-
 }
 
 @Composable

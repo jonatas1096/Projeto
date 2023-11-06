@@ -595,7 +595,6 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             selecaoTurmas = selecao.map { it.title }
             adicionarTurmaState = false
             operacaoConcluida = true
-            println("Valor retornado ao clicar: $selecao")
         })
     }
 
@@ -726,7 +725,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             println(formatoFinal)
 
             if (!imagensPublicacao.isNullOrEmpty()) { // " ! " para negação, ou seja, não está vazio
-                Toast.makeText(context,"Estamos trabalhando nisso! Aguarde...", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,"Estamos trabalhando nisso! Aguarde...", Toast.LENGTH_LONG).show()
                 coroutineScope {
                     for ((index, imagem) in imagensPublicacao.withIndex()) {
                         val caminhoImagem =
@@ -858,7 +857,6 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             coroutineScope {
                 //Agora a lógica para sinalizar todas as turmas que foram marcadas na publicação:
                 val turmas = turmasSelecionadas
-                println("Aqui é o teste para saber se a lista está sendo obtida corretamente $turmas")
                 var rmProvisorio:String? //isso vai ser util para sinalizar todos os alunos (não é o rm do aluno logado agora, é só uma box p/ guardar)
 
                 val consultarTurmas = firestore.collection("Data") //Instância da coleção
@@ -949,6 +947,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
 
             val referenciaHora = formatoFinal //nao sei se vou usar mais
             if (!imagensPublicacao.isNullOrEmpty()) { // " ! " para negação, ou seja, não está vazio
+                Toast.makeText(context,"Estamos trabalhando nisso! Aguarde...", Toast.LENGTH_LONG).show()
                 coroutineScope {
                     for ((index, imagem) in imagensPublicacao.withIndex()) {
                         val caminhoImagem =

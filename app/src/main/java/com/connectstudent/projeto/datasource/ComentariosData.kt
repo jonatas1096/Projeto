@@ -5,5 +5,5 @@ data class ComentariosData(
     val apelido: String,
     val fotoPerfil: String,
     val comentario: String,
-
+    val identificacao: String,
 )

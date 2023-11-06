@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
-             idPostagem:String, numerocurtidas:Int, expandir: (Boolean) -> Unit , abrirFotoPostagem:(Boolean) -> Unit, postagemRef: (String) -> Unit,  paginas:Int) {
+             idPostagem:String, numerocurtidas:Int, numerocomentarios:Int, postagemRef: (String) -> Unit, expandir: (Boolean) -> Unit , abrirFotoPerfil:(Boolean) -> Unit) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
     val iconecurtido = painterResource(id = R.drawable.ic_curtido)
@@ -55,15 +55,16 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
     val maxCaracteresApelido = 16
 
     //Abrir a imagem de perfil (pub)
-    var imagemPerfilState by remember{ mutableStateOf(false) }
+    var imagemState by remember{ mutableStateOf(false) }
     //Lógica da curtida
     var curtirState by remember{ mutableStateOf(false) }
     var numeroCurtidas by remember { mutableStateOf(numerocurtidas) }
+    //Número de comentários
+    var numeroComentarios by remember { mutableStateOf(numerocomentarios) }
     //RM do usuario (também pertence à lógica da curtida)
     var usuarioCurtiu by remember{ mutableStateOf(false) }
 
     //As fotos (reações nas curtidas)
-    val storage = Firebase.storage
     var primeiraFotinha = remember { mutableStateOf<String?>("") }
     var segundaFotinha = remember { mutableStateOf<String?>("") }
     var fotosBaixadas by remember { mutableStateOf(false) }
@@ -72,7 +73,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
 
     //Lógica para abrir os comentários
     var comentariosState by remember { mutableStateOf(false) }
-    val sheetState = rememberBottomSheetState(initialValue = BottomSheetValue.Collapsed)
 
 
     checarEstado(
@@ -119,8 +119,8 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                 .size(50.dp)
                 .clip(CircleShape)
                 .clickable {
-                    imagemPerfilState = !imagemPerfilState
-                    abrirFotoPostagem(imagemPerfilState)
+                    imagemState = !imagemState
+                    abrirFotoPerfil(imagemState)
                 }
         ) {
             loadImage(
@@ -161,7 +161,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                     if (nomeAutor.length > maxCaracteresNome) {
                         Text(
                             text = nomeAutor.substring(0, maxCaracteresNome) + "..",
-                            color = if (rm in setOf("23627", "12345")) {
+                            color = if (rm in setOf("23627", "15723", "23620")) {
                                 Color(0xFF9B26BB)
                             } else {
                                 Color(70, 70, 70, 255)
@@ -174,7 +174,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                     } else {
                         Text(
                             text = nomeAutor,
-                            color = if (rm in setOf("23627", "12345")) {
+                            color = if (rm in setOf("23627", "15723", "23620")) {
                                 Color(0xFF9B26BB)
                             } else {
                                 Color(70, 70, 70, 255)
@@ -265,9 +265,10 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                                     text = "<Ver mais>",
                                     fontSize = 18.sp,
                                     color = LARANJA,
-                                    modifier = Modifier.clickable {
-                                        maxCaracteresTexto.value = textoPostagem.length
-                                    }
+                                    modifier = Modifier
+                                        .clickable {
+                                            maxCaracteresTexto.value = textoPostagem.length
+                                        }
                                         .padding(bottom = 8.dp)
                                 )
                             }
@@ -413,11 +414,12 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                         .size(28.dp)
                 )
                 Text(
-                    text = "32",
+                    text = "$numeroComentarios",
                     fontSize = 32.sp,
                     fontFamily = Dongle,
                     modifier = Modifier
                         .clickable {
+                            postagemRef(idPostagem)
                             comentariosState = !comentariosState
                             expandir(comentariosState)
                         }
@@ -475,7 +477,6 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
             }
         )
     }
-
 
 }
 

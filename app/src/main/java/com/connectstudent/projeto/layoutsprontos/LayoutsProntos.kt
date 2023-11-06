@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,9 +32,15 @@ import com.connectstudent.projeto.ui.theme.LARANJA
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
@@ -59,12 +67,15 @@ import com.connectstudent.projeto.bottomNavigation.BottomNavItem
 import com.connectstudent.projeto.ui.theme.AZULCLARO
 import com.connectstudent.projeto.R
 import com.connectstudent.projeto.datasource.ComentariosData
+import com.connectstudent.projeto.ui.theme.Jomhuria
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -93,11 +104,13 @@ fun loadCoil(imagensPost: List<String>, contentDescription:String){
     ) {
         // HorizontalPager para exibir imagens individuais
         val pagerState = rememberPagerState()
+        val scope = rememberCoroutineScope()
         HorizontalPager(
             state = pagerState,
             pageCount = imagensPost.size,
         ) { pageIndex ->
             val imagemUrl = imagensPost[pageIndex]
+            val imagemAtual = pageIndex + 1
             // Carrega e exibe a imagem usando o Coil ou Glide aqui
             AsyncImage(
                 model = imagemUrl, // Passa uma única URL de imagem
@@ -105,7 +118,54 @@ fun loadCoil(imagensPost: List<String>, contentDescription:String){
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize()
             )
+            if (imagensPost.size > 1){
+                Box(
+                    modifier = Modifier
+                        .offset(y = -(16).dp)
+                        .fillMaxWidth(0.5f)
+                        .clip(RoundedCornerShape(90.dp))
+                        .background(Color(255, 255, 255, 126))
+                        .padding(2.dp)
+                        .align(BottomCenter)
+                ){
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowLeft,
+                            contentDescription = "",
+                            tint = Color.Black,
+                             modifier = Modifier.clickable {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(
+                                        pagerState.currentPage - 1
+                                    )
+                                }
+                             }
+                        )
+                        Text(
+                            text = "$imagemAtual de ${imagensPost.size}",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                        )
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = "",
+                            tint = Color.Black,
+                            modifier = Modifier.clickable {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(
+                                        pagerState.currentPage + 1
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                }
+            }
         }
+
     }
 
 }
@@ -401,8 +461,8 @@ fun AlertDialogPersonalizado(
                         .padding(16.dp)
                         .verticalScroll(scrollState)
                 ) {
-                    Text(text = "Termos e Condições",
-                        fontSize = 37.sp,
+                    Text(text = "Políticas de Privacidade",
+                        fontSize = 38.sp,
                         fontFamily = Dongle,
                         color = cor,
                         fontWeight = FontWeight.Bold
@@ -417,37 +477,38 @@ fun AlertDialogPersonalizado(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
-                        text = "Bem-vindo à nossa rede social móvel para alunos e professores da [ETEC Zona Leste]. Estes termos e condições regem o uso do nosso aplicativo. Ao utilizá-lo, você concorda expressamente com os seguintes termos e condições:",
+                        text = "Bem-vindo a nossa rede social móvel para alunos e professores da [ETEC Zona Leste]. Estes termos e condições regem o uso do nosso aplicativo. Ao utilizá-lo, você concorda expressamente com os seguintes termos e condições:",
                         fontSize = 16.sp,
                         modifier = Modifier.padding(bottom = 18.dp)
                     )
                     //Privacidade
                     Text(text = "1. Privacidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                    Text(text = "Respeitamos sua privacidade e comprometemo-nos a proteger seus dados pessoais. Para obter informações detalhadas sobre como os coletamos, usamos e protegemos suas informações pessoais, consulte algum dos desenvolvedores."
+                    Text(text = "O ConnectStudent respeita a sua privacidade e se compromete a proteger seus dados pessoais dentro do app. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais. Para mais detalhes sobre a coleta e uso de dados, entre em contato conosco por email ou procure um dos desenvolvedores na unidade escolar.\n" +
+                            " jonatas109620@gmail.com"
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Cadastro de usuário
                     Text(text = "2. Cadastro de usuário:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                    Text(text = "Para utilizar nosso aplicativo, você deve criar uma conta. Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades que ocorrerem em sua conta durante o uso."
+                    Text(text = "Para utilizar nosso aplicativo, você deve criar uma conta. Você é responsável por manter a confidencialidade de suas credenciais de login e por todas as atividades que ocorrerem em sua conta durante o uso. O cadastro em si só será permitido para alunos, professores ou agentes da administração da unidade escolar ETEC, disponibilizado previamente um “rm” ou “cpsID” para tal."
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Uso Aceitável
-                    Text(text = "3. Uso Aceitável:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                    Text(text = "Você concorda em utilizar nosso aplicativo de maneira respeitosa e ética. Comportamentos inadequados como assédio, machismo, racismo ou qualquer outro tipo de discurso de ódio que viole os direitos de terceiros, não será tolerado."
+                    Text(text = "3. Uso Aceitável e Comportamento:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "Você concorda em utilizar nosso aplicativo de maneira respeitosa e ética. Comportamentos inadequados como agressão verbal, assédio, machismo, racismo ou qualquer outro tipo de discurso de ódio que viole os direitos de terceiros, não será tolerado."
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Propriedade Intelectual:
-                    Text(text = "4. Propriedade Intelectual:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "4. Propriedade Intelectual e Conteúdo do Usuário:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
                     Text(text = "Todo o conteúdo gerado pelos usuários como postagens, fotos, vídeos ou comentários, pertence aos respectivos criadores. Você não tem permissão para usar esse conteúdo sem a devida autorização."
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Responsabilidade:
-                    Text(text = "5. Responsabilidade:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "5. Responsabilidade e Danos:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
                     Text(text = "Você reconhece que os desenvolvedores não são responsáveis por qualquer dano, perda, inconveniência ou prejuízo causado pelo uso de nosso aplicativo. Utilize-o por sua conta e risco."
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Encerramento de Conta:
-                    Text(text = "6. Encerramento de conta:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "6. Encerramento de conta e Exclusão de Dados:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
                     Text(text = "Você pode encerrar sua conta a qualquer momento contactando qualquer um dos desenvolvedores. Isso resultará na exclusão permanente de seus dados, ou seja, não podemos recuperar informações de contas excluídas."
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Diretrizes de Conteúdo:
-                    Text(text = "7. Diretrizes de Conteúdo:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
-                    Text(text = "É estritamente proibido qualquer tipo de postagem que inclua conteúdo ilegal, como discurso de ódio, nudez, violência, etc. O usuário irá arcar com as consequências caso o mesmo ocorra."
+                    Text(text = "7. Diretrizes de Conteúdo e Proibições:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
+                    Text(text = "É estritamente proibido qualquer tipo de postagem que inclua conteúdo ilegal como discurso de ódio, nudez, violência, etc. O usuário irá arcar com as consequências caso o mesmo ocorra"
                         ,fontSize = 16.sp, modifier = Modifier.padding(bottom = 10.dp))
                     //Rescisão de Serviço:
                     Text(text = "8. Rescisão de Serviço:", fontSize = 16.sp, color = cor, modifier = Modifier.padding(bottom = 5.dp))
@@ -791,14 +852,23 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
     val firestore = Firebase.firestore // Instância do firebase
 
     var expandir by remember { mutableStateOf(false) }
+    var loadState by remember { mutableStateOf(false) }
     var listaComentarios  by remember { mutableStateOf<List<ComentariosData>>(emptyList()) }
-    var loadState by remember{ mutableStateOf(false) }
-
+    //maximizar a foto
+    var abrirFoto by remember { mutableStateOf(false) }
+    //essa urlFoto vai servir para abrir a foto de perfil do comentário
+    var urlFoto by remember{ mutableStateOf("") }
+    //essa vai ser para o usuario apagar o comentário, se quiser.
+    val identificacao = if (!UserData.rmEncontrado.isNullOrEmpty()){
+        UserData.rmEncontrado
+    }else{
+        UserData.cpsIDEncontrado
+    }
     comentariosLoad(
         idPost = postagemID,
         listaPreenchida = { resultado ->
             listaComentarios = resultado
-        }
+        },
     )
 
     ConstraintLayout(
@@ -866,21 +936,28 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                 ){}
 
                 //Os comentários em si
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(310.dp)
-                        .background(Color(240, 238, 238, 255))
-                ) {
-                    items(listaComentarios){ comentario->
-                        boxComentario(
-                            usuarioFoto = comentario.fotoPerfil,
-                            comentario = comentario.comentario,
-                            nome = comentario.nome,
-                            apelido = comentario.apelido
-                        )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(310.dp)
+                            .background(Color(238, 238, 238, 255))
+                    ) {
+                        items(listaComentarios){ comentario->
+                            boxComentario(
+                                usuarioFoto = comentario.fotoPerfil,
+                                comentario = comentario.comentario,
+                                nome = comentario.nome,
+                                apelido = comentario.apelido,
+                                identificacao = comentario.identificacao,
+                                onAbrir = { abrir->
+                                    abrirFoto = abrir
+                                },
+                                urlFoto = {url ->
+                                    urlFoto = url
+                                }
+                            )
+                        }
                     }
-                }
 
                 //Inserir o comentário
                 Row(
@@ -923,13 +1000,15 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                             .addOnSuccessListener {documentSnapshot ->
                                                 if (!documentSnapshot.isEmpty) {
                                                     val postagemDoc = documentSnapshot.documents[0]
+
                                                     val comentariosArray = postagemDoc.get("comentarios") as? ArrayList<HashMap<String, String>> ?: arrayListOf()
 
                                                     val novoComentario = hashMapOf(
                                                         "nome" to nome,
                                                         "apelido" to apelido,
                                                         "fotoPerfil" to fotoPerfil,
-                                                        "comentario" to comentario
+                                                        "comentario" to comentario,
+                                                        "identificacao" to identificacao,
                                                     )
                                                     comentariosArray.add(novoComentario)
 
@@ -939,11 +1018,11 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                                             println("Novo comentário adicionado com sucesso.")
                                                             comentario = ""
                                                             loadState = true
-                                                            recarregar(loadState)
                                                         }
                                                         .addOnFailureListener { e ->
                                                             println("Erro ao adicionar o comentário: $e")
                                                             comentario = ""
+                                                            loadState = true
                                                         }
 
                                                 } else {
@@ -994,7 +1073,79 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
 
     }
 
+    if (loadState){
+        comentariosLoad(
+            idPost = postagemID,
+            listaPreenchida = { resultado ->
+                listaComentarios = resultado
+            },
+        )
+        loadState = false
+    }
 
+    if (abrirFoto){
+        //Lógica para maximizar a foto de perfil do usuário
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (cardBackground, fotoPerfilPub,fecharFoto) = createRefs()
+            if (abrirFoto){
+                //Essa primeira box é só para desfocar e adc. o click pra sair externo
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0, 0, 0, 136)) //Desfoque
+                        .clickable {
+                            abrirFoto = !abrirFoto
+                        }
+                ) {}
+
+                Card(
+                    modifier = Modifier
+                        .constrainAs(cardBackground) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom, margin = 140.dp)
+                        }
+                        .size(330.dp),
+                    backgroundColor = Color.Black
+                ) {}
+
+                //A foto em si (já maximizada).
+                Box(
+                    modifier = Modifier
+                        .constrainAs(fotoPerfilPub) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(parent.bottom, margin = 140.dp)
+                        }
+                        .size(320.dp)
+                ) {
+                    loadImage(
+                        path = urlFoto,
+                        contentDescription = "Foto do perfil maximizada",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                    )
+                }
+                Text(
+                    text = "Fechar",
+                    fontSize = 34.sp,
+                    fontFamily = Dongle,
+                    color = Color.Black,
+                    lineHeight = (15).sp,
+                    modifier = Modifier
+                        .constrainAs(fecharFoto) {
+                            top.linkTo(fotoPerfilPub.bottom, margin = 5.dp)
+                            end.linkTo(fotoPerfilPub.end, margin = 5.dp)
+                        }
+                        .clickable {
+                            abrirFoto = !abrirFoto
+                        },
+                )
+            }
+        }
+    }
 }
 
 
@@ -1008,6 +1159,7 @@ fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Un
     LaunchedEffect(Unit){
         scope.launch{
             println("iniciou o comentariosLoad")
+            println("O ID sendo usado é $idPost")
             //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
             val postagensCollection = firestore.collection("Postagens")
             postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
@@ -1027,12 +1179,14 @@ fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Un
                             val textoComentario = comentario["comentario"] ?: ""
                             val fotoPerfil = comentario["fotoPerfil"] ?: ""
                             val nome = comentario["nome"] ?: ""
+                            val identificacao = comentario["identificacao"] ?: ""
 
                             val comentarioBox = ComentariosData(
                                 nome = nome as? String ?: "",
                                 apelido = apelido as? String ?: "",
                                 fotoPerfil = fotoPerfil as? String ?: "",
-                                comentario = textoComentario as? String ?: ""
+                                comentario = textoComentario as? String ?: "",
+                                identificacao = identificacao as? String ?: "",
                             )
 
                             listaComentarios.add(comentarioBox)
@@ -1044,54 +1198,246 @@ fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Un
                 }
         }
     }
-
-
-
 }
 
-//Agora o layout dos comentários:
+
+//Estava tentando recarregar os comentários
 @Composable
-fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: String){
+fun numeroComentariosReload(idPost:(String), atualizacao:(Int) -> Unit){
 
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .clickable {
+    val scope = rememberCoroutineScope()
+    val firestore = Firebase.firestore // Instância do firebase
 
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val postagensCollection = firestore.collection("Postagens")
+            postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
+                .get()
+                .addOnSuccessListener { postagens ->
+                    println("Encontramos a postagem")
+                    if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                        println("Não está vazia")
+                        val postagemEncontrada = postagens.documents[0]
+                        val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
+                        val numerocomentarios = if (comentarios.isEmpty()) 1 else comentarios.size
+                        atualizacao(numerocomentarios)
+                    }
                 }
-        ) {
-            loadImage(
-                path = usuarioFoto,
-                contentDescription = "Foto de perfil do usuário que comentou",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier)
         }
-        Column() {
-            Row() {
-                Text(
-                    text = nome,
-                    fontSize = 17.sp,
-                    fontFamily = Dongle,
-                )
-                Text(
-                    text = apelido,
-                    fontSize = 16.sp,
-                    fontFamily = Dongle,
-                )
-            }
-
-            Text(
-                text = comentario,
-                fontSize = 23.sp,
-                fontFamily = Dongle,
-            )
-        }
-
-
     }
 }
+//Agora o layout dos comentários:
+@Composable
+fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: String, identificacao:String, onAbrir:(Boolean) -> Unit, urlFoto:(String) -> Unit){
+
+    var abrirFoto by remember{ mutableStateOf(false) }
+
+        Box( //Essa box é o comentário por inteiro
+            modifier = Modifier
+                .padding(top = 8.dp)
+        ) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 6.dp))
+            {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            abrirFoto = !abrirFoto
+                            onAbrir(abrirFoto)
+                            urlFoto(usuarioFoto)
+                        }
+                ) {
+                    loadImage(
+                        path = usuarioFoto,
+                        contentDescription = "Foto de perfil do usuário que comentou",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier)
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy((-6).dp)
+                ) {
+                    Row() {
+                        Text(
+                            text = nome,
+                            color = if (identificacao in setOf("23627", "15723", "23620")) {
+                                Color(0xFF9B26BB)
+                            } else {
+                                Color(70, 70, 70, 255)
+                            },
+                            fontSize = 22.sp,
+                            fontFamily = Dongle,
+                            modifier = Modifier.padding(start= 11.dp)
+                        )
+                        if (!apelido.isNullOrEmpty()){ //" ! " checagem de negação contrário para segurança apenas. Isso nao esta vazio.
+                            Text(
+                                text = "($apelido)",
+                                fontSize = 22.sp,
+                                fontFamily = Dongle,
+                                modifier = Modifier.padding(start= 11.dp),
+                                color = Color(160, 157, 157, 255)
+                            )
+                        }
+                    }
+                    Text(
+                        text = comentario,
+                        fontSize = 26.sp,
+                        fontFamily = Dongle,
+                        lineHeight = 14.sp,
+                        modifier = Modifier.padding(start= 11.dp)
+                    )
+                }
+            }
+        }
+}
+
+
+@Composable
+fun limparNotificacoes(onDismiss: () -> Unit, onDismissRequest: () -> Unit,  onZerado: () -> Unit,  notificacoes:(Int), navController: NavController){
+
+    val db = FirebaseFirestore.getInstance()
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = DialogProperties(
+            dismissOnClickOutside = true,
+        ),
+    )
+    {
+        Card(
+            backgroundColor = Color.White,
+            elevation = 8.dp,
+            shape = RoundedCornerShape(15.dp),
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = "Notificações",
+                    fontSize = 40.sp,
+                    fontFamily = Jomhuria,
+
+                    )
+                //Linha apenas para estética
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(1.dp)
+                        .background(color = Color(209, 209, 209, 255))
+                ) {}
+
+                if (notificacoes <= 0){
+                        Text(
+                            text = "Por enquanto não há nenhuma nova notificação para você 😓",
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                        )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.End){
+                        Text(
+                            text = "Entendido!",
+                            fontSize = 20.sp,
+                            color = LARANJA,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .clickable {
+                                    onZerado()
+                                }
+                                .padding(top = 18.dp)
+                                .padding(bottom = 4.dp)
+                        )
+                    }
+                }else{
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        val text = buildAnnotatedString {
+                            pushStyle(SpanStyle(fontSize = 20.sp, color = Color.Black))
+                            append("Há ")
+
+                            pushStyle(SpanStyle(fontSize = 20.sp, color = LARANJA))
+                            append("$notificacoes")
+                            if (notificacoes > 1){
+                                pushStyle(SpanStyle(fontSize = 20.sp, color =  Color.Black))
+                                append(", novas publicações para a sua turma!")
+                            }else{
+                                pushStyle(SpanStyle(fontSize = 20.sp, color =  Color.Black))
+                                append(", nova publicação para a sua turma!")
+                            }
+
+                        }
+                        Text(text = text)
+                    }
+                    Row(modifier = Modifier.fillMaxWidth()) {
+
+                        val text = buildAnnotatedString {
+                            pushStyle(SpanStyle(fontSize = 20.sp, color = Color.Black))
+                            append("Para visualizar, navegue até a aba ")
+
+                            pushStyle(SpanStyle(fontSize = 20.sp, color = LARANJA))
+                            append("Para você")
+                            pushStyle(SpanStyle(fontSize = 20.sp, color =  Color.Black))
+                            append(", localizada no canto superior direito da aplicação.")
+                        }
+                        Text(text = text)
+                    }
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "Leve-me para lá!",
+                            fontSize = 20.sp,
+                            color = LARANJA,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(top = 18.dp)
+                                .padding(bottom = 4.dp)
+                                .clickable {
+                                    db.collection("Alunos")
+                                        .whereEqualTo("rm", UserData.rmEncontrado)
+                                        .get()
+                                        .addOnSuccessListener { querySnapshot ->
+                                            println(querySnapshot)
+                                            if (!querySnapshot.isEmpty) {
+                                                val document = querySnapshot.documents[0]
+                                                val documentReference = db
+                                                    .collection("Alunos")
+                                                    .document(document.id)
+                                                documentReference
+                                                    .update("notificacoes", 0)
+                                                    .addOnSuccessListener {
+                                                        println("Atualizando o campo para 0")
+                                                        //navController.navigate("Index")
+                                                    }
+                                                    .addOnFailureListener { e ->
+                                                        println("Falha ao atualizar o documento")
+                                                    }
+                                            } else {
+                                                println("Falha ao obter o documento")
+                                            }
+                                        }
+                                        .addOnFailureListener { e ->
+                                            println("Nao foi encontrado nenhum documento.")
+                                        }
+                                    onDismissRequest()
+                                }
+                                .padding(top = 16.dp)
+                        )
+                    }
+                }
+
+            }
+
+
+        }
+    }
+
+}
+
+
 //Preview:
 @Composable
 @Preview(showBackground = true)

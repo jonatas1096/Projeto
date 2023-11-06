@@ -414,7 +414,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 
                     )
             ) {
-                Text(text = "Index",
+                Text(text = "Home",
                     fontFamily = Dongle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 40.sp,

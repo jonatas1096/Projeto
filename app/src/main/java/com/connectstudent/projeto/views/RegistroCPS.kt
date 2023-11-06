@@ -184,8 +184,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
 
                     TextDuasCores(color1 = Color(0xFFF5E5E5E),
                         color2 = AZULCLARO,
-                        texto1 = "Eu li e concordo com os ",
-                        texto2 = "Termos & Condições",
+                        texto1 = "Eu li e concordo com as ",
+                        texto2 = "Políticas de Privacidade",
                         onclick = {
                             dialogo.value = true
                         },

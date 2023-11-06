@@ -13,4 +13,5 @@ data class PostagemData(
     val turmasMarcadas: List<String>,
     val idPostagem: String,
     var curtidas:Int,
+    var comentarios:Int,
 )
