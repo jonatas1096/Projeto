@@ -734,9 +734,8 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             modifier = Modifier
                 .padding(top = 25.dp)
                 .clickable {
-                    Toast
-                        .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "Minhas publicações...", Toast.LENGTH_SHORT).show()
+                    navController.navigate("MinhasPublicacoes")
                 }
         )
 
@@ -748,9 +747,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             modifier = Modifier
                 .padding(top = 10.dp)
                 .clickable {
-                    Toast
-                        .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "Em breve!", Toast.LENGTH_SHORT).show()
                 }
         )
 
@@ -763,9 +760,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
                 .padding(top = 10.dp)
                 .padding(bottom = 30.dp) //← TA FUNCIONANDO, caso queira aumentar mais o gap entre eles
                 .clickable {
-                    Toast
-                        .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "Em breve!", Toast.LENGTH_SHORT).show()
                 }
         )
 
@@ -1396,7 +1391,8 @@ fun limparNotificacoes(onDismiss: () -> Unit, onDismissRequest: () -> Unit,  onZ
                                 .padding(top = 18.dp)
                                 .padding(bottom = 4.dp)
                                 .clickable {
-                                    db.collection("Alunos")
+                                    db
+                                        .collection("Alunos")
                                         .whereEqualTo("rm", UserData.rmEncontrado)
                                         .get()
                                         .addOnSuccessListener { querySnapshot ->

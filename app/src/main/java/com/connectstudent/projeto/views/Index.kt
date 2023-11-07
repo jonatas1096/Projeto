@@ -23,6 +23,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import com.connectstudent.projeto.bottomNavigation.BottomNavItem
 import com.connectstudent.projeto.bottomNavigation.withIconModifier
@@ -34,6 +36,7 @@ import com.connectstudent.projeto.ui.theme.Dongle
 import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
 import com.connectstudent.projeto.R
 import com.connectstudent.projeto.ui.theme.Jomhuria
+import com.connectstudent.projeto.ui.theme.LARANJA
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
@@ -246,7 +249,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             }
 
-            delay(500)
+            delay(750)
             println("passou o delay.")
             urlBaixada = true // a lógica pro progressIndicator
             indexState = false
@@ -329,9 +332,9 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         }
     }
     else{
-        //val pagerState = remember { PagerState() }
         val pagerState = remember { mutableStateOf(0) }
         val tabTitles = listOf("Geral", "Para voce")
+        var pubState = remember { mutableStateOf(false) }
 
         //Começo do layout
         Scaffold(
@@ -441,7 +444,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
                 //fechamento TopBar
             },
-            drawerContent = { drawerPersonalizado(urlBaixada,navController) },
+            drawerContent = { drawerPersonalizado(urlBaixada,navController)}, //Aqui é o drawerContent que fica do lado esquerdo (menuzinho).
             drawerBackgroundColor = Color.White,
 
             //Tô usando o content para mesclar o constraintLayout à aplicação em geral, assim ele fica em cima da bottomBar (tipo camadas).
@@ -498,7 +501,11 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 Modifier
                                     .size(32.dp)
                                     .padding(end = 2.dp)
-                                    .clickable { Toast.makeText(context,"Em breve!", Toast.LENGTH_SHORT).show() }
+                                    .clickable {
+                                        Toast
+                                            .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
                             ),
                             BottomNavItem( //esse é uma gambiarra daquelas kkkk
                                 nome = "",
@@ -511,8 +518,10 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 route = null,
                                 badgeCount = notificacoes!!,
                                 icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
-                            ).withIconModifier(Modifier.size(32.dp)
-                                .clickable { dialog = true }),
+                            ).withIconModifier(
+                                Modifier
+                                    .size(32.dp)
+                                    .clickable { dialog = true }),
                             BottomNavItem(
                                 nome = "Icone Usuário",
                                 route = "Profile",
@@ -602,6 +611,10 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 apelido = apelido.value,
                 fotoPerfil = urlFoto.value,
             )
+        }
+
+        if (pubState.value){
+            navController.navigate("MinhasPublicacoes")
         }
     }
 
@@ -693,6 +706,77 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
     }
 }
 
+@Composable
+fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, abrirFoto: (String) -> Unit, postRef : (String) -> Unit, postsBack:(Int) -> Unit) {
+
+    var postagemRef  by remember { mutableStateOf("") }
+    var postsCont = 0
+
+    var cardState by remember { mutableStateOf(false) }
+
+    LazyColumn(){
+        items(postagens) { postagemData ->
+            if (!UserData.rmEncontrado.isNullOrEmpty()){
+                if (postagemData.rm.contains(UserData.rmEncontrado)){
+                    Postagem(
+                        fotoPerfil = postagemData.fotoPerfil,
+                        nomeAutor = postagemData.nomeAutor,
+                        rm = postagemData.rm,
+                        cpsID = postagemData.cpsID,
+                        apelidoAutor = postagemData.apelidoAutor,
+                        textoPostagem = postagemData.textoPostagem,
+                        imagensPost = postagemData.imagensPost,
+                        tituloAutor = postagemData.tituloPost,
+                        turmasMarcadas = postagemData.turmasMarcadas,
+                        idPostagem = postagemData.idPostagem,
+                        expandir = {
+                            cardState = true
+                            expandir(cardState)},
+                        abrirFotoPerfil = {
+                            abrirFoto(postagemData.fotoPerfil)
+                        },
+                        postagemRef = {postagemref ->
+                            postagemRef = postagemref
+                            postRef(postagemRef)
+                        },
+                        numerocurtidas = postagemData.curtidas,
+                        numerocomentarios = postagemData.comentarios
+                    )
+                    postsCont++
+                    postsBack(postsCont)
+                }
+            }else{
+                if (postagemData.cpsID.contains(UserData.cpsIDEncontrado)){
+                    Postagem(
+                        fotoPerfil = postagemData.fotoPerfil,
+                        nomeAutor = postagemData.nomeAutor,
+                        rm = postagemData.rm,
+                        cpsID = postagemData.cpsID,
+                        apelidoAutor = postagemData.apelidoAutor,
+                        textoPostagem = postagemData.textoPostagem,
+                        imagensPost = postagemData.imagensPost,
+                        tituloAutor = postagemData.tituloPost,
+                        turmasMarcadas = postagemData.turmasMarcadas,
+                        idPostagem = postagemData.idPostagem,
+                        expandir = {}, //nao precisamos usar
+                        abrirFotoPerfil = {
+                            abrirFoto(postagemData.fotoPerfil)
+                        },
+                        postagemRef = {postagemref ->
+                            postagemRef = postagemref
+                            postRef(postagemRef)
+                        },
+                        numerocurtidas = postagemData.curtidas,
+                        numerocomentarios = postagemData.comentarios
+                    )
+                    postsCont++
+                    postsBack(postsCont)
+                }
+            }
+
+        }
+    }
+}
 @Composable
 fun Geral(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, postagemRef:(String), onExpandir:(Boolean) -> Unit, refUnica:(String) -> Unit){
 
@@ -874,7 +958,6 @@ fun ParaVoce(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, po
                             )
                         }
                     }
-
                 }
             }
             //Lógica para maximizar a foto de perfil da pub

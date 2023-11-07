@@ -161,7 +161,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                     if (nomeAutor.length > maxCaracteresNome) {
                         Text(
                             text = nomeAutor.substring(0, maxCaracteresNome) + "..",
-                            color = if (rm in setOf("23627", "15723", "23620")) {
+                            color = if (rm in setOf("23627", "15723", "23620", "23619")) {
                                 Color(0xFF9B26BB)
                             } else {
                                 Color(70, 70, 70, 255)
@@ -174,7 +174,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                     } else {
                         Text(
                             text = nomeAutor,
-                            color = if (rm in setOf("23627", "15723", "23620")) {
+                            color = if (rm in setOf("23627", "15723", "23620", "23619")) {
                                 Color(0xFF9B26BB)
                             } else {
                                 Color(70, 70, 70, 255)
@@ -258,7 +258,7 @@ fun Postagem(fotoPerfil:String, nomeAutor:String, rm:String, cpsID: String, apel
                                 fontSize = 29.sp,
                                 color = Color(39, 39, 39, 255),
                                 fontFamily = Dongle,
-                                lineHeight = (16).sp,
+                                lineHeight = (17).sp,
                             )
                             if (maxCaracteresTexto.value < textoPostagem.length) {
                                 Text(

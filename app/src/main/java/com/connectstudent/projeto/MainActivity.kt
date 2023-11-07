@@ -84,6 +84,11 @@ fun Main() {
             Profile(navController, publicacaoViewModel)
         }
 
+        //Minhas publicações
+        composable("MinhasPublicacoes"){
+            minhasPublicacoes(navController)
+        }
+
     }
 
 }
