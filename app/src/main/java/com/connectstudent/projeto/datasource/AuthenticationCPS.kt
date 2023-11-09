@@ -30,7 +30,6 @@ class AuthenticationCPS @Inject constructor() {
 
 
     fun cadastroCps(
-       // nome: String,
         email: String,
         senha: String,
         id: String,
@@ -112,7 +111,6 @@ class AuthenticationCPS @Inject constructor() {
 
                                         //mapeando o que eu quero salvar com as variaveis nos parâmetros:
                                         val cpsUsuariosMap = hashMapOf(
-                                            //"nome" to nome,
                                             "email" to email,
                                             "id" to id,
                                             "codigoEtec" to codigoEtec,

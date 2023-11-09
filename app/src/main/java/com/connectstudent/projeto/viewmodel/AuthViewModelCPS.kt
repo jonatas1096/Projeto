@@ -16,10 +16,10 @@ class AuthViewModelCPS @Inject constructor(private val authRepositorioCPS: AuthR
 
 
     //Viewmodel dos professores/administração
-    fun cpsCadastro(/*nome:String,*/ email: String, senha: String, id:String, codigoEtec:String, listenerAuth: ListenerAuth){
+    fun cpsCadastro(email: String, senha: String, id:String, codigoEtec:String, listenerAuth: ListenerAuth){
 
         viewModelScope.launch {
-            authRepositorioCPS.cpsCadastro(/*nome,*/ email, senha, id, codigoEtec, listenerAuth)
+            authRepositorioCPS.cpsCadastro( email, senha, id, codigoEtec, listenerAuth)
         }
 
     }

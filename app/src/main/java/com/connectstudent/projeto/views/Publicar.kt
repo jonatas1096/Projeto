@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import java.util.*
 
 
@@ -88,6 +89,40 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
 
     //Lógica da box de loading
     var loadingState by remember{ mutableStateOf(false) }
+
+    //Imagem do perfil em tempo real
+    val storage = Firebase.storage
+    var imagemPerfil = remember{ mutableStateOf("") }
+    val imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
+    var check by remember{ mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                try {
+                    if (!UserData.rmEncontrado.isNullOrEmpty()) { //nao está vazio.
+
+                    val storageRefAluno = storage.reference.child("Alunos/Fotos de Perfil/${UserData.rmEncontrado}")
+                    val uri = storageRefAluno.downloadUrl.await()
+                    imagemPerfil.value = uri.toString()
+                    check = true
+                    }else{
+                        val storageRefAluno = storage.reference.child("CPS/Fotos de Perfil/${UserData.cpsIDEncontrado}")
+                        val uri = storageRefAluno.downloadUrl.await()
+                        imagemPerfil.value = uri.toString()
+                        check = true
+                    }
+
+                } catch (downloadException: Exception) {
+                    println("Erro ao obter uma URL de foto de perfil.")
+                    println("Vamos exibir a imagem padrão.")
+                    imagemPerfil.value = imagemPadrao
+                }
+            } catch (e: Exception) {
+                println("Erro ao carregar a foto de perfil no Publicar: $e")
+            }
+        }
+    }
 
 
     BottomSheetScaffold(
@@ -330,24 +365,25 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
             )
 
             //Mini foto de perfil
-            if (!UserData.imagemUrl.isNullOrEmpty()){ // " ! " de negação, ou seja, não está vazio.
+            if (!check){
                 Surface(
                     modifier = Modifier
                         .constrainAs(fotoPerfil) {
                             start.linkTo(parent.start, margin = 8.dp)
                             top.linkTo(areaPublicar.bottom, margin = 10.dp)
                         }
-                        .size(55.dp)
+                        //.size(55.dp)
                         .padding(start = 0.dp),
                     shape = RoundedCornerShape(30.dp)
                 ) {
-                    loadImage(
-                        path = UserData.imagemUrl,
-                        contentDescription = "Mini imagem do perfil",
-                        contentScale = ContentScale.Crop,
+                    CircularProgressIndicator(
                         modifier = Modifier
+                            .size(36.dp),
+                        color = Color(43, 41, 41, 233),
+                        strokeWidth = 10.dp
                     )
                 }
+
             }
             else{
                 Surface(
@@ -361,7 +397,7 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                     shape = RoundedCornerShape(30.dp)
                 ) {
                     loadImage(
-                        path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg",
+                        path = imagemPerfil.value,
                         contentDescription = "Mini imagem do perfil",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -605,6 +641,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 .background(color = Color(255, 255, 255, 163))
         ){
             val (circularProgress, logo) = createRefs()
+            Card(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {},
+                backgroundColor = Color(0, 0, 0, 136) //Desfoque
+            ) {}
+
             CircularProgressIndicator(
                 modifier = Modifier
                     .constrainAs(circularProgress) {
@@ -618,12 +661,13 @@ fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hilt
                 strokeWidth = 10.dp
             )
             Box(
-                modifier = Modifier.constrainAs(logo) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }
+                modifier = Modifier
+                    .constrainAs(logo) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
                     .size(80.dp)
             ){
                 loadImage(
@@ -785,9 +829,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                     if (imagesEnviadasComSucesso == totalImagens) {
                                         val uniqueID = UUID.randomUUID().toString() //Esse aqui é o ID único que está sendo gerado para cada post
 
-                                        println("Imagens enviadas: $imagensUrls, total de imagens $totalImagens")
                                         val usuarioPostagem = hashMapOf(
-                                            "fotoPerfil" to UserData.imagemUrl,
                                             "nome" to UserData.nomeEncontrado,
                                             "apelido" to UserData.apelidoUsuario,
                                             "cpsID" to UserData.cpsIDEncontrado,
@@ -800,7 +842,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                         )
 
 
-                                        postagensColecao.document(titulo)
+                                        postagensColecao.document("$titulo  (${UserData.nomeEncontrado}) - $uniqueID")
                                             .set(usuarioPostagem)
                                             .addOnSuccessListener {
                                                 println("Dentro do on listener: $imagensUrls")
@@ -827,7 +869,6 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                     val uniqueID = UUID.randomUUID().toString() //Esse aqui é o ID único que está sendo gerado para cada post
 
                     val usuarioPostagem = hashMapOf(
-                        "fotoPerfil" to UserData.imagemUrl,
                         "nome" to UserData.nomeEncontrado,
                         "apelido" to UserData.apelidoUsuario,
                         "cpsID" to UserData.cpsIDEncontrado,
@@ -838,7 +879,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         "idPost" to uniqueID,
                     )
 
-                    postagensColecao.document(titulo)
+                    postagensColecao.document("$titulo  (${UserData.nomeEncontrado}) - $uniqueID")
                         .set(usuarioPostagem)
                         .addOnSuccessListener {
                             println("Dentro do on listener: $imagensUrls")
@@ -945,7 +986,6 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             val alunoPastaRef = storageRef.child("$alunoRM/$formatoFinal")
             println(formatoFinal)
 
-            val referenciaHora = formatoFinal //nao sei se vou usar mais
             if (!imagensPublicacao.isNullOrEmpty()) { // " ! " para negação, ou seja, não está vazio
                 Toast.makeText(context,"Estamos trabalhando nisso! Aguarde...", Toast.LENGTH_LONG).show()
                 coroutineScope {
@@ -1008,7 +1048,6 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                         val uniqueID = UUID.randomUUID().toString()
 
                                         val usuarioPostagem = hashMapOf(
-                                            "fotoPerfil" to UserData.imagemUrl,
                                             "nome" to UserData.nomeEncontrado,
                                             "apelido" to UserData.apelidoUsuario,
                                             "RM" to UserData.rmEncontrado,
@@ -1020,7 +1059,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                                         )
 
 
-                                        postagensColecao.document(titulo)
+                                        postagensColecao.document("$titulo  (${UserData.nomeEncontrado}) - $uniqueID")
                                             .set(usuarioPostagem)
                                             .addOnSuccessListener {
                                                 println("Dentro do on listener: $imagensUrls")
@@ -1047,7 +1086,6 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                     val uniqueID = UUID.randomUUID().toString()
 
                     val usuarioPostagem = hashMapOf(
-                        "fotoPerfil" to UserData.imagemUrl,
                         "nome" to UserData.nomeEncontrado,
                         "apelido" to UserData.apelidoUsuario,
                         "RM" to UserData.rmEncontrado,
@@ -1057,7 +1095,7 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
                         "idPost" to uniqueID,
                     )
 
-                    postagensColecao.document(titulo)
+                    postagensColecao.document("$titulo  (${UserData.nomeEncontrado}) - $uniqueID")
                         .set(usuarioPostagem)
                         .addOnSuccessListener {
                             println("Dentro do on listener: $imagensUrls")

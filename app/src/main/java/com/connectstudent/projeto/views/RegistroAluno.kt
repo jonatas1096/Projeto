@@ -131,7 +131,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                             painterResource(id = R.drawable.ic_email),
                             contentDescription = "Ícone de Email no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = LARANJA
                 )
                 //Senha
                 OutlinedRegistro(
@@ -147,7 +148,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                             painterResource(id = R.drawable.ic_senha),
                             contentDescription = "Ícone de Senha no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = LARANJA
                 )
                 //RM
                 OutlinedRegistro(
@@ -163,7 +165,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                             painterResource(id = R.drawable.ic_rmoucps),
                             contentDescription = "Ícone de RM no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = LARANJA
                 )
 
                 //Termos e Condições

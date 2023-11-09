@@ -48,6 +48,7 @@ import com.connectstudent.projeto.datasource.UserData
 import com.connectstudent.projeto.layoutsprontos.arrowVoltar
 import com.connectstudent.projeto.layoutsprontos.loadImage
 import com.connectstudent.projeto.ui.theme.Dongle
+import com.connectstudent.projeto.ui.theme.Jomhuria
 import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -768,11 +769,11 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
     // Lógica para abrir a galeria/subir a imagem para o Firebase
     if (galeriaState) {
         println("Chamou a função $galeriaState")
-        SelecionarImagemProfile { imagem ->
+       /* SelecionarImagemProfile {  imagem ->
             if (imagem != null) {
-                // imagemSelecionada = imagem
                 println("Adicionou a imagem.")
                 galeriaState = false
+                Toast.makeText(context, "Isso pode demorar um pouco. Aguarde, por favor...",Toast.LENGTH_LONG).show()
 
                 val outputStream = ByteArrayOutputStream()
                 imagem.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
@@ -839,7 +840,84 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 }
 
             }
-        }
+        }*/
+        SelecionarImagemProfile(
+            onImageSelected = {imagem ->
+                if (imagem != null) {
+                    println("Adicionou a imagem.")
+                    galeriaState = false
+                    Toast.makeText(context, "Isso pode demorar um pouco. Aguarde, por favor...",Toast.LENGTH_LONG).show()
+
+                    val outputStream = ByteArrayOutputStream()
+                    imagem.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                    val imageData = outputStream.toByteArray()
+
+                    //Começando com o aluno, infelizmente vai ficar dois blocão de texto.
+                    if (cpsID.isEmpty()) { //se o cpsID estiver vazio, entendemos que é um aluno que está logado:
+                        val alunoPastaRef = storageRef.child("Alunos/Fotos de Perfil/$alunoRM")
+
+                        alunoPastaRef.putBytes(imageData)
+                            .addOnSuccessListener { taskSnapshot ->
+                                // Primeiro subindo para o Firebase Storage
+                                val imageUrl = taskSnapshot.metadata?.reference?.downloadUrl.toString()
+
+                                // Agora vou subir o resultado disso (a URL) para o Firebase Firestore também:
+                                val alunoDocument = firestore.collection("Alunos").document(alunoRM)
+
+                                val alunoFoto = hashMapOf(
+                                    "fotoURL" to imageUrl,
+                                    "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                                )
+
+                                alunoDocument.set(alunoFoto, SetOptions.merge())
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Foto de perfil atualizada com sucesso!", Toast.LENGTH_SHORT).show()
+                                        navController.navigate("Profile")
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        Toast.makeText(context, "Erro ao atualizar a foto de perfil: $exception", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                Toast.makeText(context, "Erro ao fazer upload da imagem: $exception", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        // Já que o cpsID não está vazio, entendemos que é um professor:
+                        val cpsPastaRef = storageRef.child("CPS/Fotos de Perfil/$cpsID")
+
+                        cpsPastaRef.putBytes(imageData)
+                            .addOnSuccessListener { taskSnapshot ->
+                                // Primeiro subindo para o Firebase Storage
+                                val imageUrl = taskSnapshot.metadata?.reference?.downloadUrl.toString()
+
+                                // Agora vou subir o resultado disso (a URL) para o Firebase Firestore também:
+                                val cpsDocument = firestore.collection("Cps").document(cpsID)
+
+                                val cpsFoto = hashMapOf(
+                                    "fotoURL" to imageUrl,
+                                    "ultimaAtualizacao" to FieldValue.serverTimestamp() // Adiciona a data/hora da atualização
+                                )
+
+                                cpsDocument.set(cpsFoto, SetOptions.merge())
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Foto de perfil atualizada com sucesso!", Toast.LENGTH_SHORT).show()
+                                        navController.navigate("Profile")
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        Toast.makeText(context, "Erro ao atualizar a foto de perfil: $exception", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                            .addOnFailureListener { exception ->
+                                Toast.makeText(context, "Erro ao fazer upload da imagem: $exception", Toast.LENGTH_SHORT).show()
+                            }
+                    }
+
+                }
+            },
+            cancelar = { state ->
+                galeriaState = state
+
+            })
     }
 
 
@@ -852,10 +930,12 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
 //Função que faz a galeria abrir
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
+fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit, cancelar:(Boolean) -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var cancelarState by remember { mutableStateOf(false) }
+    var loadingState by remember { mutableStateOf(true) }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -883,6 +963,84 @@ fun SelecionarImagemProfile(onImageSelected: (Bitmap?) -> Unit) {
             // Serve para executar alguma coisa como limpeza quando a execução acaba, nao sei como usar
         }
     }
+
+    //TESTE LOADING
+    if (loadingState){
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(255, 255, 255, 163))
+        ){
+            val (circularProgress, logo, cancelar) = createRefs()
+
+            Card(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable {},
+                backgroundColor = Color(0, 0, 0, 136) //Desfoque
+
+            ) {}
+
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .constrainAs(circularProgress) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(150.dp),
+                color = Color(43, 41, 41, 233),
+                strokeWidth = 10.dp
+            )
+            Box(
+                modifier = Modifier
+                    .constrainAs(logo) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .size(80.dp)
+            ){
+                loadImage(
+                    path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
+                    contentDescription = "logo do App",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                )
+            }
+            Card(
+                modifier = Modifier
+                    .constrainAs(cancelar) {
+                        top.linkTo(circularProgress.bottom, margin = 8.dp)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .clickable {
+                        cancelar(cancelarState)
+                        loadingState = false
+                    },
+                backgroundColor = Color.White,
+                elevation = 8.dp
+            ) {
+                Text(
+                    text = "Cancelar",
+                    fontSize = 34.sp,
+                    fontFamily = Jomhuria,
+                    lineHeight = (15.sp),
+                    modifier = Modifier
+                        .padding(horizontal = 6.dp)
+                        .clickable {
+                            cancelar(cancelarState)
+                            loadingState = false
+                        }
+                )
+            }
+
+        }
+    }
+
 }
 
 

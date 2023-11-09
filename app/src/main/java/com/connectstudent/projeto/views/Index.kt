@@ -85,6 +85,8 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     // Para aguardar a foto do perfil do usuário no drawerContent
     var urlBaixada by remember{ mutableStateOf(false) }
 
+    //Para guardar o caminho da foto de perfil (tipo uma box, e é só das postagens, nao do usuário atual).
+    var fotoUsuario by remember { mutableStateOf<String?>("") }
 
     //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
     LaunchedEffect(Unit){
@@ -125,7 +127,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                         println("Tamanho de postagens: ${postagens.size()}")
                         val postagensData = mutableListOf<PostagemData>()
                         for (posts in postagens){
-                            val fotoPerfil = posts.getString("fotoPerfil") ?: ""
                             val imagensPostagem = posts.get("imagensPostagem") as? List<String> ?: emptyList()
                             val nome = posts.getString("nome") ?: ""
                             val rm = posts.getString("RM") ?: ""
@@ -153,11 +154,35 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                             }
 
 
-
+                            //Buscando a imagem em tempo real do usuario que postou (aqui é só para as postagens)
+                            if (!rm.isNullOrEmpty()){ //nao está vazio.
+                                val storageRef = storage.reference.child("Alunos/Fotos de Perfil/$rm")
+                                storageRef.downloadUrl
+                                    .addOnSuccessListener { uri ->
+                                        val imageUrl = uri.toString()
+                                        fotoUsuario = imageUrl
+                                        println("chegou assim: $fotoUsuario")
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        println("Erro ao obter o URL da foto de perfil: $exception")
+                                    }
+                            }else{
+                                val storageRef = storage.reference.child("CPS/Fotos de Perfil/$cpsID")
+                                storageRef.downloadUrl
+                                    .addOnSuccessListener { uri ->
+                                        val imageUrl = uri.toString()
+                                        fotoUsuario = imageUrl
+                                        println("chegou assim: $fotoUsuario")
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        println("Erro ao obter o URL da foto de perfil: $exception")
+                                    }
+                            }
 
                             println("Agora vai armazenar os dados na val postagemData.")
+                            println("pronto para armazenar: $fotoUsuario")
                             val postagemData = PostagemData(
-                                fotoPerfil = fotoPerfil,
+                                fotoPerfil = if (fotoUsuario.isNullOrEmpty()) "" else fotoUsuario!!,
                                 nomeAutor = nome,
                                 rm = rm,
                                 cpsID = cpsID,
@@ -249,7 +274,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                 }
             }
 
-            delay(750)
+            delay(950)
             println("passou o delay.")
             urlBaixada = true // a lógica pro progressIndicator
             indexState = false
@@ -590,15 +615,42 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
 
         //Teste área de comentários (aqui vai ficar só o layout em si)
         if (expandirCard){
+
             //Pequena lógica para saber quem está tentando comentar
             var nomeUsuario = UserData.nomeEncontrado
             var apelido = remember{ mutableStateOf("") }
             var urlFoto = remember{ mutableStateOf("") }
+            val imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
             if (!UserData.apelidoUsuario.isNullOrEmpty()){
                 apelido.value = UserData.apelidoUsuario
             }
-            if (!UserData.imagemUrl.isNullOrEmpty()){
-                urlFoto.value = UserData.imagemUrl
+
+            //Aqui é exclusivo para buscar a imagem direto do storage em tempo real.
+            if (!UserData.rmEncontrado.isNullOrEmpty()){ //nao está vazio.
+                val storageRefExpandir = storage.reference.child("Alunos/Fotos de Perfil/${UserData.rmEncontrado}")
+                storageRefExpandir.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        val imageUrl = uri.toString()
+                        urlFoto.value = imageUrl
+                    }
+                    .addOnFailureListener { exception ->
+                        println("Erro ao obter uma URL de foto de perfil: $exception")
+                        println("vamos deixar a imagem padrao.")
+                        urlFoto.value = imagemPadrao
+                    }
+            }else{
+                val storageRefExpandir = storage.reference.child("CPS/Fotos de Perfil/${UserData.cpsIDEncontrado}")
+                storageRefExpandir.downloadUrl
+                    .addOnSuccessListener { uri ->
+                        val imageUrl = uri.toString()
+                        urlFoto.value = imageUrl
+                        println("chegou assim: $fotoUsuario")
+                    }
+                    .addOnFailureListener { exception ->
+                        println("Erro ao obter uma URL de foto de perfil: $exception")
+                        println("vamos deixar a imagem padrao.")
+                        urlFoto.value = imagemPadrao
+                    }
             }
 
             layoutComentarios(
@@ -630,10 +682,15 @@ fun PostagensGerais(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
 
     var postagemRef  by remember { mutableStateOf("") }
 
+    var imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
     LazyColumn(){
         items(postagens) { postagemData ->
+            var fotoPerfil by remember { mutableStateOf("") }
+
             Postagem(
-                fotoPerfil = postagemData.fotoPerfil,
+                fotoPerfil = {url ->
+                        fotoPerfil = url!!
+                },
                 nomeAutor = postagemData.nomeAutor,
                 rm = postagemData.rm,
                 cpsID = postagemData.cpsID,
@@ -647,7 +704,11 @@ fun PostagensGerais(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                     cardState = true
                     expandir(cardState)},
                 abrirFotoPerfil = {
-                    abrirFoto(postagemData.fotoPerfil)
+                    if (!fotoPerfil.isNullOrEmpty()){ //nao está vazia
+                        abrirFoto(fotoPerfil)
+                    }else{
+                        abrirFoto(imagemPadrao)
+                    }
                 },
                 postagemRef = {postagemref ->
                     postagemRef = postagemref
@@ -670,13 +731,16 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
     var postagemRef  by remember { mutableStateOf("") }
     var postsCont = 0
 
-    val scope = rememberCoroutineScope()
-
+    var imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
     LazyColumn(){
         items(postagens) { postagemData ->
+            var fotoPerfil by remember { mutableStateOf("") }
+
             if (postagemData.turmasMarcadas.contains(UserData.turmaEncontrada)){
                 Postagem(
-                    fotoPerfil = postagemData.fotoPerfil,
+                    fotoPerfil = {url ->
+                        fotoPerfil = url!!
+                    },
                     nomeAutor = postagemData.nomeAutor,
                     rm = postagemData.rm,
                     cpsID = postagemData.cpsID,
@@ -690,7 +754,11 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                         cardState = true
                         expandir(cardState)},
                     abrirFotoPerfil = {
-                        abrirFoto(postagemData.fotoPerfil)
+                        if (!fotoPerfil.isNullOrEmpty()){ //nao está vazia
+                            abrirFoto(fotoPerfil)
+                        }else{
+                            abrirFoto(imagemPadrao)
+                        }
                     },
                     postagemRef = {postagemref ->
                         postagemRef = postagemref
@@ -713,13 +781,18 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
     var postsCont = 0
 
     var cardState by remember { mutableStateOf(false) }
+    var imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
 
     LazyColumn(){
         items(postagens) { postagemData ->
+            var fotoPerfil by remember { mutableStateOf("") }
+
             if (!UserData.rmEncontrado.isNullOrEmpty()){
                 if (postagemData.rm.contains(UserData.rmEncontrado)){
                     Postagem(
-                        fotoPerfil = postagemData.fotoPerfil,
+                        fotoPerfil = {url ->
+                            fotoPerfil = url!!
+                        },
                         nomeAutor = postagemData.nomeAutor,
                         rm = postagemData.rm,
                         cpsID = postagemData.cpsID,
@@ -733,7 +806,11 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                             cardState = true
                             expandir(cardState)},
                         abrirFotoPerfil = {
-                            abrirFoto(postagemData.fotoPerfil)
+                            if (!fotoPerfil.isNullOrEmpty()){ //nao está vazia
+                                abrirFoto(fotoPerfil)
+                            }else{
+                                abrirFoto(imagemPadrao)
+                            }
                         },
                         postagemRef = {postagemref ->
                             postagemRef = postagemref
@@ -748,7 +825,9 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
             }else{
                 if (postagemData.cpsID.contains(UserData.cpsIDEncontrado)){
                     Postagem(
-                        fotoPerfil = postagemData.fotoPerfil,
+                        fotoPerfil = {url ->
+                            fotoPerfil = url!!
+                        },
                         nomeAutor = postagemData.nomeAutor,
                         rm = postagemData.rm,
                         cpsID = postagemData.cpsID,
@@ -760,7 +839,11 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                         idPostagem = postagemData.idPostagem,
                         expandir = {}, //nao precisamos usar
                         abrirFotoPerfil = {
-                            abrirFoto(postagemData.fotoPerfil)
+                            if (!fotoPerfil.isNullOrEmpty()){ //nao está vazia
+                                abrirFoto(fotoPerfil)
+                            }else{
+                                abrirFoto(imagemPadrao)
+                            }
                         },
                         postagemRef = {postagemref ->
                             postagemRef = postagemref

@@ -124,7 +124,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             painterResource(id = R.drawable.ic_email),
                             contentDescription = "Ícone de Email no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = Color(17, 100, 172, 255)
                 )
                 //Senha
                 OutlinedRegistro(
@@ -140,7 +141,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             painterResource(id = R.drawable.ic_senha),
                             contentDescription = "Ícone de Senha no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = Color(17, 100, 172, 255)
                 )
                 //RM
                 OutlinedRegistro(
@@ -156,7 +158,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             painterResource(id = R.drawable.ic_rmoucps),
                             contentDescription = "Ícone de ID no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = Color(17, 100, 172, 255)
                 )
                 //Código turma
                 OutlinedRegistro(
@@ -172,7 +175,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             painterResource(id = R.drawable.ic_codigoturma),
                             contentDescription = "Ícone de Codigo da ETEC no registro",
                             modifier = Modifier.size(28.dp))
-                    }
+                    },
+                    cor = Color(17, 100, 172, 255)
                 )
                 //Termos e Condições
                 Row {

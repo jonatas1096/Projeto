@@ -75,8 +75,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 //Carregar uma imagem do github:
@@ -270,7 +272,7 @@ fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
-fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions,visualTransformation: VisualTransformation,leadingIcon: @Composable (() -> Unit)? = null){
+fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions,visualTransformation: VisualTransformation,leadingIcon: @Composable (() -> Unit)? = null, cor: Color){
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -285,10 +287,10 @@ fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:Strin
         singleLine = true,
         colors = TextFieldDefaults.outlinedTextFieldColors(
             unfocusedBorderColor = Color(0xA1000000),
-            focusedBorderColor = LARANJA,
-            focusedLabelColor = LARANJA,
+            focusedBorderColor = cor,
+            focusedLabelColor = cor,
             backgroundColor = Color(0xFFFFFFFF),
-            cursorColor = LARANJA,
+            cursorColor = cor,
         ),
         visualTransformation = visualTransformation,
         shape = RoundedCornerShape(50.dp),
@@ -630,11 +632,13 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
 
     val context = LocalContext.current
     var dialogo = remember { mutableStateOf(false) }
+    val scroll = rememberScrollState()
 
     Column(modifier = Modifier
         .fillMaxSize()
         .background(Color(0xFF16202a))
-        .padding(25.dp, 60.dp, 10.dp, 30.dp),
+        .padding(25.dp, 60.dp, 10.dp, 30.dp)
+        .verticalScroll(scroll),
         verticalArrangement = Arrangement.spacedBy((-10).dp)
     ) {
 
@@ -734,7 +738,9 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             modifier = Modifier
                 .padding(top = 25.dp)
                 .clickable {
-                    Toast.makeText(context, "Minhas publicações...", Toast.LENGTH_SHORT).show()
+                    Toast
+                        .makeText(context, "Minhas publicações...", Toast.LENGTH_SHORT)
+                        .show()
                     navController.navigate("MinhasPublicacoes")
                 }
         )
@@ -747,7 +753,9 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             modifier = Modifier
                 .padding(top = 10.dp)
                 .clickable {
-                    Toast.makeText(context, "Em breve!", Toast.LENGTH_SHORT).show()
+                    Toast
+                        .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
+                        .show()
                 }
         )
 
@@ -760,7 +768,9 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
                 .padding(top = 10.dp)
                 .padding(bottom = 30.dp) //← TA FUNCIONANDO, caso queira aumentar mais o gap entre eles
                 .clickable {
-                    Toast.makeText(context, "Em breve!", Toast.LENGTH_SHORT).show()
+                    Toast
+                        .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
+                        .show()
                 }
         )
 
@@ -779,12 +789,21 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
             color = Color.White,
             fontSize = 34.sp,
             modifier = Modifier
-                .padding(top = 10.dp)
+                .padding(top = 15.dp)
+                .padding(bottom = 30.dp)
                 .clickable {
                     dialogo.value = true
                 }
         )
 
+        //Linha estética
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(1.dp)
+                .padding(end = 30.dp)
+                .background(color = Color(107, 107, 107, 255))
+        ){}
 
         //Textbutton para deslogar da conta
         TextButton(
@@ -802,7 +821,7 @@ fun drawerPersonalizado(urlbaixada:Boolean, navController: NavController){
                 }
                     .show()
             },
-            modifier = Modifier.padding(top = 160.dp)
+            modifier = Modifier.padding(top = 10.dp)
         ) {
             Text(
                 text = "Sair",
@@ -895,14 +914,13 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
             }
             .offset { cardOffset }
             .height(460.dp)
-            .zIndex(1f)
             .fillMaxWidth(),
             backgroundColor = Color(252, 252, 252, 255)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 5.dp)
+                    //.padding(bottom = 5.dp)
                     .padding(horizontal = 5.dp),
                 horizontalAlignment = CenterHorizontally,
             ) {
@@ -926,7 +944,6 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     )
                 Row(modifier = Modifier
                     .fillMaxWidth()
-                    .size(2.dp)
                     .background(color = Color(206, 202, 202, 255))
                 ){}
 
@@ -939,7 +956,6 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     ) {
                         items(listaComentarios){ comentario->
                             boxComentario(
-                                usuarioFoto = comentario.fotoPerfil,
                                 comentario = comentario.comentario,
                                 nome = comentario.nome,
                                 apelido = comentario.apelido,
@@ -960,13 +976,14 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
+                    //Essa box é a que fica a imagem do usuário que vai comentar.
                     Box(
                         modifier = Modifier
                             .size(50.dp)
                             .clip(CircleShape)
                     ) {
                         loadImage(
-                            path = UserData.imagemUrl,
+                            path = fotoPerfil,
                             contentDescription = "Foto comentário",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -1001,7 +1018,6 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                                     val novoComentario = hashMapOf(
                                                         "nome" to nome,
                                                         "apelido" to apelido,
-                                                        "fotoPerfil" to fotoPerfil,
                                                         "comentario" to comentario,
                                                         "identificacao" to identificacao,
                                                     )
@@ -1127,7 +1143,7 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                     text = "Fechar",
                     fontSize = 34.sp,
                     fontFamily = Dongle,
-                    color = Color.Black,
+                    color = Color.White,
                     lineHeight = (15).sp,
                     modifier = Modifier
                         .constrainAs(fecharFoto) {
@@ -1149,50 +1165,46 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
 fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Unit){
 
     val firestore = Firebase.firestore // Instância do firebase
-    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit){
-        scope.launch{
-            println("iniciou o comentariosLoad")
-            println("O ID sendo usado é $idPost")
-            //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
-            val postagensCollection = firestore.collection("Postagens")
-            postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
-                .get()
-                .addOnSuccessListener { postagens ->
-                    println("Encontramos a postagem")
-                    if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
-                        println("Não está vazia")
-                        val postagemEncontrada = postagens.documents[0]
-                        val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
+    println("iniciou o comentariosLoad")
+    //Primeiro puxamos os dados base de indetificação e o comentário que o usuário postou
+    val postagensCollection = firestore.collection("Postagens")
+    postagensCollection.whereEqualTo("idPost", idPost) //Buscando a postagem pelo ID dela
+        .get()
+        .addOnSuccessListener { postagens ->
+            println("Encontramos a postagem")
+            if (!postagens.isEmpty) { // Verifica se a coleção não está vazia
+                println("Não está vazia")
+                val postagemEncontrada = postagens.documents[0]
+                val comentarios = postagemEncontrada.get("comentarios") as? ArrayList<Map<String, Any>> ?: ArrayList()
+                println("recuperamos o comentario. $comentarios")
+                val listaComentarios = mutableListOf<ComentariosData>() //Armazenar os dados
 
-                        println("recuperamos o comentario. $comentarios")
-                        val listaComentarios = mutableListOf<ComentariosData>() //Armazenar os dados
+                comentarios.forEach { comentario ->
+                    val apelido = comentario["apelido"]  as? String ?: ""
+                    val textoComentario = comentario["comentario"]  as? String ?: ""
+                    val identificacao = comentario["identificacao"]  as? String ?: ""
+                    val nome = comentario["nome"] as? String ?: ""
 
-                        comentarios.forEach { comentario ->
-                            val apelido = comentario["apelido"] ?: ""
-                            val textoComentario = comentario["comentario"] ?: ""
-                            val fotoPerfil = comentario["fotoPerfil"] ?: ""
-                            val nome = comentario["nome"] ?: ""
-                            val identificacao = comentario["identificacao"] ?: ""
 
-                            val comentarioBox = ComentariosData(
-                                nome = nome as? String ?: "",
-                                apelido = apelido as? String ?: "",
-                                fotoPerfil = fotoPerfil as? String ?: "",
-                                comentario = textoComentario as? String ?: "",
-                                identificacao = identificacao as? String ?: "",
-                            )
+                    val comentarioBox = ComentariosData(
+                        nome = nome,
+                        apelido = apelido,
+                        comentario = textoComentario,
+                        identificacao = identificacao
+                    )
 
-                            listaComentarios.add(comentarioBox)
-                        }
-
-                        println("Preparando o callback")
-                        listaPreenchida(listaComentarios)
-                    }
+                    listaComentarios.add(comentarioBox)
                 }
+
+
+
+                println("Preparando o callback")
+                listaPreenchida(listaComentarios)
+            }
         }
-    }
+
+
 }
 
 
@@ -1223,9 +1235,49 @@ fun numeroComentariosReload(idPost:(String), atualizacao:(Int) -> Unit){
 }
 //Agora o layout dos comentários:
 @Composable
-fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: String, identificacao:String, onAbrir:(Boolean) -> Unit, urlFoto:(String) -> Unit){
+fun boxComentario(comentario:String, nome:String, apelido: String, identificacao:String, onAbrir:(Boolean) -> Unit, urlFoto:(String) -> Unit){
 
     var abrirFoto by remember{ mutableStateOf(false) }
+    val storage = Firebase.storage
+    var urlFoto = remember{ mutableStateOf("") }
+    val imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
+    var check by remember{ mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    //Aqui é exclusivo para buscar a imagem direto do storage em tempo real.
+    LaunchedEffect(Unit) {
+        scope.launch {
+            try {
+                println("FOTO DE PERFIL.")
+                println("Primeiro vamos ver se é um aluno.")
+
+                try {
+                    val storageRefAluno = storage.reference.child("Alunos/Fotos de Perfil/$identificacao")
+                    val uri = storageRefAluno.downloadUrl.await()
+                    println("É um ALUNO.")
+                    urlFoto.value = uri.toString()
+                    check = true
+                } catch (alunoException: Exception) {
+                    println("Erro ao obter uma URL de foto de perfil do aluno: $alunoException")
+                    println("Vamos ver se é um professor agora.")
+                    try {
+                        val storageRefCPS = storage.reference.child("CPS/Fotos de Perfil/$identificacao")
+                        val uri = storageRefCPS.downloadUrl.await()
+                        println("É um PROFESSOR.")
+                        urlFoto.value = uri.toString()
+                        check = true
+                    } catch (professorException: Exception) {
+                        println("Não foi possível obter a URL de foto de perfil do professor: $professorException")
+                        urlFoto.value = imagemPadrao // Retorna a imagem padrão
+                        check = true
+                    }
+                }
+            } catch (e: Exception) {
+                println("Erro ao carregar os comentários: $e")
+            }
+        }
+    }
+
 
         Box( //Essa box é o comentário por inteiro
             modifier = Modifier
@@ -1235,21 +1287,32 @@ fun boxComentario(usuarioFoto: String, comentario:String, nome:String, apelido: 
                 .fillMaxWidth()
                 .padding(horizontal = 6.dp))
             {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .clickable {
-                            abrirFoto = !abrirFoto
-                            onAbrir(abrirFoto)
-                            urlFoto(usuarioFoto)
-                        }
-                ) {
-                    loadImage(
-                        path = usuarioFoto,
-                        contentDescription = "Foto de perfil do usuário que comentou",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier)
+                if (!check){
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(18.dp),
+                        color = Color(43, 41, 41, 233),
+                        strokeWidth = 10.dp
+                    )
+                }else{
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                abrirFoto = !abrirFoto
+                                onAbrir(abrirFoto)
+                                urlFoto(urlFoto.value)
+                            }
+                    ) {
+                        println("chegou assim ${urlFoto.value}")
+                        loadImage(
+                            //path = usuarioFoto,
+                            path = urlFoto.value,
+                            contentDescription = "Foto de perfil do usuário que comentou",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier)
+                    }
                 }
                 Column(
                     verticalArrangement = Arrangement.spacedBy((-6).dp)
