@@ -126,7 +126,6 @@ fun minhasPublicacoes(navController: NavController){
                 }
 
             pubState.value = true
-            println("mandando ${pubState.value}")
         }
     }
 

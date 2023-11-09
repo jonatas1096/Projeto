@@ -1342,7 +1342,6 @@ fun boxComentario(comentario:String, nome:String, identificacao:String, onAbrir:
                     ) {
                         println("chegou assim ${urlFoto.value}")
                         loadImage(
-                            //path = usuarioFoto,
                             path = urlFoto.value,
                             contentDescription = "Foto de perfil do usuário que comentou",
                             contentScale = ContentScale.Crop,

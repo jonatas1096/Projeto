@@ -2,7 +2,6 @@ package com.connectstudent.projeto.layoutsprontos
 
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -10,28 +9,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+import androidx.compose.runtime.Composable
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.connectstudent.projeto.datasource.UserData
 import com.connectstudent.projeto.ui.theme.Dongle
 import com.connectstudent.projeto.ui.theme.Jomhuria
 import com.connectstudent.projeto.ui.theme.LARANJA
 import com.connectstudent.projeto.R
-import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -333,11 +326,13 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                         .padding(horizontal = 12.dp)
                         .padding(bottom = 8.dp)
                 ) {
+
                     var maxCaracteresTexto = rememberSaveable() { mutableStateOf(250) }
                     if (textoPostagem.length > maxCaracteresTexto.value) {
                         Column(modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy((-8).dp)
                         ) {
+                            textoPostagem.replace("[\\uD83C-\\uDBFF\\uDC00-\\uDFFF]+".toRegex(), "")
                             Text(
                                 text = textoPostagem.substring(
                                     0,
@@ -363,8 +358,9 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                         }
 
                     } else {
+                        val textoSemEmojis = removeEmojis(textoPostagem)
                         Text(
-                            text = textoPostagem,
+                            text = textoSemEmojis,
                             fontSize = 29.sp,
                             color = Color(39, 39, 39, 255),
                             fontFamily = Dongle,
@@ -568,7 +564,15 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
 
 }
 
-
+fun removeEmojis(text: String): String {
+    val builder = StringBuilder()
+    text.forEach { char ->
+        if (!Character.isSurrogate(char)) {
+            builder.append(char)
+        }
+    }
+    return builder.toString()
+}
 @Composable
 fun curtirPublicacao(idPostagem:String, onCurtir: (Int) -> Unit,  mudarIcone: (Boolean) -> Unit) {
 
