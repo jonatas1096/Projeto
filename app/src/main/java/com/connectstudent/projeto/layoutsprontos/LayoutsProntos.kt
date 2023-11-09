@@ -958,7 +958,7 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                             boxComentario(
                                 comentario = comentario.comentario,
                                 nome = comentario.nome,
-                                apelido = comentario.apelido,
+                                //apelido = comentario.apelido,
                                 identificacao = comentario.identificacao,
                                 onAbrir = { abrir->
                                     abrirFoto = abrir
@@ -1189,7 +1189,7 @@ fun comentariosLoad(idPost:String, listaPreenchida:(List<ComentariosData>) -> Un
 
                     val comentarioBox = ComentariosData(
                         nome = nome,
-                        apelido = apelido,
+                        //apelido = apelido,
                         comentario = textoComentario,
                         identificacao = identificacao
                     )
@@ -1235,17 +1235,51 @@ fun numeroComentariosReload(idPost:(String), atualizacao:(Int) -> Unit){
 }
 //Agora o layout dos comentários:
 @Composable
-fun boxComentario(comentario:String, nome:String, apelido: String, identificacao:String, onAbrir:(Boolean) -> Unit, urlFoto:(String) -> Unit){
+fun boxComentario(comentario:String, nome:String, identificacao:String, onAbrir:(Boolean) -> Unit, urlFoto:(String) -> Unit){
 
     var abrirFoto by remember{ mutableStateOf(false) }
     val storage = Firebase.storage
+    val firestore = Firebase.firestore
+    var apelidoAutor = remember { mutableStateOf<String?>("") } //Armazenar o apelido
     var urlFoto = remember{ mutableStateOf("") }
     val imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
     var check by remember{ mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
-    //Aqui é exclusivo para buscar a imagem direto do storage em tempo real.
+    //Aqui é exclusivo para buscar a imagem direto do storage e o apelido do firestore em tempo real.
     LaunchedEffect(Unit) {
+        //Apelido
+        scope.launch {
+            if (!identificacao.isNullOrEmpty()){
+
+                //Primeiro procurando nos alunos
+                val alunoDocument = firestore.collection("Alunos").document(identificacao)
+                alunoDocument.get()
+                    .addOnSuccessListener {result ->
+                        val apelido = result.getString("apelido")
+                        if (!apelido.isNullOrEmpty()){ //Se não estiver vazio, achamos.
+                            apelidoAutor.value = apelido
+                        }else{ //Procurando nos professores
+                            val cpsDocument = firestore.collection("Cps").document(identificacao)
+                            cpsDocument.get()
+                                .addOnSuccessListener {result ->
+                                    val apelido = result.getString("apelido")
+                                    if (!apelido.isNullOrEmpty()){
+                                        apelidoAutor.value = apelido
+                                    }
+                                }
+                                .addOnFailureListener { e ->
+                                    println("o documento nao existe")
+                                }
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        println("o documento nao existe")
+                    }
+            }
+        }
+
+        //Foto de perfil
         scope.launch {
             try {
                 println("FOTO DE PERFIL.")
@@ -1276,6 +1310,7 @@ fun boxComentario(comentario:String, nome:String, apelido: String, identificacao
                 println("Erro ao carregar os comentários: $e")
             }
         }
+
     }
 
 
@@ -1315,12 +1350,12 @@ fun boxComentario(comentario:String, nome:String, apelido: String, identificacao
                     }
                 }
                 Column(
-                    verticalArrangement = Arrangement.spacedBy((-6).dp)
+                    verticalArrangement = Arrangement.spacedBy((-11).dp)
                 ) {
                     Row() {
                         Text(
                             text = nome,
-                            color = if (identificacao in setOf("23627", "15723", "23620")) {
+                            color = if (identificacao in setOf("23627", "15723", "12345", "23619")) {
                                 Color(0xFF9B26BB)
                             } else {
                                 Color(70, 70, 70, 255)
@@ -1329,9 +1364,9 @@ fun boxComentario(comentario:String, nome:String, apelido: String, identificacao
                             fontFamily = Dongle,
                             modifier = Modifier.padding(start= 11.dp)
                         )
-                        if (!apelido.isNullOrEmpty()){ //" ! " checagem de negação contrário para segurança apenas. Isso nao esta vazio.
+                        if (!apelidoAutor.value.isNullOrEmpty()){ //" ! " checagem de negação contrário para segurança apenas. Isso nao esta vazio.
                             Text(
-                                text = "($apelido)",
+                                text = "(${apelidoAutor.value})",
                                 fontSize = 22.sp,
                                 fontFamily = Dongle,
                                 modifier = Modifier.padding(start= 11.dp),

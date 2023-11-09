@@ -105,7 +105,7 @@ fun minhasPublicacoes(navController: NavController){
                             nomeAutor = nome,
                             rm = rm,
                             cpsID = cpsID,
-                            apelidoAutor = apelido,
+                            //apelidoAutor = apelido,
                             textoPostagem = texto,
                             imagensPost = imagensPostagem,
                             tituloPost = titulo,

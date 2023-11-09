@@ -364,7 +364,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     modifier = Modifier.constrainAs(nomeUsuario){
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        top.linkTo(areaFoto.bottom, margin = 0.dp)
+                        top.linkTo(areaFoto.bottom, margin = 8.dp)
                     }
                 )
             }
@@ -379,7 +379,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     modifier = Modifier.constrainAs(email){
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
-                        top.linkTo(areaFoto.bottom, margin = 40.dp)
+                        top.linkTo(areaFoto.bottom, margin = 55.dp)
                     }
                 )
             }
@@ -391,7 +391,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 modifier = Modifier.constrainAs(email){
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    top.linkTo(areaFoto.bottom, margin = 40.dp)
+                    top.linkTo(areaFoto.bottom, margin = 55.dp)
                 }
             )
 
@@ -464,11 +464,10 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 fontFamily = Dongle,
                 modifier = Modifier.constrainAs(tituloApelido){
                     start.linkTo(iconApelido.end, margin = 10.dp)
-                    top.linkTo(sobreMim.bottom, margin = 20.dp)
+                    top.linkTo(sobreMim.bottom, margin = 18.dp)
                 }
             )
             if(apelidoState){
-                //  val dialogo = remember { mutableStateOf(false) } //para abrir a caixa de dialogo, se necessário.
 
                 //MaxCaracteres para inserir o apelido:
                 Text(text = "Max.Caracteres: $atualCaracteres",
@@ -564,7 +563,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         color = Color(0xFF838383),
                         modifier = Modifier.constrainAs(apelido){
                             start.linkTo(iconApelido.end, margin = 20.dp)
-                            top.linkTo(sobreMim.bottom, margin = 50.dp)
+                            top.linkTo(sobreMim.bottom, margin = 53.dp)
                         }
                     )
 
@@ -576,7 +575,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                         modifier = Modifier
                             .constrainAs(editarApelido) {
                                 start.linkTo(tituloApelido.end, margin = 10.dp)
-                                bottom.linkTo(apelido.top)
+                                bottom.linkTo(apelido.top, margin = (5.dp))
                             }
                             .size(25.dp)
                     ){
@@ -636,7 +635,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(nome){
                         start.linkTo(iconNome.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 135.dp)
+                        top.linkTo(sobreMim.bottom, margin = 140.dp)
                     }
                 )
             }
@@ -647,7 +646,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                     color = Color(0xFF838383),
                     modifier = Modifier.constrainAs(nome){
                         start.linkTo(iconNome.end, margin = 20.dp)
-                        top.linkTo(sobreMim.bottom, margin = 135.dp)
+                        top.linkTo(sobreMim.bottom, margin = 140.dp)
                     }
                 )
             }

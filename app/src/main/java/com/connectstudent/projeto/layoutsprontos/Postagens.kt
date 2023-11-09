@@ -44,7 +44,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: String, apelidoAutor:String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
+fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: String, /*apelidoAutor:String,*/ textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
              idPostagem:String, numerocurtidas:Int, numerocomentarios:Int, postagemRef: (String) -> Unit, expandir: (Boolean) -> Unit , abrirFotoPerfil:(Boolean) -> Unit) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
@@ -84,7 +84,10 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
     val firestore = Firebase.firestore
     //O link da imagem do usuario
     var fotoUsuario = remember { mutableStateOf<String?>("") }
+    //Apelido
+    var apelidoAutor = remember { mutableStateOf<String?>("") }
 
+    //Foto do usuario em tempo real -- apelido também
     LaunchedEffect(Unit){
         scope.launch{
             if (!rm.isNullOrEmpty()){ //nao está vazio.
@@ -123,6 +126,36 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                     }
             }
 
+        }
+
+        //Apelido
+        scope.launch {
+           if (!rm.isNullOrEmpty()){
+
+               val alunoDocument = firestore.collection("Alunos").document(rm)
+               alunoDocument.get()
+                   .addOnSuccessListener {result ->
+                       val apelido = result.getString("apelido")
+                       if (!apelido.isNullOrEmpty()){
+                           apelidoAutor.value = apelido
+                       }
+                   }
+                   .addOnFailureListener { e ->
+                       println("o documento nao existe")
+                   }
+           }else{
+               val cpsDocument = firestore.collection("Cps").document(cpsID)
+               cpsDocument.get()
+                   .addOnSuccessListener {result ->
+                       val apelido = result.getString("apelido")
+                       if (!apelido.isNullOrEmpty()){
+                           apelidoAutor.value = apelido
+                       }
+                   }
+                   .addOnFailureListener { e ->
+                       println("o documento nao existe")
+                   }
+           }
         }
     }
 
@@ -209,7 +242,8 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 4.dp),
                 ) {
                     //Nome do usuário
                     if (nomeAutor.length > maxCaracteresNome) {
@@ -242,8 +276,8 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                     }
 
                     //Apelido (se houver)
-                    if (!apelidoAutor.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
-                        if (apelidoAutor.length > 16) {
+                    if (!apelidoAutor.value.isNullOrEmpty()) { // " ! " de negação, ou seja, não está vazio ou nullo.
+                        if (apelidoAutor.value!!.length > 16) {
                             Text(
                                 text = "($apelidoAutor)".substring(0, maxCaracteresApelido) + "..)",
                                 color = Color(148, 148, 148, 255),
@@ -256,7 +290,7 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
                             )
                         } else {
                             Text(
-                                text = "($apelidoAutor)",
+                                text = "(${apelidoAutor.value})",
                                 color = Color(148, 148, 148, 255),
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 28.sp,

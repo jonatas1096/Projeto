@@ -6,7 +6,6 @@ data class PostagemData(
     val nomeAutor: String,
     val rm: String,
     val cpsID:String,
-    val apelidoAutor: String,
     val textoPostagem: String,
     val imagensPost: List<String>,
     val tituloPost: String,
