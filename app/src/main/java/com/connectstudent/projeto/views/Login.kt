@@ -397,7 +397,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
     val auth = FirebaseAuth.getInstance()
 
     var email by remember { mutableStateOf(emailRedefinir) }
-    var confirmEmail by remember { mutableStateOf(confirmarEmail) }
+    var confirmarEmail by remember { mutableStateOf(confirmarEmail) }
 
     var camposDiferentes by remember{ mutableStateOf(false) }
     println("inicio $camposDiferentes")
@@ -498,7 +498,7 @@ fun redefinirSenha(onDismissRequest: () -> Unit, emailRedefinir:String, confirma
                             OutlinedTextField(
                                 value = confirmarEmail,
                                 onValueChange = {
-                                    confirmEmail = it
+                                    confirmarEmail = it
                                 },
                                 label = {
                                     Text(text = "Confirme o Email",

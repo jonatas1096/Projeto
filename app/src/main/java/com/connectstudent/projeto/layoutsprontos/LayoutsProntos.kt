@@ -47,6 +47,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -920,7 +921,6 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    //.padding(bottom = 5.dp)
                     .padding(horizontal = 5.dp),
                 horizontalAlignment = CenterHorizontally,
             ) {
@@ -1004,7 +1004,10 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                         trailingIcon = {
                             IconButton(
                                 onClick = {
-                                    if (!comentario.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
+                                     if (comentario.isBlank()){
+                                         Toast.makeText(context,"Escreva algo antes de enviar!",Toast.LENGTH_SHORT).show()
+                                    }
+                                    else if (!comentario.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
                                         //Parte da lógica para subir o comentário
                                         val postagemRef = firestore.collection("Postagens")
                                         postagemRef.whereEqualTo("idPost", postagemID)
@@ -1043,22 +1046,19 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                                             .addOnFailureListener {
                                                 println("Não foi possivel encontrar a coleção. $it")
                                             }
-                                    }else{
-                                        Toast.makeText(context,"Escreva algo antes de enviar!",Toast.LENGTH_SHORT).show()
                                     }
                                 }) {
-                                if (!comentario.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
-                                    Icon(
-                                        painterResource(id = R.drawable.ic_enviarcomentario),
-                                        contentDescription = "Ícone para enviar o comentário",
-                                        modifier = Modifier.size(22.dp))
-
-                                }
-                                else{
+                                if (comentario.isBlank()){
                                     Icon(
                                         painterResource(id = R.drawable.ic_comentariovazio),
                                         contentDescription = "Ícone de comentário vazio",
                                         tint = Color(199, 194, 194, 255),
+                                        modifier = Modifier.size(22.dp))
+                                }
+                                else{
+                                    Icon(
+                                        painterResource(id = R.drawable.ic_enviarcomentario),
+                                        contentDescription = "Ícone para enviar o comentário",
                                         modifier = Modifier.size(22.dp))
                                 }
 
@@ -1072,8 +1072,10 @@ fun layoutComentarios(expandirCard:(Boolean), dropCard:(Boolean) -> Unit, postag
                         maxLines = 1,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 4.dp)
-
+                            .padding(start = 4.dp),
+                        textStyle = TextStyle(
+                            fontSize = 15f.sp
+                        )
                     )
                 }
 
@@ -1373,8 +1375,9 @@ fun boxComentario(comentario:String, nome:String, identificacao:String, onAbrir:
                             )
                         }
                     }
+                    val comentarioExibicao = comentario.trim()
                     Text(
-                        text = comentario,
+                        text = comentarioExibicao,
                         fontSize = 26.sp,
                         fontFamily = Dongle,
                         lineHeight = 14.sp,

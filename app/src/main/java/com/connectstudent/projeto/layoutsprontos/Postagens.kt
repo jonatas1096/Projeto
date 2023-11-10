@@ -739,7 +739,6 @@ fun downloadFotosReacao(idPost:String, rm:String, cpsID:String,primeiraFoto: (St
                                         primeiraReacao = uri.toString()
                                         primeiraFoto(primeiraReacao!!)
                                     }
-
                                 }
                             }
                         }

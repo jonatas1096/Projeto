@@ -694,7 +694,6 @@ fun PostagensGerais(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                 nomeAutor = postagemData.nomeAutor,
                 rm = postagemData.rm,
                 cpsID = postagemData.cpsID,
-                //apelidoAutor = postagemData.apelidoAutor,
                 textoPostagem = postagemData.textoPostagem,
                 imagensPost = postagemData.imagensPost,
                 tituloAutor = postagemData.tituloPost,
@@ -724,12 +723,12 @@ fun PostagensGerais(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
 
 //Aqui é as postagens para turmas especificas
 @Composable
-fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, abrirFoto: (String) -> Unit, postRef : (String) -> Unit, postsBack:(Int) -> Unit) {
+fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, abrirFoto: (String) -> Unit, postRef : (String) -> Unit, postsExistente:(Boolean) -> Unit) {
 
     var cardState by remember { mutableStateOf(false) }
 
     var postagemRef  by remember { mutableStateOf("") }
-    var postsCont = 0
+    var postsCont by remember { mutableStateOf(false) }
 
     var imagemPadrao = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/imagemdefault.jpg"
     LazyColumn(){
@@ -737,6 +736,7 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
             var fotoPerfil by remember { mutableStateOf("") }
 
             if (postagemData.turmasMarcadas.contains(UserData.turmaEncontrada)){
+                postsCont = true //existe ao menos uma postagem, entao vamos retornar true
                 Postagem(
                     fotoPerfil = {url ->
                         fotoPerfil = url!!
@@ -744,7 +744,6 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                     nomeAutor = postagemData.nomeAutor,
                     rm = postagemData.rm,
                     cpsID = postagemData.cpsID,
-                    //apelidoAutor = postagemData.apelidoAutor,
                     textoPostagem = postagemData.textoPostagem,
                     imagensPost = postagemData.imagensPost,
                     tituloAutor = postagemData.tituloPost,
@@ -767,8 +766,7 @@ fun PostagensTurmas(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                     numerocurtidas = postagemData.curtidas,
                     numerocomentarios = postagemData.comentarios
                 )
-                postsCont++
-                postsBack(postsCont)
+                postsExistente(postsCont)
             }
         }
     }
@@ -872,8 +870,6 @@ fun Geral(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, posta
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
-
         //ConstraintLayout para o que precisar ser posicionado melhor
         ConstraintLayout(
             modifier = Modifier
@@ -980,7 +976,7 @@ fun ParaVoce(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, po
     val postagensOrdenadas = remember { postagens}
     var postagemReferencia by remember { mutableStateOf(postagemRef) }
     var expandirCard by remember { mutableStateOf(false) }
-    var quantidadePostagens = 0
+    var quantidadePostagens = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -1005,6 +1001,7 @@ fun ParaVoce(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, po
                 modifier = Modifier
                     .padding(bottom = 60.dp)
             ) {
+
                 PostagensTurmas(
                     postagens = postagensOrdenadas,
                     postRef = { postagemRef ->
@@ -1018,28 +1015,20 @@ fun ParaVoce(abrir:(Boolean),caminho:(String), postagens: List<PostagemData>, po
                         caminhoImagem = resultado
                         abrirFoto = !abrirFoto
                     },
-                    postsBack = {contagem ->
-                        quantidadePostagens = contagem
-                        println("aqui: $quantidadePostagens")
+                    postsExistente = {contagem ->
+                        quantidadePostagens.value = contagem
                     }
                 )
-                if (quantidadePostagens == 0){
+                println("quantidade de postagens é $quantidadePostagens")
+
+                if (!quantidadePostagens.value){
+                    println("entrou: $quantidadePostagens")
                     Column(
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "Nada para você ainda 😓", fontSize = 40.sp, fontFamily = Jomhuria)
-                        Box(
-                            modifier = Modifier.size(120.dp)
-                        ) {
-                            loadImage(
-                                path = "https://raw.githubusercontent.com/jonatas1096/Projeto/master/app/src/main/res/drawable/logo_padrao.png",
-                                contentDescription = "Mini Logo da Index",
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                            )
-                        }
                     }
                 }
             }
