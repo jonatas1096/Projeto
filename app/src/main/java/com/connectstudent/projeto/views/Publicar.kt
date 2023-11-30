@@ -799,6 +799,12 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             /////////////
 
             /////////////
+            //teste:
+            /*
+            val postagensColecao = firestore.collection("postagens").document(codigoUnidade)
+                
+             */
+            
             //Agora os demais dados do post
             val postagensColecao = firestore.collection("Postagens")
 

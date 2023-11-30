@@ -67,6 +67,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     // A instância do firebase authenticaiton e as variáveis que vou precisar:
     val UIDref = FirebaseAuth.getInstance().currentUser?.uid.toString()
     val email = auth.currentUser?.email
+
     // A instância do firebase storage
     val storage = Firebase.storage
     val storageRef = storage.reference
@@ -507,62 +508,114 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     modifier = Modifier
                         .height(55.dp)
                 ) {
-                    BottomNavigationBar(
-                        items = listOf(
-                            BottomNavItem(
-                                nome = "Home",
-                                route = "Index",
-                                badgeCount = 0,
-                                icon = ImageVector.vectorResource(id = R.drawable.ic_home),
-                            ).withIconModifier(
-                                Modifier
-                                    .size(25.dp)),
-                            BottomNavItem(
-                                nome = "Chat",
-                                route = null,
-                                badgeCount = 4,
-                                icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
-                            ).withIconModifier(
-                                Modifier
-                                    .size(32.dp)
-                                    .padding(end = 2.dp)
-                                    .clickable {
-                                        Toast
-                                            .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
-                                            .show()
-                                    }
+                    if(!UserData.cpsIDEncontrado.isNullOrEmpty()){ // " ! " para negação, ou seja, não está vazio.
+                        BottomNavigationBar(
+                            items = listOf(
+                                BottomNavItem(
+                                    nome = "Home",
+                                    route = "Index",
+                                    badgeCount = 0,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_home),
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(25.dp)),
+                                BottomNavItem(
+                                    nome = "Chat",
+                                    route = null,
+                                    badgeCount = 4,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(32.dp)
+                                        .padding(end = 2.dp)
+                                        .clickable {
+                                            Toast
+                                                .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
+                                ),
+                                BottomNavItem( //esse é uma gambiarra daquelas kkkk
+                                    nome = "Publicar",
+                                    route = "Publicar",
+                                    badgeCount = 0,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_publicar)
+                                ).withIconModifier(Modifier.size(30.dp)),
+                                BottomNavItem(
+                                    nome = "Notificações",
+                                    route = null,
+                                    badgeCount = notificacoes!!,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(32.dp)
+                                        .clickable { dialog = true }),
+                                BottomNavItem(
+                                    nome = "Icone Usuário",
+                                    route = "Profile",
+                                    badgeCount = 0,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
+                                ).withIconModifier(Modifier.size(30.dp))
                             ),
-                            BottomNavItem( //esse é uma gambiarra daquelas kkkk
-                                nome = "",
-                                route = null,
-                                badgeCount = 0,
-                                icon = ImageVector.vectorResource(id = R.drawable.ic_blank)
-                            ).withIconModifier(Modifier.size(2.dp)),
-                            BottomNavItem(
-                                nome = "Notificações",
-                                route = null,
-                                badgeCount = notificacoes!!,
-                                icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
-                            ).withIconModifier(
-                                Modifier
-                                    .size(32.dp)
-                                    .clickable { dialog = true }),
-                            BottomNavItem(
-                                nome = "Icone Usuário",
-                                route = "Profile",
-                                badgeCount = 0,
-                                icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
-                            ).withIconModifier(Modifier.size(30.dp))
-                        ),
-                        navController = navController,
-                        onClickItem = { item ->
-                            item.route?.let { route ->
-                                navController.navigate(route)
-                            }
-                        },
-                        ModifierIcon = Modifier.size(35.dp),
-
+                            navController = navController,
+                            onClickItem = { item ->
+                                item.route?.let { route ->
+                                    navController.navigate(route)
+                                }
+                            },
+                            ModifierIcon = Modifier.size(35.dp),
+                            )
+                    }else{
+                        BottomNavigationBar(
+                            items = listOf(
+                                BottomNavItem(
+                                    nome = "Home",
+                                    route = "Index",
+                                    badgeCount = 0,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_home),
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(25.dp)),
+                                BottomNavItem(
+                                    nome = "Chat",
+                                    route = null,
+                                    badgeCount = 4,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_chat)
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(32.dp)
+                                        .padding(end = 2.dp)
+                                        .clickable {
+                                            Toast
+                                                .makeText(context, "Em breve!", Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
+                                ),
+                                BottomNavItem(
+                                    nome = "Notificações",
+                                    route = null,
+                                    badgeCount = notificacoes!!,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
+                                ).withIconModifier(
+                                    Modifier
+                                        .size(32.dp)
+                                        .clickable { dialog = true }),
+                                BottomNavItem(
+                                    nome = "Icone Usuário",
+                                    route = "Profile",
+                                    badgeCount = 0,
+                                    icon = ImageVector.vectorResource(id = R.drawable.ic_areausuario)
+                                ).withIconModifier(Modifier.size(30.dp))
+                            ),
+                            navController = navController,
+                            onClickItem = { item ->
+                                item.route?.let { route ->
+                                    navController.navigate(route)
+                                }
+                            },
+                            ModifierIcon = Modifier.size(35.dp),
                         )
+                    }
+
                     if (dialog){
                         limparNotificacoes(
                             onDismiss = {dialog = false}, //Esse aqui é só para o de clicar fora do dialog. É para nao misturar, existem 3 onDismiss.
@@ -583,7 +636,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
         )
 
 
-        //Gambiarra para colocar sombra no Button de publicar
+    /*    //Gambiarra para colocar sombra no Button de publicar
         if (scaffoldState.drawerState.isClosed){
             ConstraintLayout(
                 modifier = Modifier
@@ -611,7 +664,7 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     }
                 }
             }
-        }
+        } */
 
         //Teste área de comentários (aqui vai ficar só o layout em si)
         if (expandirCard){

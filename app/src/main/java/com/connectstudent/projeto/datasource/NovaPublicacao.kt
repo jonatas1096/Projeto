@@ -92,14 +92,12 @@ class NovaPublicacao  @Inject constructor() {
             usuarioColecao.whereEqualTo("cpsID", usuarioUID)
                 .get()
                 .addOnSuccessListener { documents ->
-
                     println("Entrou no documento para professores")
                     if (!documents.isEmpty) { //(caso não esteja vazio)
                         //Pegando o cpsID
                         val cpsidEncontrado = documents.documents[0].getString("id")
                         if (cpsidEncontrado != null) {
                             cpsID = cpsidEncontrado
-                            println("cpsID: $cpsID")
                             listenerPublicacao.onSucess(rm,cpsID,apelidoEncontrado,nomeEncontrado, turmaEncontrada)
                         }
 

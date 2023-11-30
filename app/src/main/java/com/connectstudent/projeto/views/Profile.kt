@@ -201,7 +201,7 @@ fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltV
                 .fillMaxSize()
                 .verticalScroll(scroll)
         ) {
-            val (card, cardCinza, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
+            val (card, areaFoto, nomeUsuario, email, backtohome, arrow2,sobreMim,
                 iconApelido, tituloApelido, apelido, iconNome, tituloNome, nome, gambiarratextfield,
             ) = createRefs()
 
