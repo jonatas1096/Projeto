@@ -9,8 +9,8 @@ import javax.inject.Inject
 
 class ReconhecerUsuario  @Inject constructor() {
 
-    //Essa classe separada vem com o objetivo de montar a lógica de uma nova publicação, mas, antes de tudo precisei implementar um
-    //método para obter dados do usuários logado e saber quem está usando o app.
+    //Essa classe separada antes vinha com o objetivo de montar a lógica de uma nova publicação mas, antes de tudo, precisei implementar um
+    //método para obter dados do usuário logado e saber quem está usando o app.
     //Então, primeiro separei uma função para reconhecer quem está logado:
   //  @SuppressLint("SuspiciousIndentation")
     @SuppressLint("SuspiciousIndentation")

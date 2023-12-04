@@ -9,16 +9,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PublicacaoViewModel @Inject constructor(private val pubRepositorio: ReconhecerUsuarioRepositorio): ViewModel() {
+
+class UsuarioViewModel @Inject constructor(private val pubRepositorio: ReconhecerUsuarioRepositorio): ViewModel() {
 
     fun usuarioEncontrado(listenerReconhecerUsuario: ListenerReconhecerUsuario){
 
         viewModelScope.launch {
 
             pubRepositorio.encontrandoUsuario(listenerReconhecerUsuario)
-
         }
 
     }
-
 }

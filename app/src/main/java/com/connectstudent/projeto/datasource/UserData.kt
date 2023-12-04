@@ -13,7 +13,15 @@ object UserData {
 
 
     //Atualizar os dados padrões:
-    fun setUserData(rm:String, cpsID:String, nome: String, turma:String, uid: String, email: String, codigoEtec:String) {
+    fun setUserData(
+        rm: String,
+        cpsID: String,
+        nome: String,
+        turma: String,
+        uid: String,
+        email: String,
+        codigoEtec: String
+    ) {
         rmEncontrado = rm
         cpsIDEncontrado = cpsID
         nomeEncontrado = nome
@@ -29,9 +37,10 @@ object UserData {
     }
 
     //Atualizar apelido do usuário:
-    fun setApelido(apelido:String){
+    fun setApelido(apelido: String) {
         apelidoUsuario = apelido
     }
+
 }
 
 

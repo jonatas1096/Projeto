@@ -42,7 +42,7 @@ import com.connectstudent.projeto.turmasItens.turmasItem
 import com.connectstudent.projeto.ui.theme.Dongle
 import com.connectstudent.projeto.ui.theme.Jomhuria
 import com.connectstudent.projeto.ui.theme.LARANJA
-import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
+import com.connectstudent.projeto.viewmodel.UsuarioViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -54,13 +54,12 @@ import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import java.util.*
 
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Publicar(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
+fun Publicar(navController: NavController, viewModel: UsuarioViewModel = hiltViewModel()) {
     ////////////////////////////////
 
     //toda a palhaçada do jetpack só pra abrir o bottomshet
@@ -801,9 +800,17 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
             /////////////
             //teste:
 
+
             val postagensColecao = firestore.collection("Unidades").document("211").collection("Postagens")
                 
 
+            
+            //Agora os demais dados do post
+            //val postagensColecao = firestore.collection("Postagens")
+            /*
+            val postagensColecao = firestore.collection("postagens").document(codigoUnidade)
+                
+             */
             
             //Agora os demais dados do post
             //val postagensColecao = firestore.collection("Postagens")
@@ -1117,6 +1124,8 @@ fun CriarPublicacao(foto: String, nome:String, titulo:String, texto:String, imag
 
             }
 
+
+        }
         }*/
         loadingState = false
     }

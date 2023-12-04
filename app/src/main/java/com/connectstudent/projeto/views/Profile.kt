@@ -49,7 +49,7 @@ import com.connectstudent.projeto.layoutsprontos.arrowVoltar
 import com.connectstudent.projeto.layoutsprontos.loadImage
 import com.connectstudent.projeto.ui.theme.Dongle
 import com.connectstudent.projeto.ui.theme.Jomhuria
-import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
+import com.connectstudent.projeto.viewmodel.UsuarioViewModel
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
@@ -62,7 +62,7 @@ import java.io.ByteArrayOutputStream
 
 @SuppressLint("UnrememberedMutableState", "SuspiciousIndentation")
 @Composable
-fun Profile(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
+fun Profile(navController: NavController, viewModel: UsuarioViewModel = hiltViewModel()) {
 
     // Unica forma que eu consegui pra abrir a galeria sendo uma função composable
     // aqui é só a lógica da galeria

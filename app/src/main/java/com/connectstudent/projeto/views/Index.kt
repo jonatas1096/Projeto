@@ -31,7 +31,7 @@ import com.connectstudent.projeto.datasource.UserData
 import com.connectstudent.projeto.layoutsprontos.*
 import com.connectstudent.projeto.listener.ListenerReconhecerUsuario
 import com.connectstudent.projeto.ui.theme.Dongle
-import com.connectstudent.projeto.viewmodel.PublicacaoViewModel
+import com.connectstudent.projeto.viewmodel.UsuarioViewModel
 import com.connectstudent.projeto.R
 import com.connectstudent.projeto.ui.theme.Jomhuria
 import com.google.firebase.auth.FirebaseAuth
@@ -39,14 +39,15 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltViewModel()) {
+fun Index(navController: NavController, viewModel: UsuarioViewModel = hiltViewModel()) {
 
 
     val postagensOrdenadas = remember { mutableStateListOf<PostagemData>() }
@@ -86,36 +87,61 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
     //Para guardar o caminho da foto de perfil (tipo uma box, e é só das postagens, nao do usuário atual).
     var fotoUsuario by remember { mutableStateOf<String?>("") }
 
-    //Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
-    LaunchedEffect(Unit){
+    // Aqui é primordial, é dessa forma que os dados bases (tipo RM) chegam na index.
+    LaunchedEffect(Unit) {
+        println("============ DADOS PRIMORDIAIS ============")
+        // A viewmodel traz os dados básicos assim que o usuário loga (pegamos pelo UID)
 
-        scope.launch { //scopo principal
+        val usuarioDeferred = CompletableDeferred<Unit>() //Essa variavel serve para "segurar" o restante do código até que os dados
+        // do usuário sejam corretamente tratados, peguei da net
 
-            scope.launch {
-                //A viewmodel traz os dados básicos assim que o usuário loga (pegamos pelo UID)
-                viewModel.usuarioEncontrado(object : ListenerReconhecerUsuario{
-                    override fun onSucess(rm:String, cpsID:String, apelido:String, nome:String, turma:String, codigoEtec:String) {
-                        println("o usuario que vem do listener tem o rm: $rm, ou o cpsID $cpsID , o apelido $apelido, o nome: $nome, a turma: $turma e o código etec $codigoEtec")
-                        if (email != null) { // <- precisei colocar por conta do "?" do authentication do firebase
-                            UserData.setUserData(rm, cpsID, nome, turma, UIDref, email, codigoEtec)
+        scope.launch {
+            try {
+                viewModel.usuarioEncontrado(object : ListenerReconhecerUsuario {
+                    override fun onSucess(rm: String, cpsID: String, apelido: String, nome: String, turma: String, codigoEtec: String
+                    ) {
+                        println("O usuário que vem do listener tem o RM: $rm, ou o CPSID $cpsID, o apelido $apelido, o nome: $nome, a turma: $turma e o código Etec $codigoEtec")
+
+                        if (email != null) {
+                            UserData.setUserData(
+                                rm,
+                                cpsID,
+                                nome,
+                                turma,
+                                UIDref,
+                                email,
+                                codigoEtec
+                            )
+
+                            if (!apelido.isNullOrEmpty()) {
+                                UserData.setApelido(apelido)
+                            }
+                            usuarioDeferred.complete(Unit)
                         }
-                        if (!apelido.isNullOrEmpty()){//na negativa "!", nao está vazio ou nullo.
-                            UserData.setApelido(apelido)
-                        }
+
                     }
+
                     override fun onFailure(erro: String) {
-                        println("Nenhum usuario encontrado.")
+                        println("Nenhum usuário encontrado.")
                     }
-
                 })
+            } catch (e: Exception) {
+                println("Erro ao obter dados do usuário: $e")
+                // Marcar o Deferred como concluído em caso de algum erro
+                usuarioDeferred.complete(Unit)
             }
-            delay(1500) //esse delay serve para dar tempo do rm ser guardado na classe UserData e conserguirmos fazer as lógicas abaixo.
+        }
 
 
-            scope.launch {
-                //Parte para trazer as postagens
-                val postagensRef = firestore.collection("Unidades").document(UserData.codigoEncontrado).collection("Postagens")
+        usuarioDeferred.await()
+        println("Coletou os dados primários, vamos trazer o restante do código")
 
+
+        // Parte para trazer as postagens
+        scope.launch {
+            try {
+                //val postagensRef = firestore.collection("Unidades").document(UserData.codigoEncontrado).collection("Postagens")
+                val postagensRef = firestore.collection("Postagens")
                 val filaOrdenar = postagensRef
                     .orderBy("ultimaAtualizacao", Query.Direction.DESCENDING)
 
@@ -184,7 +210,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                 nomeAutor = nome,
                                 rm = rm,
                                 cpsID = cpsID,
-                                //apelidoAutor = apelido,
                                 textoPostagem = texto,
                                 imagensPost = imagensPostagem,
                                 tituloPost = titulo,
@@ -203,81 +228,72 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                     .addOnFailureListener{erro ->
                         println("Não foi possivel coletar os dados $erro")
                     }
+            } catch (e: Exception) {
+                println("Não foi possível coletar os dados das postagens: $e")
             }
+        }
 
 
-            //
 
-            scope.launch {
-                //Parte para trazer as notificações. Começando pelo aluno:
-                if (!UserData.rmEncontrado.isNullOrEmpty()){// " ! " de negação, ou seja, não está vazio.
+        // Parte para trazer as notificações. Começando pelo aluno:
+        scope.launch {
+            try {
+                if (!UserData.rmEncontrado.isNullOrEmpty()) {
                     val usuarioCollection = firestore.collection("Alunos")
-                    val usuarioRef = usuarioCollection.document(UserData.rmEncontrado) //Usando o RM que guardamos
-                    usuarioRef.get()
-                        .addOnSuccessListener {documento ->
-                            if (documento.contains("notificacoes")){
-                                val numeroNotificacoesConversao = documento.getLong("notificacoes") //Obtendo a quantidade de notificação que o usuário já possui
-                                notificacoes = numeroNotificacoesConversao?.toInt()
-                                println("O usuário tem $notificacoes notificações.")
-                            }else{
-                                notificacoes = 0
-                            }
-                        }
-                }
-                else if(!UserData.cpsIDEncontrado.isNullOrEmpty()){
+                    val usuarioRef = usuarioCollection.document(UserData.rmEncontrado)
+                    val documento = usuarioRef.get().await()
+
+                    if (documento.contains("notificacoes")) {
+                        val numeroNotificacoesConversao = documento.getLong("notificacoes")
+                        notificacoes = numeroNotificacoesConversao?.toInt() ?: 0
+                        println("O usuário tem $notificacoes notificações.")
+                    } else {
+                        notificacoes = 0
+                    }
+                } else if (!UserData.cpsIDEncontrado.isNullOrEmpty()) {
                     val usuarioCollection = firestore.collection("Cps")
                     val usuarioRef = usuarioCollection.document(UserData.cpsIDEncontrado)
-                    usuarioRef.get()
-                        .addOnSuccessListener {documento ->
-                            if (documento.contains("notificacoes")){
-                                val numeroNotificacoesConversao = documento.getLong("notificacoes")
-                                notificacoes = numeroNotificacoesConversao?.toInt()
-                            }
-                            else{
-                                notificacoes = 0
-                            }
-                        }
+                    val documento = usuarioRef.get().await()
+
+                    if (documento.contains("notificacoes")) {
+                        val numeroNotificacoesConversao = documento.getLong("notificacoes")
+                        notificacoes = numeroNotificacoesConversao?.toInt() ?: 0
+                    } else {
+                        notificacoes = 0
+                    }
                 }
+            } catch (e: Exception) {
+                println("Erro ao obter notificações: $e")
             }
-
-
-            delay(500)
-
-            scope.launch {
-                //Parte para recuperar a foto de perfil do usuário (meio que provisória, fazemos o mesmo no profile).
-                if (!UserData.rmEncontrado.isNullOrEmpty()) {
-                    val alunoRef = storageRef.child("Alunos/Fotos de Perfil").child(UserData.rmEncontrado)
-                    alunoRef.downloadUrl
-                        .addOnSuccessListener { uri ->
-                            val url = uri.toString()
-                            println("URL obtida: $url")
-                            imagemUrl = url
-                            UserData.updateUrl(url)
-                        }
-                        .addOnFailureListener { exception ->
-                            println("A URL não pôde ser obtida. Erro: $exception")
-                        }
-                } else if (!UserData.cpsIDEncontrado.isNullOrEmpty()) {
-                    val cpsRef = storageRef.child("CPS/Fotos de Perfil").child(UserData.cpsIDEncontrado)
-                    cpsRef.downloadUrl
-                        .addOnSuccessListener { uri ->
-                            val url = uri.toString()
-                            println("URL obtida: $url")
-                            imagemUrl = url
-                            UserData.updateUrl(url)
-                        }
-                        .addOnFailureListener { exception ->
-                            println("A URL não pôde ser obtida. Erro: $exception")
-                        }
-                }
-            }
-
-            delay(950)
-            println("passou o delay.")
-            urlBaixada = true // a lógica pro progressIndicator
-            indexState = false
         }
+
+
+        // Parte para recuperar a foto de perfil do usuário (meio que provisória, fazemos o mesmo no profile).
+        scope.launch {
+            try {
+                val storageRef = if (!UserData.rmEncontrado.isNullOrEmpty()) {
+                    storage.reference.child("Alunos/Fotos de Perfil")
+                        .child(UserData.rmEncontrado)
+                } else {
+                    storage.reference.child("CPS/Fotos de Perfil")
+                        .child(UserData.cpsIDEncontrado)
+                }
+
+                val url = storageRef.downloadUrl.await().toString()
+                println("URL obtida: $url")
+                imagemUrl = url
+                UserData.updateUrl(url)
+
+                println("Passou o delay.")
+                urlBaixada = true // A lógica pro progressIndicator
+                indexState = false
+            } catch (e: Exception) {
+                println("A URL não pôde ser obtida. Erro: $e")
+            }
+        }
+
     }
+
 
 
     var expandirCard by remember { mutableStateOf(false) }
@@ -536,16 +552,14 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
                                     route = "Publicar",
                                     badgeCount = 0,
                                     icon = ImageVector.vectorResource(id = R.drawable.ic_publicar)
-                                ).withIconModifier(Modifier.size(32.dp)),
+                                ).withIconModifier(Modifier.size(35.dp)),
                                 BottomNavItem(
                                     nome = "Notificações",
                                     route = null,
                                     badgeCount = notificacoes!!,
                                     icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
                                 ).withIconModifier(
-                                    Modifier
-                                        .size(32.dp)
-                                        .clickable { dialog = true }),
+                                    Modifier.size(32.dp).clickable { dialog = true }),
                                 BottomNavItem(
                                     nome = "Icone Usuário",
                                     route = "Profile",
@@ -632,36 +646,6 @@ fun Index(navController: NavController, viewModel: PublicacaoViewModel = hiltVie
             backgroundColor = Color(0xFFFBF7F5),
         )
 
-
-    /*    //Gambiarra para colocar sombra no Button de publicar
-        if (scaffoldState.drawerState.isClosed){
-            ConstraintLayout(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                val (publicar) = createRefs()
-                Surface(
-                    shape = CircleShape,
-                    elevation = 10.dp,
-                    modifier = Modifier
-                        .size(55.dp)
-                        .constrainAs(publicar) {
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(parent.bottom, margin = 20.dp)
-                        }
-                ) {
-                    IconButton(
-                        onClick = {
-                            navController.navigate("Publicar")
-                        },
-                    ){
-                        Image(ImageVector.vectorResource(id = R.drawable.ic_publicar),
-                            contentDescription = "Ir para publicar nova postagem")
-                    }
-                }
-            }
-        } */
 
         //Teste área de comentários (aqui vai ficar só o layout em si)
         if (expandirCard){
@@ -844,7 +828,6 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                         nomeAutor = postagemData.nomeAutor,
                         rm = postagemData.rm,
                         cpsID = postagemData.cpsID,
-                        //apelidoAutor = postagemData.apelidoAutor,
                         textoPostagem = postagemData.textoPostagem,
                         imagensPost = postagemData.imagensPost,
                         tituloAutor = postagemData.tituloPost,
@@ -879,7 +862,6 @@ fun MinhasPostagens(postagens: List<PostagemData>, expandir: (Boolean) -> Unit, 
                         nomeAutor = postagemData.nomeAutor,
                         rm = postagemData.rm,
                         cpsID = postagemData.cpsID,
-                        //apelidoAutor = postagemData.apelidoAutor,
                         textoPostagem = postagemData.textoPostagem,
                         imagensPost = postagemData.imagensPost,
                         tituloAutor = postagemData.tituloPost,
