@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,7 +42,8 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var id by remember { mutableStateOf("") }
-    var codigoEtec by remember { mutableStateOf("") }
+    /*var codigoEtec by remember { mutableStateOf("") }*/
+    var senhaVisibilidade by remember { mutableStateOf(false) } //mostrar senha
 
     val context = LocalContext.current
 
@@ -135,16 +137,42 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password
                     ),
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (senhaVisibilidade){
+                        VisualTransformation.None
+                    }else
+                        PasswordVisualTransformation()
+                    ,
                     leadingIcon = {
                         Icon(
                             painterResource(id = R.drawable.ic_senha),
                             contentDescription = "Ícone de Senha no registro",
                             modifier = Modifier.size(28.dp))
                     },
-                    cor = Color(17, 100, 172, 255)
+                    cor = Color(17, 100, 172, 255),
+                    trailingIcon = {
+                        if (senhaVisibilidade){
+                            IconButton(onClick = {
+                                senhaVisibilidade = !senhaVisibilidade
+                            }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_visibility),
+                                    contentDescription = "Ícone para mostrar ou ocultar a senha",
+                                    modifier = Modifier.size(22.dp))
+                            }
+                        }
+                        else{
+                            IconButton(onClick = {
+                                senhaVisibilidade = !senhaVisibilidade
+                            }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_visibilityoff),
+                                    contentDescription = "Ícone para mostrar ou ocultar a senha",
+                                    modifier = Modifier.size(22.dp))
+                            }
+                        }
+                    }
                 )
-                //RM
+                //ID
                 OutlinedRegistro(
                     value = id,
                     onValueChange = {id = it},
@@ -161,7 +189,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     },
                     cor = Color(17, 100, 172, 255)
                 )
-                //Código turma
+                /*//Código turma
                 OutlinedRegistro(
                     value = codigoEtec,
                     onValueChange = {codigoEtec = it},
@@ -177,7 +205,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                             modifier = Modifier.size(28.dp))
                     },
                     cor = Color(17, 100, 172, 255)
-                )
+                )*/
                 //Termos e Condições
                 Row {
                     CheckBoxPersonalizada{isChecked ->
@@ -218,7 +246,7 @@ fun RegistroCPS(navController: NavController, viewModel: AuthViewModelCPS = hilt
                     BotaoRegistrar(
                         onClick = {
                             //Ao clicar existe duas possibilidades de mensagens que coloquei no "Listener"
-                            viewModel.cpsCadastro(/*nome,*/ email, senha,id, codigoEtec, object : ListenerAuth{
+                            viewModel.cpsCadastro(email, senha,id, /*codigoEtec,*/ object : ListenerAuth{
                                 override fun onSucess(mensagem: String) {
                                     Toast.makeText(context,mensagem, Toast.LENGTH_SHORT).show()
                                     navController.navigate("Login")

@@ -244,6 +244,7 @@ fun Login(navController: NavController, viewModel: AuthViewModel, viewModelCPS: 
                         onValueChange = {senha = it},
                         label = "Senha",
                         keyboardOptions = KeyboardOptions(
+
                             keyboardType = KeyboardType.Password
                         ),
                         leadingIcon = {

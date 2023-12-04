@@ -559,7 +559,9 @@ fun Index(navController: NavController, viewModel: UsuarioViewModel = hiltViewMo
                                     badgeCount = notificacoes!!,
                                     icon = ImageVector.vectorResource(id = R.drawable.ic_notificacoesindex)
                                 ).withIconModifier(
-                                    Modifier.size(32.dp).clickable { dialog = true }),
+                                    Modifier
+                                        .size(32.dp)
+                                        .clickable { dialog = true }),
                                 BottomNavItem(
                                     nome = "Icone Usuário",
                                     route = "Profile",

@@ -211,8 +211,6 @@ fun OutlinedEmail(value:String, onValueChange: (String) -> Unit, label:String, k
 fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions, leadingIcon: @Composable (() -> Unit)? = null){
 
     var senhaVisibilidade by remember { mutableStateOf(false) }
-    println("aqui começou $senhaVisibilidade")
-
 
     OutlinedTextField(
         value = value,
@@ -245,7 +243,6 @@ fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, k
             if (senhaVisibilidade){
                 IconButton(onClick = {
                     senhaVisibilidade = !senhaVisibilidade
-                    println(senhaVisibilidade)
                 }) {
                     Icon(
                         painterResource(id = R.drawable.ic_visibility),
@@ -256,7 +253,6 @@ fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, k
             else{
                 IconButton(onClick = {
                     senhaVisibilidade = !senhaVisibilidade
-                    println(senhaVisibilidade)
                 }) {
                     Icon(
                         painterResource(id = R.drawable.ic_visibilityoff),
@@ -273,7 +269,8 @@ fun OutlinedSenha(value:String, onValueChange: (String) -> Unit, label:String, k
 }
 
 @Composable
-fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions,visualTransformation: VisualTransformation,leadingIcon: @Composable (() -> Unit)? = null, cor: Color){
+fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:String, keyboardOptions: KeyboardOptions,visualTransformation: VisualTransformation,leadingIcon: @Composable (() -> Unit)? = null, cor: Color, trailingIcon: @Composable (() -> Unit)? = null,){
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -296,6 +293,7 @@ fun OutlinedRegistro(value: String, onValueChange: (String) -> Unit, label:Strin
         visualTransformation = visualTransformation,
         shape = RoundedCornerShape(50.dp),
         leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         modifier = Modifier
             .padding(bottom = 0.dp)
             .padding(bottom = 5.dp)

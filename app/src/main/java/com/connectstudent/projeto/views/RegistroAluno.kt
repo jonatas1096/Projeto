@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -43,6 +44,8 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var rm by remember { mutableStateOf("") }
+    var senhaVisibilidade by remember { mutableStateOf(false) } //mostrar senha
+
 
     val context = LocalContext.current
 
@@ -142,14 +145,40 @@ fun RegistroAluno(navController: NavController, viewModel: AuthViewModel = hiltV
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password
                     ),
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation = if (senhaVisibilidade){
+                        VisualTransformation.None
+                    }else
+                        PasswordVisualTransformation()
+                    ,
                     leadingIcon = {
                         Icon(
                             painterResource(id = R.drawable.ic_senha),
                             contentDescription = "Ícone de Senha no registro",
                             modifier = Modifier.size(28.dp))
                     },
-                    cor = LARANJA
+                    cor = LARANJA,
+                    trailingIcon = {
+                        if (senhaVisibilidade){
+                            IconButton(onClick = {
+                                senhaVisibilidade = !senhaVisibilidade
+                            }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_visibility),
+                                    contentDescription = "Ícone para mostrar ou ocultar a senha",
+                                    modifier = Modifier.size(22.dp))
+                            }
+                        }
+                        else{
+                            IconButton(onClick = {
+                                senhaVisibilidade = !senhaVisibilidade
+                            }) {
+                                Icon(
+                                    painterResource(id = R.drawable.ic_visibilityoff),
+                                    contentDescription = "Ícone para mostrar ou ocultar a senha",
+                                    modifier = Modifier.size(22.dp))
+                            }
+                        }
+                    }
                 )
                 //RM
                 OutlinedRegistro(

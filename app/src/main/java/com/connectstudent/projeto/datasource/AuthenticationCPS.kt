@@ -33,7 +33,7 @@ class AuthenticationCPS @Inject constructor() {
         email: String,
         senha: String,
         id: String,
-        codigoEtec: String,
+        /*codigoEtec: String,*/
         listenerAuth: ListenerAuth
     ){
         //novamente a variavel para acessar o firebase e puxar tudo de "Data"
@@ -54,8 +54,6 @@ class AuthenticationCPS @Inject constructor() {
                 val idData = documentSnapshot.data
                 //aqui usamos a variavel acima para puxar todos os dados do array que eu criei no firebase e inserir na variavel "arrayID"
                 //Ou seja, eu fiz uma cópia do array original do firebase e armazenei em uma variavel aqui localmente.
-                //val arrayID = idData?.get("id_cps") as? List<String>
-
 
                 //Começo da validação para garantir que o usuário é um professor ou da administração:
                 if (idData != null) {
@@ -96,11 +94,11 @@ class AuthenticationCPS @Inject constructor() {
                         } else if (id.isEmpty()) {
                             listenerAuth.onFailure("O ID é necessário para a validação!")
                         }
-                        else if (codigoEtec.isEmpty()) {
+                        /*else if (codigoEtec.isEmpty()) {
                             listenerAuth.onFailure("Forneça o código da ETEC!")
 
-                        }
-                        else if(condicaoID == true && cadastroID.value == false && codigoEtec == "211"){
+                        }*/
+                        else if(condicaoID == true && cadastroID.value == false /*&& codigoEtec == "211"*/){
                             //testando a validação:
                             auth.createUserWithEmailAndPassword(email, senha)
                                 .addOnCompleteListener { cadastroCps ->
@@ -113,7 +111,7 @@ class AuthenticationCPS @Inject constructor() {
                                         val cpsUsuariosMap = hashMapOf(
                                             "email" to email,
                                             "id" to id,
-                                            "codigoEtec" to codigoEtec,
+                                            /*"codigoEtec" to codigoEtec,*/
                                             "cpsID" to cpsID
                                         )
 
@@ -147,9 +145,9 @@ class AuthenticationCPS @Inject constructor() {
                         else if (cadastroID.value == true){
                             listenerAuth.onFailure("ID já cadastrado por outro usuário.")
                         }
-                        else if(codigoEtec != "211"){
+                        /*else if(codigoEtec != "211"){
                             listenerAuth.onFailure("Código ETEC inválido.")
-                        }
+                        }*/
                         else {
                             listenerAuth.onFailure("ID não encontrado no banco de dados.")
                         }

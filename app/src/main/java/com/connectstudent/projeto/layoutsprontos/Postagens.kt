@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: String, /*apelidoAutor:String,*/ textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
+fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: String, textoPostagem:String, imagensPost: List<String>, tituloAutor:String, turmasMarcadas: List<String>,
              idPostagem:String, numerocurtidas:Int, numerocomentarios:Int, postagemRef: (String) -> Unit, expandir: (Boolean) -> Unit , abrirFotoPerfil:(Boolean) -> Unit) {
 
     val iconecurtir = painterResource(id = R.drawable.ic_curtir)
@@ -82,6 +82,7 @@ fun Postagem(fotoPerfil:(String?) -> Unit, nomeAutor:String, rm:String, cpsID: S
 
     //Foto do usuario em tempo real -- apelido também
     LaunchedEffect(Unit){
+        println("VOCE CLICOU!!!!")
         scope.launch{
             if (!rm.isNullOrEmpty()){ //nao está vazio.
                 val storageRef = storage.reference.child("Alunos/Fotos de Perfil/$rm")
